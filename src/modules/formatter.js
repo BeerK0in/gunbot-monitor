@@ -71,14 +71,26 @@ class Formatter {
 
   priceDiff(message, buyPrice, sellPrice, lastPrice) {
     if (this.translateBuySellMessage(message) === TOO_LOW_TO_SELL) {
-      return chalk.magenta(this.price(parseFloat(sellPrice) - parseFloat(lastPrice)));
+      let diff = parseFloat(sellPrice) - parseFloat(lastPrice);
+      let percent = (diff / parseFloat(sellPrice) * 100).toFixed(2);
+      return `${chalk.magenta(this.price(diff))} ${chalk.gray(`${percent}%`)}`;
     }
 
     if (this.translateBuySellMessage(message) === TOO_HIGH_TO_BUY) {
-      return chalk.blue(this.price(parseFloat(lastPrice) - parseFloat(buyPrice)));
+      let diff = parseFloat(lastPrice) - parseFloat(buyPrice);
+      let percent = (diff / parseFloat(lastPrice) * 100).toFixed(2);
+      return `${chalk.blue(this.price(diff))} ${chalk.gray(`${percent}%`)}`;
     }
 
     return chalk.gray('-');
+  }
+
+  btcValue(numberOfCoins, lastPriceInBTC) {
+    if (numberOfCoins === undefined || lastPriceInBTC === undefined) {
+      return chalk.gray('-');
+    }
+
+    return this.price(parseFloat(numberOfCoins) * parseFloat(lastPriceInBTC));
   }
 
   trades(numberOfTrades, lastTradeDate) {
@@ -98,6 +110,30 @@ class Formatter {
     }
 
     return `${chalk.bold.red(code)} ${chalk.gray(this.timeSince(lastErrorTimeStamp))}`;
+  }
+
+  lastPrice(lastPrice, tendency) {
+    let output = this.price(lastPrice);
+    let tendencyOutput = '';
+
+    tendency = parseInt(tendency, 10);
+
+    if (tendency <= -10) {
+      tendencyOutput = chalk.red('↓');
+    }
+    if (tendency > -10 && tendency <= -2) {
+      tendencyOutput = chalk.magenta('↘');
+    }
+    if (tendency > -2 && tendency <= 1) {
+      tendencyOutput = chalk.yellow('→');
+    }
+    if (tendency > 1 && tendency <= 9) {
+      tendencyOutput = chalk.cyan('↗');
+    }
+    if (tendency > 9) {
+      tendencyOutput = chalk.green('↑');
+    }
+    return `${output} ${tendencyOutput}`;
   }
 
   /**

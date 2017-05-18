@@ -14,6 +14,8 @@ class TradePairParser {
       buyPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sPriceToBuy,(.+),priceToSell,.+/,
       sellPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sPriceToBuy,.+,priceToSell,(.+)/,
       lastPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sLP\s(.+),[<>],/,
+      tendency: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sprice\s\s\w*\s\((.*)\)/,
+      lastPriceInBTC: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sLP\s(.+)\s\sBal\.BTC\s/,
       priceStatusBuy: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(last\sprice\sis\stoo\shigh)/,
       priceStatusSell: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(price\sis\stoo\slow\sto\ssell)/,
       lastErrorCode: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s.*\sError:\sstatusCode\s(\d{1,100})/,
