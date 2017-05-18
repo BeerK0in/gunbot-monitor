@@ -1,5 +1,5 @@
 const assert = require('assert');
-const osData = require('../modules/osData');
+const osData = require('../src/modules/osData');
 
 describe('OsData', function () {
   it('defines a megabyte', function () {
