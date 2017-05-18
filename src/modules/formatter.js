@@ -5,7 +5,6 @@ const chalk = require('chalk');
 const TOO_LOW_TO_SELL = 1000;
 const TOO_HIGH_TO_BUY = 1100;
 
-
 class Formatter {
 
   constructor() {
@@ -13,7 +12,7 @@ class Formatter {
     this.numberOfPriceDecimals = 4;
   }
 
-  tradePair(tradePair){
+  tradePair(tradePair) {
     if (tradePair === undefined) {
       return chalk.gray('-');
     }
@@ -21,7 +20,7 @@ class Formatter {
     return chalk.green.bold(tradePair);
   }
 
-  coins(coins){
+  coins(coins) {
     if (coins === undefined) {
       return chalk.gray('-');
     }
@@ -108,7 +107,7 @@ class Formatter {
    * @returns {*}
    */
   timeToStatus(date) {
-    if(date === undefined){
+    if (date === undefined) {
       return chalk.gray('-');
     }
     if (!(date instanceof Date)) {
@@ -148,7 +147,7 @@ class Formatter {
    * @param date
    */
   timeSince(date) {
-    if(date === undefined){
+    if (date === undefined) {
       return chalk.gray('-');
     }
 
