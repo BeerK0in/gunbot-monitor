@@ -13,6 +13,22 @@ class Formatter {
     this.numberOfPriceDecimals = 4;
   }
 
+  tradePair(tradePair){
+    if (tradePair === undefined) {
+      return chalk.gray('-');
+    }
+
+    return chalk.green.bold(tradePair);
+  }
+
+  coins(coins){
+    if (coins === undefined) {
+      return chalk.gray('-');
+    }
+
+    return coins;
+  }
+
   price(price) {
     if (price === '--not set--') {
       return chalk.gray('-');
@@ -55,7 +71,6 @@ class Formatter {
   }
 
   priceDiff(message, buyPrice, sellPrice, lastPrice) {
-
     if (this.translateBuySellMessage(message) === TOO_LOW_TO_SELL) {
       return chalk.magenta(this.price(parseFloat(sellPrice) - parseFloat(lastPrice)));
     }
@@ -68,10 +83,22 @@ class Formatter {
   }
 
   trades(numberOfTrades, lastTradeDate) {
+    if (numberOfTrades === undefined || lastTradeDate === undefined) {
+      return chalk.gray('-');
+    }
+
     if (numberOfTrades <= 0) {
       return chalk.gray('-');
     }
     return `${chalk.bold(numberOfTrades)} ${chalk.gray(this.timeSince(lastTradeDate))}`;
+  }
+
+  errorCode(code, lastErrorTimeStamp) {
+    if (code === undefined) {
+      return chalk.gray('-');
+    }
+
+    return `${chalk.bold.red(code)} ${chalk.gray(this.timeSince(lastErrorTimeStamp))}`;
   }
 
   /**
@@ -81,6 +108,9 @@ class Formatter {
    * @returns {*}
    */
   timeToStatus(date) {
+    if(date === undefined){
+      return chalk.gray('-');
+    }
     if (!(date instanceof Date)) {
       date = new Date(date);
     }
@@ -118,6 +148,10 @@ class Formatter {
    * @param date
    */
   timeSince(date) {
+    if(date === undefined){
+      return chalk.gray('-');
+    }
+
     if (!(date instanceof Date)) {
       date = new Date(date);
     }

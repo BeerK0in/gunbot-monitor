@@ -39,7 +39,8 @@ class TableData {
       chalk.cyan.bold('price diff'),
       chalk.cyan.bold('last price is'),
       chalk.cyan.bold('number of buys'),
-      chalk.cyan.bold('number of sells')
+      chalk.cyan.bold('number of sells'),
+      chalk.cyan.bold('last error')
     ];
   }
 
@@ -63,17 +64,18 @@ class TableData {
               continue;
             }
             table.push([
-              chalk.green.bold(data.tradePair),
+              formatter.tradePair(data.tradePair),
               formatter.timeSince(data.lastTimeStamp),
               formatter.timeToStatus(data.lastTimeStamp),
-              data.coins,
+              formatter.coins(data.coins),
               formatter.price(data.buyPrice),
               formatter.price(data.sellPrice),
               formatter.price(data.lastPrice),
               formatter.priceDiff(data.priceStatusBuy || data.priceStatusSell, data.buyPrice, data.sellPrice, data.lastPrice),
               formatter.buySellMessage(data.priceStatusBuy || data.priceStatusSell),
               formatter.trades(data.buyCounter, data.lastTimeStampBuy),
-              formatter.trades(data.sellCounter, data.lastTimeStampSell)
+              formatter.trades(data.sellCounter, data.lastTimeStampSell),
+              formatter.errorCode(data.lastErrorCode, data.lastErrorTimeStamp)
             ]);
           }
           resolve(table);

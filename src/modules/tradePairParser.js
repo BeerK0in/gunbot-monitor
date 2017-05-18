@@ -15,7 +15,9 @@ class TradePairParser {
       sellPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sPriceToBuy,.+,priceToSell,(.+)/,
       lastPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sLP\s(.+),[<>],/,
       priceStatusBuy: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(last\sprice\sis\stoo\shigh)/,
-      priceStatusSell: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(price\sis\stoo\slow\sto\ssell)/
+      priceStatusSell: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(price\sis\stoo\slow\sto\ssell)/,
+      lastErrorCode: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s.*\sError:\sstatusCode\s(\d{1,100})/,
+      lastErrorTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s.*\sError:\sstatusCode\s\d{1,100}/
     };
 
     this.regExpsTrades = {
