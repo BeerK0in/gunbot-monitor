@@ -93,8 +93,7 @@ class TradePairParser {
   }
 
   parseTradeDataFirstTime(tradePair, market) {
-    return new Promise((resolve) => {
-
+    return new Promise(resolve => {
       let collectedData = [];
       collectedData.buyCounter = 0;
       collectedData.sellCounter = 0;
@@ -104,7 +103,7 @@ class TradePairParser {
       const readStream = fs.createReadStream(`${settings.pathToGunbot}${market}-${tradePair}-trades.txt`);
       readStream.on('error', () => {
         // TODO: print error. console.error(error);
-        resolve(collectedData)
+        resolve(collectedData);
       });
 
       const readLine = readline.createInterface({

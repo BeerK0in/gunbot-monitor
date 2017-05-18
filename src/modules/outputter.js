@@ -23,7 +23,7 @@ class Outputter {
   collectOutputAndUpdateConsoleLog() {
     Promise.all([osData.getMemoryGauge(), osData.getLoad(), tableData.getTable()])
       .then(values => logUpdate(this.buildOutput(...values)))
-      .catch(error => logUpdate(this.buildOutput(undefined, undefined, undefined, error)))
+      .catch(error => logUpdate(this.buildOutput(undefined, undefined, undefined, error)));
   }
 
   buildOutput(memory, load, table, error) {
@@ -37,7 +37,11 @@ class Outputter {
     output += this.newLine;
     output += this.newLine;
     output += chalk.italic('Use `CTRL+C` to exit.');
-    output += this.newLine + error;
+    output += this.newLine;
+
+    if (error !== undefined) {
+      output += error;
+    }
 
     return output;
   }
