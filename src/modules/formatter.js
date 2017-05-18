@@ -13,8 +13,14 @@ class Formatter {
     if (price === '--not set--') {
       return chalk.gray('-');
     }
+    if (price === undefined) {
+      return chalk.gray('-');
+    }
 
     let posOfDecimalPoint = price.indexOf('.');
+    if (posOfDecimalPoint < 1) {
+      posOfDecimalPoint = 1;
+    }
     return price.slice(0, posOfDecimalPoint + 1 + this.numberOfPriceDecimals);
   }
 
