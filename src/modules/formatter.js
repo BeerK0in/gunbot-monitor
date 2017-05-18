@@ -2,6 +2,10 @@
 
 const chalk = require('chalk');
 
+const TOO_LOW_TO_SELL = 1000;
+const TOO_HIGH_TO_BUY = 1100;
+
+
 class Formatter {
 
   constructor() {
@@ -17,6 +21,8 @@ class Formatter {
       return chalk.gray('-');
     }
 
+    price = price.toString();
+
     let posOfDecimalPoint = price.indexOf('.');
     if (posOfDecimalPoint < 1) {
       posOfDecimalPoint = 1;
@@ -24,13 +30,38 @@ class Formatter {
     return price.slice(0, posOfDecimalPoint + 1 + this.numberOfPriceDecimals);
   }
 
-  buySellMessage(message) {
+  translateBuySellMessage(message) {
     if (message === 'price is too low to sell') {
-      return chalk.magenta('too low to sell');
+      return TOO_LOW_TO_SELL;
     }
 
     if (message === 'last price is too high') {
+      return TOO_HIGH_TO_BUY;
+    }
+
+    return false;
+  }
+
+  buySellMessage(message) {
+    if (this.translateBuySellMessage(message) === TOO_LOW_TO_SELL) {
+      return chalk.magenta('too low to sell');
+    }
+
+    if (this.translateBuySellMessage(message) === TOO_HIGH_TO_BUY) {
       return chalk.blue('too high to buy');
+    }
+
+    return chalk.gray('-');
+  }
+
+  priceDiff(message, buyPrice, sellPrice, lastPrice) {
+
+    if (this.translateBuySellMessage(message) === TOO_LOW_TO_SELL) {
+      return chalk.magenta(this.price(parseFloat(sellPrice) - parseFloat(lastPrice)));
+    }
+
+    if (this.translateBuySellMessage(message) === TOO_HIGH_TO_BUY) {
+      return chalk.blue(this.price(parseFloat(lastPrice) - parseFloat(buyPrice)));
     }
 
     return chalk.gray('-');
@@ -40,7 +71,7 @@ class Formatter {
     if (numberOfTrades <= 0) {
       return chalk.gray('-');
     }
-    return `${numberOfTrades} ${chalk.gray(this.timeSince(lastTradeDate))}`;
+    return `${chalk.bold(numberOfTrades)} ${chalk.gray(this.timeSince(lastTradeDate))}`;
   }
 
   /**

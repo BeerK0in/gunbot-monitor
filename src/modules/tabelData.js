@@ -36,6 +36,7 @@ class TableData {
       chalk.cyan.bold('priceToBuy'),
       chalk.cyan.bold('priceToSell'),
       chalk.cyan.bold('lastPrice'),
+      chalk.cyan.bold('price diff'),
       chalk.cyan.bold('last price is'),
       chalk.cyan.bold('number of buys'),
       chalk.cyan.bold('number of sells')
@@ -69,6 +70,7 @@ class TableData {
               formatter.price(data.buyPrice),
               formatter.price(data.sellPrice),
               formatter.price(data.lastPrice),
+              formatter.priceDiff(data.priceStatusBuy || data.priceStatusSell, data.buyPrice, data.sellPrice, data.lastPrice),
               formatter.buySellMessage(data.priceStatusBuy || data.priceStatusSell),
               formatter.trades(data.buyCounter, data.lastTimeStampBuy),
               formatter.trades(data.sellCounter, data.lastTimeStampSell)
