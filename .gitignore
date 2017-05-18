@@ -1,0 +1,6 @@
+node_modules
+coverage
+dev-data
+.idea
+*.iml
+.yo-rc.json
