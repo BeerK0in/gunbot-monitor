@@ -4,6 +4,7 @@ const chalk = require('chalk');
 
 const TOO_LOW_TO_SELL = 1000;
 const TOO_HIGH_TO_BUY = 1100;
+const PRICE_IS_SWEET = 1200;
 
 class Formatter {
 
@@ -26,6 +27,30 @@ class Formatter {
     }
 
     return coins;
+  }
+
+  currentProfit(numberOfCoins, boughtPrice, lastPriceInBTC) {
+    if (numberOfCoins === undefined || boughtPrice === undefined || lastPriceInBTC === undefined) {
+      return chalk.gray('-');
+    }
+
+    if (parseFloat(lastPriceInBTC) === 0.0 || parseFloat(boughtPrice) === 0.0) {
+      return chalk.gray('-');
+    }
+
+    if (isNaN(parseFloat(lastPriceInBTC)) || isNaN(parseFloat(boughtPrice))) {
+      return chalk.gray('-');
+    }
+
+    let diff = parseFloat(lastPriceInBTC) - parseFloat(boughtPrice);
+    let profit = this.price(parseFloat(numberOfCoins) * diff);
+    let profitPercent = diff * 100 / parseFloat(boughtPrice);
+
+    if (diff >= 0) {
+      return chalk.green(this.price(profit)) + chalk.gray(` ${profitPercent.toFixed(1)}%`);
+    }
+
+    return chalk.red(this.price(profit)) + chalk.gray(` ${profitPercent.toFixed(1)}%`);
   }
 
   price(price) {
@@ -54,16 +79,32 @@ class Formatter {
       return TOO_HIGH_TO_BUY;
     }
 
+    if (message === 'price is sweet') {
+      return PRICE_IS_SWEET;
+    }
+
     return false;
+  }
+
+  openOrders(message) {
+    if (message === 'Open orders') {
+      return chalk.red('yes');
+    }
+
+    return chalk.gray('-');
   }
 
   buySellMessage(message) {
     if (this.translateBuySellMessage(message) === TOO_LOW_TO_SELL) {
-      return chalk.magenta('too low to sell');
+      return chalk.magenta('2 low 2 sell');
     }
 
     if (this.translateBuySellMessage(message) === TOO_HIGH_TO_BUY) {
-      return chalk.blue('too high to buy');
+      return chalk.blue('2 high 2 buy');
+    }
+
+    if (this.translateBuySellMessage(message) === PRICE_IS_SWEET) {
+      return chalk.green('price is sweet');
     }
 
     return chalk.gray('-');
@@ -101,7 +142,7 @@ class Formatter {
     if (numberOfTrades <= 0) {
       return chalk.gray('-');
     }
-    return `${chalk.bold(numberOfTrades)} ${chalk.gray(this.timeSince(lastTradeDate))}`;
+    return `${chalk.bold(numberOfTrades)} ${this.timeSince(lastTradeDate, true)}`;
   }
 
   errorCode(code, lastErrorTimeStamp) {
@@ -182,9 +223,21 @@ class Formatter {
    * @return String
    * @param date
    */
-  timeSince(date) {
+  timeSince(date, colorize) {
     if (date === undefined) {
-      return chalk.gray('-');
+      return chalk.gray('');
+    }
+
+    let veryGood = 'green';
+    let good = 'cyan';
+    let neutral = 'yellow';
+    let bad = 'red';
+
+    if (!colorize) {
+      veryGood = 'white';
+      good = 'white';
+      neutral = 'white';
+      bad = 'white';
     }
 
     if (!(date instanceof Date)) {
@@ -195,30 +248,36 @@ class Formatter {
     let interval = Math.floor(seconds / 31536000);
 
     if (interval > 1) {
-      return interval + 'Y ' + chalk.gray('ago');
+      return chalk[bad](interval + 'Y ') + chalk.gray('ago');
     }
 
     interval = Math.floor(seconds / 2592000);
     if (interval > 1) {
-      return interval + 'M ' + chalk.gray('ago');
+      return chalk[bad](interval + 'M ') + chalk.gray('ago');
     }
 
     interval = Math.floor(seconds / 86400);
     if (interval > 1) {
-      return interval + 'D ' + chalk.gray('ago');
+      return chalk[bad](interval + 'D ') + chalk.gray('ago');
     }
 
     interval = Math.floor(seconds / 3600);
+    if (interval > 1 && interval < 3) {
+      return chalk[good](interval + 'h ') + chalk.gray('ago');
+    }
+    if (interval > 1 && interval < 48) {
+      return chalk[neutral](interval + 'h ') + chalk.gray('ago');
+    }
     if (interval > 1) {
-      return interval + 'h ' + chalk.gray('ago');
+      return chalk[bad](interval + 'h ') + chalk.gray('ago');
     }
 
     interval = Math.floor(seconds / 60);
     if (interval > 1) {
-      return interval + 'm ' + chalk.gray('ago');
+      return chalk[veryGood](interval + 'm ') + chalk.gray('ago');
     }
 
-    return Math.floor(seconds) + 's ' + chalk.gray('ago');
+    return chalk[veryGood](Math.floor(seconds) + 's ') + chalk.gray('ago');
   }
 
 }
