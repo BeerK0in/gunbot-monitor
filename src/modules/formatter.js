@@ -254,17 +254,17 @@ class Formatter {
     let interval = Math.floor(seconds / 31536000);
 
     if (interval > 1) {
-      return chalk[bad](interval + 'Y ') + chalk.gray('ago');
+      return chalk[veryBad](interval + 'Y ') + chalk.gray('ago');
     }
 
     interval = Math.floor(seconds / 2592000);
     if (interval > 1) {
-      return chalk[bad](interval + 'M ') + chalk.gray('ago');
+      return chalk[veryBad](interval + 'M ') + chalk.gray('ago');
     }
 
     interval = Math.floor(seconds / 86400);
     if (interval > 1) {
-      return chalk[bad](interval + 'D ') + chalk.gray('ago');
+      return chalk[veryBad](interval + 'D ') + chalk.gray('ago');
     }
 
     interval = Math.floor(seconds / 3600);
