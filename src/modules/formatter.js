@@ -235,13 +235,15 @@ class Formatter {
     let veryGood = 'green';
     let good = 'cyan';
     let neutral = 'yellow';
-    let bad = 'red';
+    let bad = 'magenta';
+    let veryBad = 'red';
 
     if (!colorize) {
       veryGood = 'white';
       good = 'white';
       neutral = 'white';
       bad = 'white';
+      veryBad = 'white';
     }
 
     if (!(date instanceof Date)) {
@@ -266,14 +268,17 @@ class Formatter {
     }
 
     interval = Math.floor(seconds / 3600);
-    if (interval > 1 && interval < 3) {
+    if (interval > 1 && interval < 6) {
       return chalk[good](interval + 'h ') + chalk.gray('ago');
     }
-    if (interval > 1 && interval < 48) {
+    if (interval > 1 && interval < 24) {
       return chalk[neutral](interval + 'h ') + chalk.gray('ago');
     }
-    if (interval > 1) {
+    if (interval > 1 && interval < 49) {
       return chalk[bad](interval + 'h ') + chalk.gray('ago');
+    }
+    if (interval > 1) {
+      return chalk[veryBad](interval + 'h ') + chalk.gray('ago');
     }
 
     interval = Math.floor(seconds / 60);
