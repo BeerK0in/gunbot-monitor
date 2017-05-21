@@ -34,11 +34,15 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    if (parseFloat(lastPriceInBTC) === 0.0 || parseFloat(boughtPrice) === 0.0) {
+    if (parseFloat(lastPriceInBTC) === 0 || parseFloat(boughtPrice) === 0) {
       return chalk.gray('-');
     }
 
     if (isNaN(parseFloat(lastPriceInBTC)) || isNaN(parseFloat(boughtPrice))) {
+      return chalk.gray('-');
+    }
+
+    if (parseFloat(numberOfCoins) === 0) {
       return chalk.gray('-');
     }
 
