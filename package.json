@@ -36,8 +36,7 @@
     "commander": "^2.9.0",
     "figlet": "^1.2.0",
     "log-update": "^2.0.0",
-    "read-last-lines": "^1.1.2",
-    "systeminformation": "^3.17.3"
+    "read-last-lines": "^1.1.2"
   },
   "jest": {
     "testEnvironment": "node",
