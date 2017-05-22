@@ -65,7 +65,6 @@ class TableData {
 
       Promise.all(dataPromises)
         .then(values => {
-
           let totalBTCValue = 0.0;
           let totalProfit = 0.0;
 
@@ -74,14 +73,13 @@ class TableData {
               continue;
             }
 
-            if(!isNaN(parseFloat(formatter.btcValue(data.coins, data.lastPriceInBTC)))) {
+            if (!isNaN(parseFloat(formatter.btcValue(data.coins, data.lastPriceInBTC)))) {
               totalBTCValue += parseFloat(formatter.btcValue(data.coins, data.lastPriceInBTC));
             }
 
-            if(!isNaN(parseFloat(data.profit))) {
+            if (!isNaN(parseFloat(data.profit))) {
               totalProfit += parseFloat(data.profit);
             }
-
 
             table.push([
               formatter.tradePair(data.tradePair),
