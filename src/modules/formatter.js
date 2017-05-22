@@ -26,7 +26,7 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    return coins;
+    return this.price(coins);
   }
 
   currentProfit(numberOfCoins, boughtPrice, lastPriceInBTC) {
@@ -100,15 +100,15 @@ class Formatter {
 
   buySellMessage(message) {
     if (this.translateBuySellMessage(message) === TOO_LOW_TO_SELL) {
-      return chalk.magenta('2 low 2 sell');
+      return chalk.magenta('too low');
     }
 
     if (this.translateBuySellMessage(message) === TOO_HIGH_TO_BUY) {
-      return chalk.blue('2 high 2 buy');
+      return chalk.blue('too high');
     }
 
     if (this.translateBuySellMessage(message) === PRICE_IS_SWEET) {
-      return chalk.green('price is sweet');
+      return chalk.green('sweet');
     }
 
     return chalk.gray('-');
@@ -181,6 +181,21 @@ class Formatter {
     return `${output} ${tendencyOutput}`;
   }
 
+  tradesInTimeSlots(slots) {
+    if (slots === undefined) {
+      return chalk.gray('-');
+    }
+
+    return `${this.colorizeTradesInTimeSlots(slots['1hr'])}/${this.colorizeTradesInTimeSlots(slots['6hr'])}/${this.colorizeTradesInTimeSlots(slots['12hr'])}/${this.colorizeTradesInTimeSlots(slots['24hr'])}/${this.colorizeTradesInTimeSlots(slots.older)}`;
+  }
+
+  colorizeTradesInTimeSlots(number) {
+    if (number === undefined || number === 0) {
+      return chalk.white('0');
+    }
+
+    return chalk.blue(number);
+  }
   /**
    * Converts the given date in a string of status.
    * Like if the date is 300 sec in the past, return "offline".
@@ -197,10 +212,10 @@ class Formatter {
 
     let seconds = Math.floor((new Date() - date) / 1000);
     if (seconds > this.timeTillOfflineStatus) {
-      return this.colorStatus('offline');
+      return this.colorStatus('off');
     }
 
-    return this.colorStatus('online');
+    return this.colorStatus('on');
   }
 
   /**
@@ -254,39 +269,39 @@ class Formatter {
     let interval = Math.floor(seconds / 31536000);
 
     if (interval > 1) {
-      return chalk[veryBad](interval + 'Y ') + chalk.gray('ago');
+      return chalk[veryBad](interval + 'Y ');
     }
 
     interval = Math.floor(seconds / 2592000);
     if (interval > 1) {
-      return chalk[veryBad](interval + 'M ') + chalk.gray('ago');
+      return chalk[veryBad](interval + 'M ');
     }
 
     interval = Math.floor(seconds / 86400);
     if (interval > 1) {
-      return chalk[veryBad](interval + 'D ') + chalk.gray('ago');
+      return chalk[veryBad](interval + 'D ');
     }
 
     interval = Math.floor(seconds / 3600);
     if (interval > 1 && interval < 6) {
-      return chalk[good](interval + 'h ') + chalk.gray('ago');
+      return chalk[good](interval + 'h ');
     }
     if (interval > 1 && interval < 24) {
-      return chalk[neutral](interval + 'h ') + chalk.gray('ago');
+      return chalk[neutral](interval + 'h ');
     }
     if (interval > 1 && interval < 49) {
-      return chalk[bad](interval + 'h ') + chalk.gray('ago');
+      return chalk[bad](interval + 'h ');
     }
     if (interval > 1) {
-      return chalk[veryBad](interval + 'h ') + chalk.gray('ago');
+      return chalk[veryBad](interval + 'h ');
     }
 
     interval = Math.floor(seconds / 60);
     if (interval > 1) {
-      return chalk[veryGood](interval + 'm ') + chalk.gray('ago');
+      return chalk[veryGood](interval + 'm ');
     }
 
-    return chalk[veryGood](Math.floor(seconds) + 's ') + chalk.gray('ago');
+    return chalk[veryGood](Math.floor(seconds) + 's ');
   }
 
 }

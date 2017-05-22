@@ -6,7 +6,7 @@ class Settings {
     this._pathToGunbot = './';
     this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
     this.logFileLinesToRead = 30;
-    this.outputIntervalDelay = 1000 * 10; // 10 seconds
+    this.outputIntervalDelay = 1000 * 20; // 20 seconds
   }
 
   set pathToGunbot(path) {

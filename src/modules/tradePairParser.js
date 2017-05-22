@@ -13,7 +13,7 @@ class TradePairParser {
       coins: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s.*altcoins:\s(.+)/,
       buyPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sPriceToBuy,(.+),priceToSell,.+/,
       sellPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sPriceToBuy,.+,priceToSell,(.+)/,
-      lastPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sLP\s(.+),[<>],/,
+      lastPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sLP\s(.+),[<>]=?,/,
       boughtPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sboughtPrice\s(.+)/,
       tendency: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sprice\s\s\w*\s\((.*)\)/,
       lastPriceInBTC: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sLP\s(.+)\s\sBal\.BTC\s/,
@@ -27,10 +27,14 @@ class TradePairParser {
     };
 
     this.regExpsTrades = {
-      buyCounter: /.*(buy).*/,
-      sellCounter: /.*(sell).*/,
+      buyCounter: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s.*(buy).*/,
+      sellCounter: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s.*(sell).*/,
       lastTimeStampBuy: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s\*\*\*\sMARKET\sCALLBACK\s\|\sbuy\s.*/,
       lastTimeStampSell: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s\*\*\*\sMARKET\sCALLBACK\s\|\ssell\s.*/
+    };
+
+    this.regExpsProfit = {
+      profit: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sProfit\s(.*)/
     };
   }
 
@@ -38,7 +42,8 @@ class TradePairParser {
     return new Promise((resolve, reject) => {
       Promise.all([
         this.readLogFile(tradePair, market),
-        this.readTradesFile(tradePair, market)
+        this.readTradesFile(tradePair, market),
+        this.getProfit(tradePair, market)
       ])
         .then(values => {
           resolve(Object.assign({}, ...values));
@@ -63,6 +68,32 @@ class TradePairParser {
       this.parseTradeDataFirstTime(tradePair, market)
         .then(collectedData => resolve(collectedData))
         .catch(error => reject(error));
+    });
+  }
+
+  getProfit(tradePair, market) {
+    let collectedData = [];
+    collectedData.profit = 0.0;
+
+    return new Promise(resolve => {
+      const readStream = fs.createReadStream(`${settings.pathToGunbot}${market}-${tradePair}-log.txt`);
+      readStream.on('error', () => {
+        // TODO: print error. console.error(error);
+        resolve(collectedData);
+      });
+
+      const readLine = readline.createInterface({
+        input: readStream
+      });
+
+      readLine.on('line', line => {
+        let matches = this.regExpsProfit.profit.exec(line);
+        if (matches && matches.length >= 2) {
+          collectedData.profit += parseFloat(matches[1]);
+        }
+      });
+
+      readLine.on('close', () => resolve(collectedData));
     });
   }
 
@@ -107,6 +138,20 @@ class TradePairParser {
       collectedData.sellCounter = 0;
       collectedData.lastTimeStampBuy = 0;
       collectedData.lastTimeStampSell = 0;
+      collectedData.buys = {
+        '1hr': 0,
+        '6hr': 0,
+        '12hr': 0,
+        '24hr': 0,
+        older: 0
+      };
+      collectedData.sells = {
+        '1hr': 0,
+        '6hr': 0,
+        '12hr': 0,
+        '24hr': 0,
+        older: 0
+      };
 
       const readStream = fs.createReadStream(`${settings.pathToGunbot}${market}-${tradePair}-trades.txt`);
       readStream.on('error', () => {
@@ -120,13 +165,15 @@ class TradePairParser {
 
       readLine.on('line', line => {
         let matches = this.regExpsTrades.buyCounter.exec(line);
-        if (matches && matches.length >= 2) {
+        if (matches && matches.length >= 3) {
           collectedData.buyCounter++;
+          collectedData.buys = this.sortTradesInTimeSlots(collectedData.buys, matches[1]);
         }
 
         matches = this.regExpsTrades.sellCounter.exec(line);
-        if (matches && matches.length >= 2) {
+        if (matches && matches.length >= 3) {
           collectedData.sellCounter++;
+          collectedData.sells = this.sortTradesInTimeSlots(collectedData.sells, matches[1]);
         }
 
         matches = this.regExpsTrades.lastTimeStampBuy.exec(line);
@@ -142,6 +189,36 @@ class TradePairParser {
 
       readLine.on('close', () => resolve(collectedData));
     });
+  }
+
+  sortTradesInTimeSlots(container, date) {
+    if (date === undefined) {
+      return container;
+    }
+
+    if (!(date instanceof Date)) {
+      date = new Date(date);
+    }
+
+    let hours = Math.floor((new Date() - date) / 1000 / 60 / 60);
+
+    if (hours <= 1 && hours >= 0) {
+      container['1hr']++;
+    }
+    if (hours <= 6 && hours > 1) {
+      container['6hr']++;
+    }
+    if (hours <= 12 && hours > 6) {
+      container['12hr']++;
+    }
+    if (hours <= 24 && hours > 12) {
+      container['24hr']++;
+    }
+    if (hours > 24) {
+      container.older++;
+    }
+
+    return container;
   }
 
 }

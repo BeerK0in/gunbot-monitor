@@ -30,19 +30,22 @@ class TableData {
   getHead() {
     return [
       chalk.cyan.bold('name'),
-      chalk.cyan.bold('last log'),
-      chalk.cyan.bold('status'),
+      chalk.cyan.bold('ll'),
+      chalk.cyan.bold('stat'),
       chalk.cyan.bold('oo?'),
       chalk.cyan.bold('coins'),
       chalk.cyan.bold('in BTC'),
-      chalk.cyan.bold('profit in BTC'),
+      chalk.cyan.bold('change'),
       chalk.cyan.bold('pr2Buy'),
       chalk.cyan.bold('pr2Sell'),
       chalk.cyan.bold('lastPrice'),
       chalk.cyan.bold('price diff'),
-      chalk.cyan.bold('last price is'),
-      chalk.cyan.bold('# of buys'),
-      chalk.cyan.bold('# of sells'),
+      chalk.cyan.bold('price is'),
+      chalk.cyan.bold('# buys'),
+      chalk.cyan.bold('1/6/12/24/+'),
+      chalk.cyan.bold('# sells'),
+      chalk.cyan.bold('1/6/12/24/+'),
+      chalk.cyan.bold('revenue'),
       chalk.cyan.bold('last error')
     ];
   }
@@ -80,7 +83,10 @@ class TableData {
               formatter.priceDiff(data.priceStatusBuy || data.priceStatusSell, data.buyPrice, data.sellPrice, data.lastPrice),
               formatter.buySellMessage(data.priceStatusBuy || data.priceStatusSell || data.priceStatusSweet),
               formatter.trades(data.buyCounter, data.lastTimeStampBuy),
+              formatter.tradesInTimeSlots(data.buys),
               formatter.trades(data.sellCounter, data.lastTimeStampSell),
+              formatter.tradesInTimeSlots(data.sells),
+              formatter.price(data.profit),
               formatter.errorCode(data.lastErrorCode, data.lastErrorTimeStamp)
             ]);
           }
