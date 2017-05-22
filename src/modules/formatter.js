@@ -226,8 +226,8 @@ class Formatter {
    */
   colorStatus(status) {
     switch (status) {
-      case 'online':
-        return chalk.green.bold('online');
+      case 'on':
+        return chalk.green.bold('on');
       case 'launching':
         return chalk.blue.bold('launching');
       default:

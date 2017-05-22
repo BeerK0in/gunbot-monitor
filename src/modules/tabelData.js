@@ -45,7 +45,7 @@ class TableData {
       chalk.cyan.bold('1/6/12/24/+'),
       chalk.cyan.bold('# sells'),
       chalk.cyan.bold('1/6/12/24/+'),
-      chalk.cyan.bold('revenue'),
+      chalk.cyan.bold('profit'),
       chalk.cyan.bold('last error')
     ];
   }
@@ -65,10 +65,24 @@ class TableData {
 
       Promise.all(dataPromises)
         .then(values => {
+
+          let totalBTCValue = 0.0;
+          let totalProfit = 0.0;
+
           for (let data of values) {
             if (data === undefined || data.lastTimeStamp === undefined) {
               continue;
             }
+
+            if(!isNaN(parseFloat(formatter.btcValue(data.coins, data.lastPriceInBTC)))) {
+              totalBTCValue += parseFloat(formatter.btcValue(data.coins, data.lastPriceInBTC));
+            }
+
+            if(!isNaN(parseFloat(data.profit))) {
+              totalProfit += parseFloat(data.profit);
+            }
+
+
             table.push([
               formatter.tradePair(data.tradePair),
               formatter.timeSince(data.lastTimeStamp),
@@ -90,6 +104,27 @@ class TableData {
               formatter.errorCode(data.lastErrorCode, data.lastErrorTimeStamp)
             ]);
           }
+
+          table.push([
+            formatter.tradePair('TOTAL'),
+            '',
+            '',
+            '',
+            '',
+            formatter.price(totalBTCValue),
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            formatter.price(totalProfit),
+            ''
+          ]);
           resolve(table);
         })
         .catch(error => reject(error));

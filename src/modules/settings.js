@@ -5,7 +5,7 @@ class Settings {
   constructor() {
     this._pathToGunbot = './';
     this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
-    this.logFileLinesToRead = 30;
+    this.logFileLinesToRead = 100;
     this.outputIntervalDelay = 1000 * 20; // 20 seconds
   }
 
