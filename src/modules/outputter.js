@@ -26,8 +26,7 @@ class Outputter {
   }
 
   buildOutput(memory, load, table, error) {
-    let output = this.printHeadline();
-    output += this.newLine;
+    let output = this.newLine;
     output += memory;
     output += this.newLine;
     output += load;
@@ -47,11 +46,14 @@ class Outputter {
   }
 
   start() {
-    this.print();
+    this.printHeadline()
+      .then(() => {
+        this.print();
 
-    this.interval = setInterval(() => {
-      this.print();
-    }, settings.outputIntervalDelay);
+        this.interval = setInterval(() => {
+          this.print();
+        }, settings.outputIntervalDelay);
+      });
   }
 
   stop() {
@@ -61,17 +63,21 @@ class Outputter {
   // ------
 
   printHeadline() {
-    let newLine = this.newLine;
-    let headline = this.headline;
+    return new Promise(resolve => {
+      let newLine = this.newLine;
+      let headline = this.headline;
 
-    figLet.text(headline, {
-      font: 'Standard'
-    }, function (err, data) {
-      if (err) {
-        console.log(newLine + chalk.bold.yellow(headline));
-        return;
-      }
-      console.log(newLine + chalk.bold.yellow(data));
+      figLet.text(headline, {
+        font: 'Standard'
+      }, function (err, data) {
+        if (err) {
+          console.log(newLine + chalk.bold.yellow(headline));
+          resolve(true);
+          return;
+        }
+        console.log(newLine + chalk.bold.yellow(data));
+        resolve(true);
+      });
     });
   }
 
