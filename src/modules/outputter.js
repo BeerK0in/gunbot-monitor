@@ -13,7 +13,6 @@ class Outputter {
     this.interval = null;
     this.newLine = '\n';
     this.headline = '   >>>   GUNBOT - MONITOR   <<<';
-    this.printHeadline();
   }
 
   print() {
@@ -27,7 +26,8 @@ class Outputter {
   }
 
   buildOutput(memory, load, table, error) {
-    let output = this.newLine;
+    let output = this.printHeadline();
+    output += this.newLine;
     output += memory;
     output += this.newLine;
     output += load;
