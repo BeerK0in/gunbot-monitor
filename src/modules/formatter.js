@@ -74,16 +74,28 @@ class Formatter {
     return price.slice(0, posOfDecimalPoint + 1 + this.numberOfPriceDecimals);
   }
 
-  translateBuySellMessage(message) {
-    if (message === 'price is too low to sell') {
-      return TOO_LOW_TO_SELL;
+  getLatestBuySellSweetMessage(buyMessageDate, sellMessageDate, sweetMessageDate) {
+    if (!(buyMessageDate instanceof Date)) {
+      buyMessageDate = new Date(buyMessageDate || 0);
     }
 
-    if (message === 'last price is too high') {
+    if (!(sellMessageDate instanceof Date)) {
+      sellMessageDate = new Date(sellMessageDate || 0);
+    }
+
+    if (!(sweetMessageDate instanceof Date)) {
+      sweetMessageDate = new Date(sweetMessageDate || 0);
+    }
+
+    if (buyMessageDate > sellMessageDate && buyMessageDate > sweetMessageDate) {
       return TOO_HIGH_TO_BUY;
     }
 
-    if (message === 'price is sweet') {
+    if (sellMessageDate > buyMessageDate && sellMessageDate > sweetMessageDate) {
+      return TOO_LOW_TO_SELL;
+    }
+
+    if (sweetMessageDate > buyMessageDate && sweetMessageDate > sellMessageDate) {
       return PRICE_IS_SWEET;
     }
 
@@ -98,30 +110,37 @@ class Formatter {
     return chalk.gray('-');
   }
 
-  buySellMessage(message) {
-    if (this.translateBuySellMessage(message) === TOO_LOW_TO_SELL) {
-      return chalk.magenta('too low');
-    }
+  buySellMessage(buyMessageDate, sellMessageDate, sweetMessageDate) {
+    let bss = this.getLatestBuySellSweetMessage(buyMessageDate, sellMessageDate, sweetMessageDate);
 
-    if (this.translateBuySellMessage(message) === TOO_HIGH_TO_BUY) {
+    if (bss === TOO_HIGH_TO_BUY) {
       return chalk.blue('too high');
     }
 
-    if (this.translateBuySellMessage(message) === PRICE_IS_SWEET) {
+    if (bss === TOO_LOW_TO_SELL) {
+      return chalk.magenta('too low');
+    }
+
+    if (bss === PRICE_IS_SWEET) {
       return chalk.green('sweet');
     }
 
     return chalk.gray('-');
   }
 
-  priceDiff(message, buyPrice, sellPrice, lastPrice) {
-    if (this.translateBuySellMessage(message) === TOO_LOW_TO_SELL) {
+  priceDiff(buyMessageDate, sellMessageDate, sweetMessageDate, buyPrice, sellPrice, lastPrice) {
+    if (isNaN(parseFloat(buyPrice)) || isNaN(parseFloat(sellPrice)) || isNaN(parseFloat(lastPrice))) {
+      return chalk.gray('-');
+    }
+
+    let bss = this.getLatestBuySellSweetMessage(buyMessageDate, sellMessageDate, sweetMessageDate);
+    if (bss === TOO_LOW_TO_SELL) {
       let diff = parseFloat(sellPrice) - parseFloat(lastPrice);
       let percent = (diff / parseFloat(sellPrice) * 100).toFixed(2);
       return `${chalk.magenta(this.price(diff))} ${chalk.gray(`${percent}%`)}`;
     }
 
-    if (this.translateBuySellMessage(message) === TOO_HIGH_TO_BUY) {
+    if (bss === TOO_HIGH_TO_BUY) {
       let diff = parseFloat(lastPrice) - parseFloat(buyPrice);
       let percent = (diff / parseFloat(lastPrice) * 100).toFixed(2);
       return `${chalk.blue(this.price(diff))} ${chalk.gray(`${percent}%`)}`;
@@ -191,7 +210,7 @@ class Formatter {
 
   colorizeTradesInTimeSlots(number) {
     if (number === undefined || number === 0) {
-      return chalk.white('0');
+      return chalk.gray('-');
     }
 
     return chalk.blue(number);

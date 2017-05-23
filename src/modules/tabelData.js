@@ -54,6 +54,8 @@ class TableData {
 
   fillContent(table) {
     return new Promise((resolve, reject) => {
+      let result = {};
+
       let allPromises = [];
       allPromises.push(pm2Data.getProcesses());
       for (let market of Object.keys(this.tradePairs)) {
@@ -70,12 +72,25 @@ class TableData {
         .then(values => {
           let totalBTCValue = 0.0;
           let totalProfit = 0.0;
+          let availableBitCoins = 0;
+          let latestAvailableBitCoinsDate = new Date(0);
           let pm2Result = values[0];
           values.shift();
 
           for (let data of values) {
             if (data === undefined || data.lastTimeStamp === undefined) {
               continue;
+            }
+
+            if (data.availableBitCoins !== undefined && data.availableBitCoins.length > 0) {
+              if (!(data.availableBitCoinsTimeStamp instanceof Date)) {
+                data.availableBitCoinsTimeStamp = new Date(data.availableBitCoinsTimeStamp || 0);
+              }
+
+              if (data.availableBitCoinsTimeStamp > latestAvailableBitCoinsDate) {
+                availableBitCoins = data.availableBitCoins;
+                latestAvailableBitCoinsDate = data.availableBitCoinsTimeStamp;
+              }
             }
 
             if (!isNaN(parseFloat(formatter.btcValue(data.coins, data.lastPriceInBTC)))) {
@@ -98,8 +113,8 @@ class TableData {
               formatter.price(data.buyPrice),
               formatter.price(data.sellPrice),
               formatter.lastPrice(data.lastPrice, data.tendency),
-              formatter.priceDiff(data.priceStatusBuy || data.priceStatusSell, data.buyPrice, data.sellPrice, data.lastPrice),
-              formatter.buySellMessage(data.priceStatusBuy || data.priceStatusSell || data.priceStatusSweet),
+              formatter.priceDiff(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp, data.buyPrice, data.sellPrice, data.lastPrice),
+              formatter.buySellMessage(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp),
               formatter.trades(data.buyCounter, data.lastTimeStampBuy),
               formatter.tradesInTimeSlots(data.buys),
               formatter.trades(data.sellCounter, data.lastTimeStampSell),
@@ -115,8 +130,8 @@ class TableData {
             '',
             '',
             '',
-            formatter.price(totalBTCValue),
             '',
+            formatter.price(totalBTCValue),
             '',
             '',
             '',
@@ -130,7 +145,9 @@ class TableData {
             formatter.price(totalProfit),
             ''
           ]);
-          resolve(table);
+          result.table = table;
+          result.availableBitCoins = availableBitCoins;
+          resolve(result);
         })
         .catch(error => reject(error));
     });

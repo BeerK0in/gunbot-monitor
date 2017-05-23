@@ -10,8 +10,10 @@ $ npm install -g gunbot-monitor
 ## Usage
 
 ```sh
-$ gmon
+$ gmon [-p /path/to/gunbot/logs]
 ```
+
+Run the command inside the folder of your gunbot logs, or use `-p /path/to/gunbot/logs` to specify the path.
 ## License
 
 MIT © [BeerK0in](https://github.com/BeerK0in)

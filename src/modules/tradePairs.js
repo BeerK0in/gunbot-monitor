@@ -34,7 +34,7 @@ class TradePairs {
       regExStr += marketPrefix + '|';
     }
     regExStr = regExStr.slice(0, -1);
-    regExStr += ')-(BTC_[A-Z]{2,16})-log.txt';
+    regExStr += ')-(BTC_[A-Z0-9]{2,16})-log.txt';
     return new RegExp(regExStr);
   }
 

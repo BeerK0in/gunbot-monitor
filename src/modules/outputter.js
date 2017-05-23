@@ -27,14 +27,16 @@ class Outputter {
       .catch(error => logUpdate(this.buildOutput(undefined, undefined, undefined, error)));
   }
 
-  buildOutput(memory, load, table, error) {
+  buildOutput(memory, load, tableData, error) {
     let output = this.newLine;
     output += memory;
     output += this.newLine;
     output += load;
     output += this.newLine;
     output += this.newLine;
-    output += table;
+    output += ` Available BitCoins: ${tableData.availableBitCoins}`;
+    output += this.newLine;
+    output += tableData.table;
     output += this.newLine;
     output += this.newLine;
     output += chalk.italic('Use `CTRL+C` to exit.');
@@ -75,12 +77,12 @@ class Outputter {
       }, function (err, data) {
         if (err) {
           console.log(newLine + chalk.bold.yellow(headline));
-          console.log(newLine + chalk.white('Version ' + version));
+          console.log(newLine + chalk.white(`Version ${version} | Refresh interval ${settings.outputIntervalDelay / 1000}s`));
           resolve(true);
           return;
         }
         console.log(newLine + chalk.bold.yellow(data));
-        console.log(chalk.white('Version ' + version));
+        console.log(chalk.white(`Version ${version} | Refresh interval ${settings.outputIntervalDelay / 1000}s`));
         resolve(true);
       });
     });

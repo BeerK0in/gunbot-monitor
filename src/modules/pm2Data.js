@@ -16,16 +16,22 @@ class Pm2Data {
       let result = {};
 
       exec('pm2 jlist', function (error, stdout) {
-        if (!error) {
-          let processes = JSON.parse(stdout);
+        if (error) {
+          resolve(result);
+          return;
+        }
+        if (!stdout) {
+          resolve(result);
+          return;
+        }
+        let processes = JSON.parse(stdout);
 
-          for (let process of processes) {
-            result[process.name] = {
-              name: process.name,
-              id: process.pm2_env.pm_id,
-              status: process.pm2_env.status
-            };
-          }
+        for (let process of processes) {
+          result[process.name] = {
+            name: process.name,
+            id: process.pm2_env.pm_id,
+            status: process.pm2_env.status
+          };
         }
         resolve(result);
       });

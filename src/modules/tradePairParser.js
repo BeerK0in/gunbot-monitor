@@ -18,12 +18,17 @@ class TradePairParser {
       tendency: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sprice\s\s\w*\s\((.*)\)/,
       lastPriceInBTC: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sLP\s(.+)\s\sBal\.BTC\s/,
       priceStatusBuy: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(last\sprice\sis\stoo\shigh)/,
+      priceStatusBuyTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\slast\sprice\sis\stoo\shigh/,
       priceStatusSell: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(price\sis\stoo\slow\sto\ssell)/,
+      priceStatusSellTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\sprice\sis\stoo\slow\sto\ssell/,
       priceStatusSweet: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(price\sis\ssweet).*/,
+      priceStatusSweetTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\sprice\sis\ssweet.*/,
       lastErrorCode: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s.*\sError:\sstatusCode\s(\d{1,100})/,
       lastErrorTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s.*\sError:\sstatusCode\s\d{1,100}/,
       noOpenOrders: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(no\sopen\sorders)/,
-      openOrders: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(Open\sorders)/
+      openOrders: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(Open\sorders)/,
+      availableBitCoins: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s.*Bal\.BTC\s(.*)\s\sBal\..*/,
+      availableBitCoinsTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s.*Bal\.BTC\s.*\s\sBal\..*/
     };
 
     this.regExpsTrades = {
