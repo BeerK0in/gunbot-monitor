@@ -6,13 +6,15 @@ const settings = require('./settings');
 const logUpdate = require('log-update');
 const figLet = require('figlet');
 const chalk = require('chalk');
+const pj = require('../../package.json');
 
 class Outputter {
 
   constructor() {
     this.interval = null;
     this.newLine = '\n';
-    this.headline = '   >>>   GUNBOT - MONITOR   <<<';
+    this.headline = '   >>>   GUNBOT - MONITOR / BETA  <<<';
+    this.version = pj.version;
   }
 
   print() {
@@ -66,16 +68,19 @@ class Outputter {
     return new Promise(resolve => {
       let newLine = this.newLine;
       let headline = this.headline;
+      let version = this.version;
 
       figLet.text(headline, {
         font: 'Standard'
       }, function (err, data) {
         if (err) {
           console.log(newLine + chalk.bold.yellow(headline));
+          console.log(newLine + chalk.white('Version ' + version));
           resolve(true);
           return;
         }
         console.log(newLine + chalk.bold.yellow(data));
+        console.log(chalk.white('Version ' + version));
         resolve(true);
       });
     });
