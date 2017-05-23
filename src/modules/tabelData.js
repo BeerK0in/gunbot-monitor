@@ -4,6 +4,7 @@ const chalk = require('chalk');
 const tradePairs = require('./tradePairs');
 const tradePairParser = require('./tradePairParser');
 const formatter = require('./formatter');
+const pm2Data = require('./pm2Data');
 
 class TableData {
 
@@ -30,6 +31,7 @@ class TableData {
   getHead() {
     return [
       chalk.cyan.bold('name'),
+      chalk.cyan.bold('id'),
       chalk.cyan.bold('ll'),
       chalk.cyan.bold('stat'),
       chalk.cyan.bold('oo?'),
@@ -52,21 +54,24 @@ class TableData {
 
   fillContent(table) {
     return new Promise((resolve, reject) => {
-      let dataPromises = [];
+      let allPromises = [];
+      allPromises.push(pm2Data.getProcesses());
       for (let market of Object.keys(this.tradePairs)) {
         if (this.tradePairs[market].length === 0) {
           continue;
         }
 
         for (let tradePair of this.tradePairs[market]) {
-          dataPromises.push(tradePairParser.getData(tradePair, market));
+          allPromises.push(tradePairParser.getData(tradePair, market));
         }
       }
 
-      Promise.all(dataPromises)
+      Promise.all(allPromises)
         .then(values => {
           let totalBTCValue = 0.0;
           let totalProfit = 0.0;
+          let pm2Result = values[0];
+          values.shift();
 
           for (let data of values) {
             if (data === undefined || data.lastTimeStamp === undefined) {
@@ -83,8 +88,9 @@ class TableData {
 
             table.push([
               formatter.tradePair(data.tradePair),
+              formatter.pm2Id(data.tradePair, pm2Result),
               formatter.timeSince(data.lastTimeStamp),
-              formatter.timeToStatus(data.lastTimeStamp),
+              formatter.pm2Status(data.tradePair, pm2Result),
               formatter.openOrders(data.openOrders || data.noOpenOrders),
               formatter.coins(data.coins),
               formatter.btcValue(data.coins, data.lastPriceInBTC),

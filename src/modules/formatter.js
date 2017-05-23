@@ -164,19 +164,19 @@ class Formatter {
     tendency = parseInt(tendency, 10);
 
     if (tendency <= -10) {
-      tendencyOutput = chalk.red('↓');
+      tendencyOutput = chalk.red.bold('↓');
     }
     if (tendency > -10 && tendency <= -2) {
-      tendencyOutput = chalk.magenta('↘');
+      tendencyOutput = chalk.magenta.bold('↘');
     }
     if (tendency > -2 && tendency <= 1) {
-      tendencyOutput = chalk.yellow('→');
+      tendencyOutput = chalk.yellow.bold('→');
     }
     if (tendency > 1 && tendency <= 9) {
-      tendencyOutput = chalk.cyan('↗');
+      tendencyOutput = chalk.cyan.bold('↗');
     }
     if (tendency > 9) {
-      tendencyOutput = chalk.green('↑');
+      tendencyOutput = chalk.green.bold('↑');
     }
     return `${output} ${tendencyOutput}`;
   }
@@ -196,26 +196,36 @@ class Formatter {
 
     return chalk.blue(number);
   }
+
+  pm2Id(pairName, pm2Data) {
+    if (pairName === undefined || pm2Data === undefined) {
+      return chalk.gray('-');
+    }
+
+    if (pm2Data[pairName] === undefined || pm2Data[pairName].id === undefined) {
+      return chalk.gray('-');
+    }
+
+    return pm2Data[pairName].id;
+  }
+
   /**
    * Converts the given date in a string of status.
    * Like if the date is 300 sec in the past, return "offline".
-   * @param date
+   * @param pairName
+   * @param pm2Data
    * @returns {*}
    */
-  timeToStatus(date) {
-    if (date === undefined) {
+  pm2Status(pairName, pm2Data) {
+    if (pairName === undefined || pm2Data === undefined) {
       return chalk.gray('-');
     }
-    if (!(date instanceof Date)) {
-      date = new Date(date);
+
+    if (pm2Data[pairName] === undefined || pm2Data[pairName].status === undefined) {
+      return chalk.gray('-');
     }
 
-    let seconds = Math.floor((new Date() - date) / 1000);
-    if (seconds > this.timeTillOfflineStatus) {
-      return this.colorStatus('off');
-    }
-
-    return this.colorStatus('on');
+    return this.colorStatus(pm2Data[pairName].status);
   }
 
   /**
@@ -226,8 +236,11 @@ class Formatter {
    */
   colorStatus(status) {
     switch (status) {
-      case 'on':
+      case 'online':
         return chalk.green.bold('on');
+      case 'offline':
+      case 'stopped':
+        return chalk.red.bold('off');
       case 'launching':
         return chalk.blue.bold('launching');
       default:
