@@ -183,19 +183,19 @@ class Formatter {
     tendency = parseInt(tendency, 10);
 
     if (tendency <= -10) {
-      tendencyOutput = chalk.red.bold('↓');
+      tendencyOutput = chalk.red.bold('↓↓');
     }
     if (tendency > -10 && tendency <= -2) {
-      tendencyOutput = chalk.magenta.bold('↘');
+      tendencyOutput = chalk.magenta.bold('↓');
     }
     if (tendency > -2 && tendency <= 1) {
       tendencyOutput = chalk.yellow.bold('→');
     }
     if (tendency > 1 && tendency <= 9) {
-      tendencyOutput = chalk.cyan.bold('↗');
+      tendencyOutput = chalk.cyan.bold('↑');
     }
     if (tendency > 9) {
-      tendencyOutput = chalk.green.bold('↑');
+      tendencyOutput = chalk.green.bold('↑↑');
     }
     return `${output} ${tendencyOutput}`;
   }
