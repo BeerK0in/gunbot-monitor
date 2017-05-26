@@ -44,9 +44,9 @@ class Pm2Data {
   }
 
   isJson(item) {
-    item = typeof item !== "string"
-      ? JSON.stringify(item)
-      : item;
+    if (typeof item !== 'string') {
+      item = JSON.stringify(item);
+    }
 
     try {
       item = JSON.parse(item);
@@ -54,7 +54,7 @@ class Pm2Data {
       return false;
     }
 
-    if (typeof item === "object" && item !== null) {
+    if (typeof item === 'object' && item !== null) {
       return true;
     }
 
