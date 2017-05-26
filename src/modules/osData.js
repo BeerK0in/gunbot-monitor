@@ -99,6 +99,8 @@ class OsData {
         buffcache: 0
       };
 
+      // LINUX
+      // ------------------------------------------------------------------
       if (os.type() === 'Linux') {
         exec('free -b', function (error, stdout) {
           if (!error) {
@@ -120,6 +122,9 @@ class OsData {
           resolve(result);
         });
       }
+
+      // OSX
+      // ------------------------------------------------------------------
       if (os.type() === 'Darwin') {
         exec('vm_stat | grep \'Pages active\'', function (error, stdout) {
           if (!error) {
@@ -132,6 +137,10 @@ class OsData {
           resolve(result);
         });
       }
+
+      // All other OS.
+      // ------------------------------------------------------------------
+      resolve(result);
     });
   }
 

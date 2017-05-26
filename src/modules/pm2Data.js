@@ -15,26 +15,30 @@ class Pm2Data {
     return new Promise(resolve => {
       let result = {};
 
-      exec('pm2 jlist', function (error, stdout) {
-        if (error) {
-          resolve(result);
-          return;
-        }
-        if (!stdout) {
-          resolve(result);
-          return;
-        }
-        let processes = JSON.parse(stdout);
+      try {
+        exec('pm2 jlist', function (error, stdout) {
+          if (error) {
+            resolve(result);
+            return;
+          }
+          if (!stdout) {
+            resolve(result);
+            return;
+          }
+          let processes = JSON.parse(stdout);
 
-        for (let process of processes) {
-          result[process.name] = {
-            name: process.name,
-            id: process.pm2_env.pm_id,
-            status: process.pm2_env.status
-          };
-        }
+          for (let process of processes) {
+            result[process.name] = {
+              name: process.name,
+              id: process.pm2_env.pm_id,
+              status: process.pm2_env.status
+            };
+          }
+          resolve(result);
+        });
+      } catch (e) {
         resolve(result);
-      });
+      }
     });
   }
 

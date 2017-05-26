@@ -41,6 +41,10 @@ class TradePairParser {
     this.regExpsProfit = {
       profit: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sProfit\s(.*)/
     };
+
+    this.regExpsErrors = {
+      errorCodeAndTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s.*\sError:\sstatusCode\s(\d{1,100})/
+    };
   }
 
   getData(tradePair, market) {
@@ -83,7 +87,6 @@ class TradePairParser {
     return new Promise(resolve => {
       const readStream = fs.createReadStream(`${settings.pathToGunbot}${market}-${tradePair}-log.txt`);
       readStream.on('error', () => {
-        // TODO: print error. console.error(error);
         resolve(collectedData);
       });
 
@@ -114,7 +117,33 @@ class TradePairParser {
       for (let dataName of Object.keys(this.regExpsLogs)) {
         collectedData = this.parseLogData(dataName, logFileLines[i], collectedData);
       }
+      collectedData = this.parseLogErrors(logFileLines[i], collectedData);
     }
+    return collectedData;
+  }
+
+  parseLogErrors(line, collectedData) {
+    if (this.regExpsErrors === undefined) {
+      return collectedData;
+    }
+
+    let matches = this.regExpsErrors.errorCodeAndTimeStamp.exec(line);
+    if (matches && matches.length >= 3) {
+      if (collectedData.errors === undefined) {
+        collectedData.errors = {};
+      }
+
+      if (collectedData.errors[matches[2]] === undefined) {
+        collectedData.errors[matches[2]] = {
+          counter: 0,
+          dates: []
+        };
+      }
+
+      collectedData.errors[matches[2]].counter++;
+      collectedData.errors[matches[2]].dates.push(matches[1]);
+    }
+
     return collectedData;
   }
 

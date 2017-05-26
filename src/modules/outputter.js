@@ -64,25 +64,36 @@ class Outputter {
     clearInterval(this.interval);
   }
 
-  // ------
+  getHeadlineText() {
+    return this.headline;
+  }
+
+  getSubHeadlineText() {
+    let date = new Date();
+    let output = `Version ${chalk.bold(this.version)}`;
+    output += ` | Refresh interval ${chalk.bold(settings.outputIntervalDelay / 1000)}s`;
+    output += ` | Server time ${chalk.bold(date)}`;
+
+    return output;
+  }
 
   printHeadline() {
     return new Promise(resolve => {
       let newLine = this.newLine;
-      let headline = this.headline;
-      let version = this.version;
+      let headline = this.getHeadlineText();
+      let subHeadline = this.getSubHeadlineText();
 
       figLet.text(headline, {
         font: 'Standard'
       }, function (err, data) {
         if (err) {
           console.log(newLine + chalk.bold.yellow(headline));
-          console.log(newLine + chalk.white(`Version ${version} | Refresh interval ${settings.outputIntervalDelay / 1000}s`));
+          console.log(newLine + chalk.white(subHeadline));
           resolve(true);
           return;
         }
         console.log(newLine + chalk.bold.yellow(data));
-        console.log(chalk.white(`Version ${version} | Refresh interval ${settings.outputIntervalDelay / 1000}s`));
+        console.log((subHeadline));
         resolve(true);
       });
     });

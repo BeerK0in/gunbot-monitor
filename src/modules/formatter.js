@@ -1,6 +1,7 @@
 'use strict';
 
 const chalk = require('chalk');
+const settings = require('./settings');
 
 const TOO_LOW_TO_SELL = 1000;
 const TOO_HIGH_TO_BUY = 1100;
@@ -48,13 +49,43 @@ class Formatter {
 
     let diff = parseFloat(lastPriceInBTC) - parseFloat(boughtPrice);
     let profit = this.price(parseFloat(numberOfCoins) * diff);
-    let profitPercent = diff * 100 / parseFloat(boughtPrice);
 
     if (diff >= 0) {
-      return chalk.green(this.price(profit)) + chalk.gray(` ${profitPercent.toFixed(1)}%`);
+      return this.price(profit);
     }
 
-    return chalk.red(this.price(profit)) + chalk.gray(` ${profitPercent.toFixed(1)}%`);
+    return this.price(profit);
+  }
+
+  currentProfitWithPercent(numberOfCoins, boughtPrice, lastPriceInBTC) {
+    let currentProfit = this.currentProfit(numberOfCoins, boughtPrice, lastPriceInBTC);
+
+    if (currentProfit === undefined || currentProfit === chalk.gray('-') || currentProfit === '-') {
+      return chalk.gray('-');
+    }
+
+    let diff = parseFloat(lastPriceInBTC) - parseFloat(boughtPrice);
+    let profitPercent = diff * 100 / parseFloat(boughtPrice);
+
+    return this.profit(currentProfit) + chalk.gray(` ${profitPercent.toFixed(1)}%`);
+  }
+
+  totalCurrentProfit(totalBTCValue, totalDiffSinceBuy) {
+    if (totalBTCValue === undefined || totalDiffSinceBuy === undefined) {
+      return chalk.gray('-');
+    }
+
+    if (parseFloat(totalBTCValue) === 0 || parseFloat(totalDiffSinceBuy) === 0) {
+      return chalk.gray('-');
+    }
+
+    if (isNaN(parseFloat(totalBTCValue)) || isNaN(parseFloat(totalDiffSinceBuy))) {
+      return chalk.gray('-');
+    }
+
+    let profitPercent = parseFloat(totalDiffSinceBuy) * 100 / parseFloat(totalBTCValue);
+
+    return this.profit(totalDiffSinceBuy) + chalk.gray(` ${profitPercent.toFixed(1)}%`);
   }
 
   price(price) {
@@ -72,6 +103,25 @@ class Formatter {
       posOfDecimalPoint = 1;
     }
     return price.slice(0, posOfDecimalPoint + 1 + this.numberOfPriceDecimals);
+  }
+
+  profit(price) {
+    price = this.price(price);
+    let priceAsFloat = parseFloat(price);
+
+    if (isNaN(priceAsFloat)) {
+      return chalk.white('0');
+    }
+
+    if (priceAsFloat < 0) {
+      return chalk.red(priceAsFloat);
+    }
+
+    if (priceAsFloat > 0) {
+      return chalk.green(priceAsFloat);
+    }
+
+    return chalk.white(priceAsFloat);
   }
 
   getLatestBuySellSweetMessage(buyMessageDate, sellMessageDate, sweetMessageDate) {
@@ -165,15 +215,37 @@ class Formatter {
     if (numberOfTrades <= 0) {
       return chalk.gray('-');
     }
-    return `${chalk.bold(numberOfTrades)} ${this.timeSince(lastTradeDate, true)}`;
+    return `${chalk.bold(numberOfTrades)} ${this.timeSince(lastTradeDate, 'trades')}`;
   }
 
-  errorCode(code, lastErrorTimeStamp) {
-    if (code === undefined) {
+  errorCode(errors, lastTimeStamp) {
+    if (errors === undefined || errors.length === 0 || lastTimeStamp === undefined) {
       return chalk.gray('-');
     }
 
-    return `${chalk.bold.red(code)} ${chalk.gray(this.timeSince(lastErrorTimeStamp))}`;
+    if (!(lastTimeStamp instanceof Date)) {
+      lastTimeStamp = new Date(lastTimeStamp);
+    }
+
+    let output = [];
+    let oldestErrorDate = new Date();
+
+    for (let code of Object.keys(errors)) {
+      for (let date of errors[code].dates) {
+        if (!(date instanceof Date)) {
+          date = new Date(date);
+        }
+        if (date < oldestErrorDate) {
+          oldestErrorDate = date;
+        }
+      }
+
+      let seconds = Math.floor((lastTimeStamp - oldestErrorDate) / 1000);
+
+      output.push(`${errors[code].counter} x ${chalk.red(code)} in ${this.formatSeconds(seconds, 'errors')}`);
+    }
+
+    return output.join('\n');
   }
 
   lastPrice(lastPrice, tendency) {
@@ -183,19 +255,19 @@ class Formatter {
     tendency = parseInt(tendency, 10);
 
     if (tendency <= -10) {
-      tendencyOutput = chalk.red.bold('↓');
+      tendencyOutput = chalk.red.bold('\u2193');
     }
     if (tendency > -10 && tendency <= -2) {
-      tendencyOutput = chalk.magenta.bold('↘');
+      tendencyOutput = chalk.magenta.bold('\u2198');
     }
     if (tendency > -2 && tendency <= 1) {
-      tendencyOutput = chalk.yellow.bold('→');
+      tendencyOutput = chalk.yellow.bold('\u2192');
     }
     if (tendency > 1 && tendency <= 9) {
-      tendencyOutput = chalk.cyan.bold('↗');
+      tendencyOutput = chalk.cyan.bold('\u2197');
     }
     if (tendency > 9) {
-      tendencyOutput = chalk.green.bold('↑');
+      tendencyOutput = chalk.green.bold('\u2191');
     }
     return `${output} ${tendencyOutput}`;
   }
@@ -273,24 +345,11 @@ class Formatter {
    * @method timeSince
    * @return String
    * @param date
+   * @param timeColorSchemeName
    */
-  timeSince(date, colorize) {
+  timeSince(date, timeColorSchemeName = 'll') {
     if (date === undefined) {
       return chalk.gray('');
-    }
-
-    let veryGood = 'green';
-    let good = 'cyan';
-    let neutral = 'yellow';
-    let bad = 'magenta';
-    let veryBad = 'red';
-
-    if (!colorize) {
-      veryGood = 'white';
-      good = 'white';
-      neutral = 'white';
-      bad = 'white';
-      veryBad = 'white';
     }
 
     if (!(date instanceof Date)) {
@@ -298,42 +357,50 @@ class Formatter {
     }
 
     let seconds = Math.floor((new Date() - date) / 1000);
+    return this.formatSeconds(seconds, timeColorSchemeName);
+  }
+
+  formatSeconds(seconds, timeColorSchemeName = 'll') {
+    if (settings.timeColorScheme[timeColorSchemeName] === undefined) {
+      timeColorSchemeName = 'll';
+    }
+
     let interval = Math.floor(seconds / 31536000);
 
     if (interval > 1) {
-      return chalk[veryBad](interval + 'Y ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].yearsColor](interval + 'Y ');
     }
 
     interval = Math.floor(seconds / 2592000);
     if (interval > 1) {
-      return chalk[veryBad](interval + 'M ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].monthColor](interval + 'M ');
     }
 
     interval = Math.floor(seconds / 86400);
     if (interval > 1) {
-      return chalk[veryBad](interval + 'D ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].daysColor](interval + 'D ');
     }
 
     interval = Math.floor(seconds / 3600);
     if (interval > 1 && interval < 6) {
-      return chalk[good](interval + 'h ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].hours1pColor](interval + 'h ');
     }
     if (interval > 1 && interval < 24) {
-      return chalk[neutral](interval + 'h ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].hours6pColor](interval + 'h ');
     }
     if (interval > 1 && interval < 49) {
-      return chalk[bad](interval + 'h ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].hours24pColor](interval + 'h ');
     }
     if (interval > 1) {
-      return chalk[veryBad](interval + 'h ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].hours48pColor](interval + 'h ');
     }
 
     interval = Math.floor(seconds / 60);
     if (interval > 1) {
-      return chalk[veryGood](interval + 'm ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].minutesColor](interval + 'm ');
     }
 
-    return chalk[veryGood](Math.floor(seconds) + 's ');
+    return chalk[settings.timeColorScheme[timeColorSchemeName].secondsColor](Math.floor(seconds) + 's ');
   }
 
 }
