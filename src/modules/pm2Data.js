@@ -14,6 +14,7 @@ class Pm2Data {
   getProcesses() {
     return new Promise(resolve => {
       let result = {};
+      let isJson = this.isJson;
 
       try {
         exec('pm2 jlist', function (error, stdout) {
@@ -21,7 +22,7 @@ class Pm2Data {
             resolve(result);
             return;
           }
-          if (!stdout) {
+          if (!stdout || !isJson(stdout)) {
             resolve(result);
             return;
           }
@@ -40,6 +41,24 @@ class Pm2Data {
         resolve(result);
       }
     });
+  }
+
+  isJson(item) {
+    item = typeof item !== "string"
+      ? JSON.stringify(item)
+      : item;
+
+    try {
+      item = JSON.parse(item);
+    } catch (e) {
+      return false;
+    }
+
+    if (typeof item === "object" && item !== null) {
+      return true;
+    }
+
+    return false;
   }
 
 }

@@ -130,14 +130,14 @@ class TableData {
           }
 
           table.push([
-            formatter.tradePair('TOTAL'),
+            chalk.bold(formatter.tradePair('TOTAL')),
             '',
             '',
             '',
             '',
             '',
-            formatter.price(totalBTCValue),
-            formatter.totalCurrentProfit(totalBTCValue, totalDiffSinceBuy),
+            chalk.bold(formatter.price(totalBTCValue)),
+            chalk.bold(formatter.totalCurrentProfit(totalBTCValue, totalDiffSinceBuy)),
             '',
             '',
             '',
@@ -147,7 +147,7 @@ class TableData {
             '',
             '',
             '',
-            formatter.profit(totalProfit),
+            chalk.bold(formatter.profit(totalProfit)),
             ''
           ]);
           result.table = table;
