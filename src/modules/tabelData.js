@@ -19,7 +19,15 @@ class TableData {
   getTable() {
     return new Promise((resolve, reject) => {
       let table = new CliTable({
-        head: this.getHead()
+        head: this.getHead(),
+        colAligns: ['left','right','right','left','right','right','right','right','right','right','right','left','right','left','right','left','right','left'],
+        style: {
+          'padding-left': 1
+        , 'padding-right': 1
+        , head: ['red']
+        , border: ['grey']
+        , compact : false
+      }
       });
 
       this.fillContent(table)
