@@ -31,9 +31,8 @@ class TableData {
   getHead() {
     return [
       chalk.cyan.bold('name'),
-      chalk.cyan.bold('id'),
+      chalk.cyan.bold('pm2'),
       chalk.cyan.bold('ll'),
-      chalk.cyan.bold('stat'),
       chalk.cyan.bold('oo?'),
       chalk.cyan.bold('coins'),
       chalk.cyan.bold('in BTC'),
@@ -108,9 +107,8 @@ class TableData {
 
             table.push([
               formatter.tradePair(data.tradePair),
-              formatter.pm2Id(data.tradePair, pm2Result),
-              formatter.timeSince(data.lastTimeStamp),
               formatter.pm2Status(data.tradePair, pm2Result),
+              formatter.timeSince(data.lastTimeStamp),            
               formatter.openOrders(data.openOrders || data.noOpenOrders),
               formatter.coins(data.coins),
               formatter.btcValue(data.coins, data.lastPriceInBTC),
@@ -131,7 +129,6 @@ class TableData {
 
           table.push([
             chalk.bold(formatter.tradePair('TOTAL')),
-            '',
             '',
             '',
             '',

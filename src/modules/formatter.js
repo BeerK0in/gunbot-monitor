@@ -316,7 +316,7 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    return this.colorStatus(pm2Data[pairName].status);
+    return this.colorStatus(pm2Data[pairName].id,pm2Data[pairName].status);
   }
 
   /**
@@ -325,17 +325,17 @@ class Formatter {
    * @param {} status
    * @return
    */
-  colorStatus(status) {
+  colorStatus(id,status) {
     switch (status) {
       case 'online':
-        return chalk.green.bold('on');
+        return chalk.green.bold(id);
       case 'offline':
       case 'stopped':
-        return chalk.red.bold('off');
+        return chalk.red.bold(id + ' off');
       case 'launching':
-        return chalk.blue.bold('launching');
+        return chalk.blue.bold(id + ' launching');
       default:
-        return chalk.red.bold(status);
+        return chalk.red.bold(id + ' ' + status);
     }
   }
 
