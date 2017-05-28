@@ -1,6 +1,19 @@
 # gunbot-monitor [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
 > Monitors your GUNBOTs
 
+**Warning - The current state of the Monitor is an early BETA version.**
+So,
+- it is only tested on Ubuntu and OSX
+- it requires nodejs 6 and npm
+- the monitor and I as creator of it are not responsible/liable for wrong numbers or wrong calculations
+- it uses up to 100MB memory
+- you should not use it if your server has less than 230MB available free memory
+- it shows stats I'm interested in, so chances are high you'll miss some information
+- it is not very efficient in parsing all the logs, so it could slow down your server
+- it is only tested with Poloniex logs (I'm pretty sure it will not work for other markets)
+- you need a wide window / screen
+- Finally: use at own risk
+
 ## Installation
 
 ```sh
