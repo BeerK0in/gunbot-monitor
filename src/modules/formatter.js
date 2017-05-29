@@ -23,7 +23,7 @@ class Formatter {
   }
 
   coins(coins) {
-    if (coins === undefined) {
+    if (coins === undefined || coins == 0) {
       return chalk.gray('-');
     }
 
