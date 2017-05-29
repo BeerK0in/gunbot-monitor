@@ -210,7 +210,7 @@ class Formatter {
   }
 
   btcValue(numberOfCoins, lastPriceInBTC) {
-    if (numberOfCoins === undefined || lastPriceInBTC === undefined) {
+    if (numberOfCoins === undefined || lastPriceInBTC === undefined || numberOfCoins == 0) {
       return chalk.gray('-');
     }
 
