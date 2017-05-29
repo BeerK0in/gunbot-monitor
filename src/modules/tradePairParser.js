@@ -63,11 +63,9 @@ class TradePairParser {
 
   readLogFile(tradePair, market) {
     return new Promise((resolve, reject) => {
-
       let filePath = `${settings.pathToGunbot}${market}-${tradePair}-log.txt`;
 
-      fs.stat(filePath, (error) => {
-
+      fs.stat(filePath, error => {
         if (error) {
           resolve([]);
           return;
@@ -94,13 +92,12 @@ class TradePairParser {
   getProfit(tradePair, market) {
     let collectedData = [];
     collectedData.profit = 0.0;
+    collectedData.profitHistory = '';
 
     return new Promise(resolve => {
-
       let filePath = `${settings.pathToGunbot}${market}-${tradePair}-log.txt`;
 
-      fs.stat(filePath, (error) => {
-
+      fs.stat(filePath, error => {
         if (error) {
           resolve([]);
           return;
@@ -133,7 +130,6 @@ class TradePairParser {
     collectedData.market = market;
 
     let logFileLines = lines.split(/\n|\r/);
-    // Console.log(logFileLines.length, logFileLines[0], logFileLines[logFileLines.length - 1]);
 
     for (let i = logFileLines.length - 1; i >= 0; i--) {
       for (let dataName of Object.keys(this.regExpsLogs)) {
@@ -211,7 +207,6 @@ class TradePairParser {
 
       const readStream = fs.createReadStream(`${settings.pathToGunbot}${market}-${tradePair}-trades.txt`);
       readStream.on('error', () => {
-        // TODO: print error. console.error(error);
         resolve(collectedData);
       });
 

@@ -9,11 +9,6 @@ const PRICE_IS_SWEET = 1200;
 
 class Formatter {
 
-  constructor() {
-    this.timeTillOfflineStatus = 300;
-    this.numberOfPriceDecimals = 4;
-  }
-
   tradePair(tradePair) {
     if (tradePair === undefined) {
       return chalk.gray('-');
@@ -23,7 +18,7 @@ class Formatter {
   }
 
   coins(coins) {
-    if (coins === undefined) {
+    if (coins === undefined || parseFloat(coins) === 0) {
       return chalk.gray('-');
     }
 
@@ -66,8 +61,10 @@ class Formatter {
 
     let diff = parseFloat(lastPriceInBTC) - parseFloat(boughtPrice);
     let profitPercent = diff * 100 / parseFloat(boughtPrice);
+    let negativePadding = (profitPercent < 0) ? '' : ' ';
+    let percentPadding = (profitPercent >= 10 || profitPercent <= -10) ? '' : ' ';
 
-    return this.profit(currentProfit) + chalk.gray(` ${profitPercent.toFixed(1)}%`);
+    return `${this.profit(currentProfit)} ${negativePadding}${percentPadding}${chalk.gray(`${profitPercent.toFixed(1)}%`)}`;
   }
 
   totalCurrentProfit(totalBTCValue, totalDiffSinceBuy) {
@@ -84,8 +81,10 @@ class Formatter {
     }
 
     let profitPercent = parseFloat(totalDiffSinceBuy) * 100 / parseFloat(totalBTCValue);
+    let negativePadding = (profitPercent < 0) ? '' : ' ';
+    let percentPadding = (profitPercent >= 10 || profitPercent <= -10) ? '' : ' ';
 
-    return this.profit(totalDiffSinceBuy) + chalk.gray(` ${profitPercent.toFixed(1)}%`);
+    return `${this.profit(totalDiffSinceBuy)} ${negativePadding}${percentPadding}${chalk.gray(`${profitPercent.toFixed(1)}%`)}`;
   }
 
   price(price) {
@@ -96,13 +95,8 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    price = price.toString();
-
-    let posOfDecimalPoint = price.indexOf('.');
-    if (posOfDecimalPoint < 1) {
-      posOfDecimalPoint = 1;
-    }
-    return price.slice(0, posOfDecimalPoint + 1 + this.numberOfPriceDecimals);
+    let priceOut = parseFloat(price).toFixed(4);
+    return priceOut;
   }
 
   profit(price) {
@@ -114,14 +108,14 @@ class Formatter {
     }
 
     if (priceAsFloat < 0) {
-      return chalk.red(priceAsFloat);
+      return chalk.red(price);
     }
 
     if (priceAsFloat > 0) {
-      return chalk.green(priceAsFloat);
+      return chalk.green(price);
     }
 
-    return chalk.white(priceAsFloat);
+    return chalk.white(price);
   }
 
   getLatestBuySellSweetMessage(buyMessageDate, sellMessageDate, sweetMessageDate) {
@@ -178,29 +172,63 @@ class Formatter {
     return chalk.gray('-');
   }
 
-  priceDiff(buyMessageDate, sellMessageDate, sweetMessageDate, buyPrice, sellPrice, lastPrice) {
-    if (isNaN(parseFloat(buyPrice)) || isNaN(parseFloat(sellPrice)) || isNaN(parseFloat(lastPrice))) {
-      return chalk.gray('-');
+  buyPrice(numberOfCoins, boughtPrice, buyPrice) {
+    if (numberOfCoins === undefined ||
+      boughtPrice === undefined ||
+      parseFloat(boughtPrice) === 0 ||
+      isNaN(parseFloat(boughtPrice)) ||
+      parseFloat(numberOfCoins) === 0) {
+      return this.price(buyPrice);
+    }
+    return chalk.yellow(this.price(boughtPrice * 10000));
+  }
+
+  priceDiff(buyMessageDate, sellMessageDate, sweetMessageDate, buyPrice, sellPrice, lastPrice, coins) {
+    if (isNaN(parseFloat(lastPrice))) {
+      return chalk.red('No LP found');
     }
 
     let bss = this.getLatestBuySellSweetMessage(buyMessageDate, sellMessageDate, sweetMessageDate);
-    if (bss === TOO_LOW_TO_SELL) {
+
+    if (bss === TOO_LOW_TO_SELL && !isNaN(parseFloat(sellPrice))) {
       let diff = parseFloat(sellPrice) - parseFloat(lastPrice);
       let percent = (diff / parseFloat(sellPrice) * 100).toFixed(2);
-      return `${chalk.magenta(this.price(diff))} ${chalk.gray(`${percent}%`)}`;
+      let percentPadding = (percent >= 10 || percent <= -10) ? '' : ' ';
+
+      return `${chalk.magenta(this.price(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
     }
 
-    if (bss === TOO_HIGH_TO_BUY) {
+    if (bss === TOO_HIGH_TO_BUY && !isNaN(parseFloat(buyPrice))) {
       let diff = parseFloat(lastPrice) - parseFloat(buyPrice);
       let percent = (diff / parseFloat(lastPrice) * 100).toFixed(2);
-      return `${chalk.blue(this.price(diff))} ${chalk.gray(`${percent}%`)}`;
+      let percentPadding = (percent >= 10 || percent <= -10) ? '' : ' ';
+
+      return `${chalk.blue(this.price(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
+    }
+
+    // Sweet to sell
+    if (bss === PRICE_IS_SWEET && parseFloat(coins) > 0 && !isNaN(parseFloat(sellPrice))) {
+      let diff = parseFloat(lastPrice) - parseFloat(sellPrice);
+      let percent = (diff / parseFloat(lastPrice) * 100).toFixed(2);
+      let percentPadding = (percent >= 10 || percent <= -10) ? '' : ' ';
+
+      return `${chalk.green(this.price(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
+    }
+
+    // Sweet to buy
+    if (bss === PRICE_IS_SWEET && parseFloat(coins) === 0 && !isNaN(parseFloat(buyPrice))) {
+      let diff = parseFloat(buyPrice) - parseFloat(lastPrice);
+      let percent = (diff / parseFloat(buyPrice) * 100).toFixed(2);
+      let percentPadding = (percent >= 10 || percent <= -10) ? '' : ' ';
+
+      return `${chalk.green(this.price(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
     }
 
     return chalk.gray('-');
   }
 
   btcValue(numberOfCoins, lastPriceInBTC) {
-    if (numberOfCoins === undefined || lastPriceInBTC === undefined) {
+    if (numberOfCoins === undefined || lastPriceInBTC === undefined || parseFloat(numberOfCoins) === 0) {
       return chalk.gray('-');
     }
 
@@ -258,13 +286,13 @@ class Formatter {
       tendencyOutput = chalk.red.bold('\u2193\u2193');
     }
     if (tendency > -10 && tendency <= -2) {
-      tendencyOutput = chalk.magenta.bold('\u2193');
+      tendencyOutput = chalk.magenta.bold(' \u2193');
     }
     if (tendency > -2 && tendency <= 1) {
-      tendencyOutput = chalk.yellow.bold('\u2192');
+      tendencyOutput = chalk.yellow.bold(' \u2192');
     }
     if (tendency > 1 && tendency <= 9) {
-      tendencyOutput = chalk.cyan.bold('\u2191');
+      tendencyOutput = chalk.cyan.bold(' \u2191');
     }
     if (tendency > 9) {
       tendencyOutput = chalk.green.bold('\u2191\u2191');
@@ -277,7 +305,7 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    return `${this.colorizeTradesInTimeSlots(slots['1hr'])}/${this.colorizeTradesInTimeSlots(slots['6hr'])}/${this.colorizeTradesInTimeSlots(slots['12hr'])}/${this.colorizeTradesInTimeSlots(slots['24hr'])}/${this.colorizeTradesInTimeSlots(slots.older)}`;
+    return `${this.colorizeTradesInTimeSlots(slots['1hr'])} ${this.colorizeTradesInTimeSlots(slots['6hr'])} ${this.colorizeTradesInTimeSlots(slots['12hr'])} ${this.colorizeTradesInTimeSlots(slots['24hr'])} ${this.colorizeTradesInTimeSlots(slots.older)}`;
   }
 
   colorizeTradesInTimeSlots(number) {
@@ -316,7 +344,7 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    return this.colorStatus(pm2Data[pairName].status);
+    return this.colorStatus(pm2Data[pairName].id, pm2Data[pairName].status);
   }
 
   /**
@@ -325,17 +353,17 @@ class Formatter {
    * @param {} status
    * @return
    */
-  colorStatus(status) {
+  colorStatus(id, status) {
     switch (status) {
       case 'online':
-        return chalk.green.bold('on');
+        return chalk.green.bold(id);
       case 'offline':
       case 'stopped':
-        return chalk.red.bold('off');
+        return chalk.red.bold(id + ' off');
       case 'launching':
-        return chalk.blue.bold('launching');
+        return chalk.blue.bold(id + ' launching');
       default:
-        return chalk.red.bold(status);
+        return chalk.red.bold(id + ' ' + status);
     }
   }
 

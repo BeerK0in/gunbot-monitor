@@ -4,6 +4,8 @@ class Settings {
 
   constructor() {
     this._pathToGunbot = './';
+    this._compact = false;
+    this._small = false;
     this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
     this.logFileLinesToRead = 100;
     this.outputIntervalDelay = 1000 * 10; // In seconds
@@ -51,6 +53,22 @@ class Settings {
 
   get pathToGunbot() {
     return this._pathToGunbot;
+  }
+
+  set compact(value) {
+    this._compact = value;
+  }
+
+  get compact() {
+    return this._compact;
+  }
+
+  set small(value) {
+    this._small = value;
+  }
+
+  get small() {
+    return this._small;
   }
 
 }
