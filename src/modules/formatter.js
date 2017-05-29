@@ -277,7 +277,7 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    return `${this.colorizeTradesInTimeSlots(slots['1hr'])}/${this.colorizeTradesInTimeSlots(slots['6hr'])}/${this.colorizeTradesInTimeSlots(slots['12hr'])}/${this.colorizeTradesInTimeSlots(slots['24hr'])}/${this.colorizeTradesInTimeSlots(slots.older)}`;
+    return `${this.colorizeTradesInTimeSlots(slots['1hr'])} ${this.colorizeTradesInTimeSlots(slots['6hr'])} ${this.colorizeTradesInTimeSlots(slots['12hr'])} ${this.colorizeTradesInTimeSlots(slots['24hr'])} ${this.colorizeTradesInTimeSlots(slots.older)}`;
   }
 
   colorizeTradesInTimeSlots(number) {

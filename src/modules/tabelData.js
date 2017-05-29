@@ -51,9 +51,9 @@ class TableData {
       chalk.cyan.bold('price diff'),
       chalk.cyan.bold('price is'),
       chalk.cyan.bold('# buys'),
-      chalk.cyan.bold('1/6/12/24/+'),
+      chalk.cyan.bold('1 6 h d +'),
       chalk.cyan.bold('# sells'),
-      chalk.cyan.bold('1/6/12/24/+'),
+      chalk.cyan.bold('1 6 h d +'),
       chalk.cyan.bold('profit'),
       chalk.cyan.bold('last error')
     ];
