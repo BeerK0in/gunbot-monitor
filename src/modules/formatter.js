@@ -118,11 +118,11 @@ class Formatter {
     }
 
     if (priceAsFloat < 0) {
-      return chalk.red(priceAsFloat);
+      return chalk.red(price);
     }
 
     if (priceAsFloat > 0) {
-      return chalk.green(priceAsFloat);
+      return chalk.green(price);
     }
 
     return chalk.white(price);
