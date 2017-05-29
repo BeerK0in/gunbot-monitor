@@ -16,7 +16,7 @@ class TradePairParser {
       lastPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sLP\s(.+),[<>]=?,/,
       boughtPrice: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sboughtPrice\s(.+)/,
       tendency: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sprice\s\s\w*\s\((.*)\)/,
-      lastPriceInBTC: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sLP\s(.+)\s\sBal\.BTC\s/,
+      lastPriceInBTC: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\sLP\s(.+)\s\sBal\./,
       priceStatusBuy: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(last\sprice\sis\stoo\shigh)/,
       priceStatusBuyTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\slast\sprice\sis\stoo\shigh/,
       priceStatusSell: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(price\sis\stoo\slow\sto\ssell)/,
