@@ -103,7 +103,10 @@ class Formatter {
     if (posOfDecimalPoint < 1) {
       posOfDecimalPoint = 1;
     }
-    return price.slice(0, posOfDecimalPoint + 1 + this.numberOfPriceDecimals);
+
+    let priceOut = parseFloat(price).toFixed(4)
+    //return price.slice(0, posOfDecimalPoint + 1 + this.numberOfPriceDecimals);
+    return priceOut;
   }
 
   profit(price) {
