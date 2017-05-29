@@ -128,6 +128,15 @@ class Formatter {
     return chalk.white(price);
   }
 
+  profitHistory(history) {
+    let lastHistory = history.slice(-10).split('').reverse().map(function(value) {
+      if (value == '+') { return chalk.green.bold('\u2191'); } 
+      if (value == '-') { return chalk.red.bold('\u2193'); } 
+      return ' ';
+    })
+    return lastHistory.join('');
+  }
+
   getLatestBuySellSweetMessage(buyMessageDate, sellMessageDate, sweetMessageDate) {
     if (!(buyMessageDate instanceof Date)) {
       buyMessageDate = new Date(buyMessageDate || 0);

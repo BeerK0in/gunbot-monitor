@@ -50,6 +50,7 @@ class TableData {
       chalk.cyan.bold('# sells'),
       chalk.cyan.bold('1 6 h d +'),
       chalk.cyan.bold('profit'),
+      chalk.cyan.bold('Last 10'),
       chalk.cyan.bold('last error')
     ];
   }
@@ -78,7 +79,7 @@ class TableData {
           let availableBitCoins = 0;
           let latestAvailableBitCoinsDate = new Date(0);
           let pm2Result = values[0];
-          values.shift();
+          values.shift();          
 
           for (let data of values) {
             if (data === undefined || data.lastTimeStamp === undefined) {
@@ -126,6 +127,7 @@ class TableData {
               formatter.trades(data.sellCounter, data.lastTimeStampSell),
               formatter.tradesInTimeSlots(data.sells),
               formatter.profit(data.profit),
+              formatter.profitHistory(data.profitHistory),
               formatter.errorCode(data.errors, data.lastTimeStamp)
             ]);
           }
