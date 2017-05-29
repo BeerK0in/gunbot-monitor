@@ -12,7 +12,7 @@ class TableData {
     this.tradePairs = [];
   }
 
-  init() {
+  initAvailableTradePairs() {
     this.tradePairs = tradePairs.getTradePairs();
   }
 

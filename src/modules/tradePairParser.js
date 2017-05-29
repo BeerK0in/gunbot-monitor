@@ -27,8 +27,8 @@ class TradePairParser {
       lastErrorTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s.*\sError:\sstatusCode\s\d{1,100}/,
       noOpenOrders: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(no\sopen\sorders)/,
       openOrders: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s(Open\sorders)/,
-      availableBitCoins: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s.*Bal\.BTC\s(.*)\s\sBal\..*/,
-      availableBitCoinsTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s.*Bal\.BTC\s.*\s\sBal\..*/
+      availableBitCoins: /\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}\s.*Bal\.[A-Z]{3,4}\s(.*)\s\sBal\..*/,
+      availableBitCoinsTimeStamp: /(\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2})\s.*Bal\.[A-Z]{3,4}\s.*\s\sBal\..*/
     };
 
     this.regExpsTrades = {
@@ -63,11 +63,22 @@ class TradePairParser {
 
   readLogFile(tradePair, market) {
     return new Promise((resolve, reject) => {
-      readLastLines.read(`${settings.pathToGunbot}${market}-${tradePair}-log.txt`, settings.logFileLinesToRead)
-        .then(lines => {
-          resolve(this.parseLogLines(lines, tradePair, market));
-        })
-        .catch(error => reject(error));
+
+      let filePath = `${settings.pathToGunbot}${market}-${tradePair}-log.txt`;
+
+      fs.stat(filePath, (error) => {
+
+        if (error) {
+          resolve([]);
+          return;
+        }
+
+        readLastLines.read(filePath, settings.logFileLinesToRead)
+          .then(lines => {
+            resolve(this.parseLogLines(lines, tradePair, market));
+          })
+          .catch(error => reject(error));
+      });
     });
   }
 
@@ -85,23 +96,34 @@ class TradePairParser {
     collectedData.profit = 0.0;
 
     return new Promise(resolve => {
-      const readStream = fs.createReadStream(`${settings.pathToGunbot}${market}-${tradePair}-log.txt`);
-      readStream.on('error', () => {
-        resolve(collectedData);
-      });
 
-      const readLine = readline.createInterface({
-        input: readStream
-      });
+      let filePath = `${settings.pathToGunbot}${market}-${tradePair}-log.txt`;
 
-      readLine.on('line', line => {
-        let matches = this.regExpsProfit.profit.exec(line);
-        if (matches && matches.length >= 2) {
-          collectedData.profit += parseFloat(matches[1]);
+      fs.stat(filePath, (error) => {
+
+        if (error) {
+          resolve([]);
+          return;
         }
-      });
 
-      readLine.on('close', () => resolve(collectedData));
+        const readStream = fs.createReadStream(filePath);
+        readStream.on('error', () => {
+          resolve(collectedData);
+        });
+
+        const readLine = readline.createInterface({
+          input: readStream
+        });
+
+        readLine.on('line', line => {
+          let matches = this.regExpsProfit.profit.exec(line);
+          if (matches && matches.length >= 2) {
+            collectedData.profit += parseFloat(matches[1]);
+          }
+        });
+
+        readLine.on('close', () => resolve(collectedData));
+      });
     });
   }
 

@@ -18,6 +18,7 @@ class Outputter {
   }
 
   print() {
+    tableData.initAvailableTradePairs();
     this.collectOutputAndUpdateConsoleLog();
   }
 
@@ -28,7 +29,13 @@ class Outputter {
   }
 
   buildOutput(memory, load, tableData, error) {
+    if (error !== undefined) {
+      return error;
+    }
+
     let output = this.newLine;
+    output += this.getServerTime();
+    output += this.newLine;
     output += memory;
     output += this.newLine;
     output += load;
@@ -41,10 +48,6 @@ class Outputter {
     output += this.newLine;
     output += chalk.italic('Use `CTRL+C` to exit.');
     output += this.newLine;
-
-    if (error !== undefined) {
-      output += error;
-    }
 
     return output;
   }
@@ -64,15 +67,18 @@ class Outputter {
     clearInterval(this.interval);
   }
 
+  getServerTime(){
+    let date = new Date();
+    return `Server time:  ${chalk.bold(date)}`;
+  }
+
   getHeadlineText() {
     return this.headline;
   }
 
   getSubHeadlineText() {
-    let date = new Date();
     let output = `Version ${chalk.bold(this.version)}`;
     output += ` | Refresh interval ${chalk.bold(settings.outputIntervalDelay / 1000)}s`;
-    output += ` | Server time ${chalk.bold(date)}`;
 
     return output;
   }
@@ -84,7 +90,7 @@ class Outputter {
       let subHeadline = this.getSubHeadlineText();
 
       figLet.text(headline, {
-        font: 'Standard'
+        font: 'Small'
       }, function (err, data) {
         if (err) {
           console.log(newLine + chalk.bold.yellow(headline));

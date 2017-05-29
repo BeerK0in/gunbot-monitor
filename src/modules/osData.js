@@ -34,7 +34,7 @@ class OsData {
           let used = total - available;
           let usedPercent = Math.floor(used / total * 100);
 
-          resolve(`Memory: ${gauge(used, total, 29, total * 0.8, `${usedPercent}% used`)} - available: ${chalk.bold(available)} MB of ${chalk.bold(total)} MB`);
+          resolve(`Memory:       ${gauge(used, total, 29, total * 0.8, `${usedPercent}% used`)} - available: ${chalk.bold(available)} MB of ${chalk.bold(total)} MB`);
         })
         .catch(error => reject(error));
     });
@@ -48,7 +48,7 @@ class OsData {
         .then(currentLoad => {
           let load = Math.floor(currentLoad);
           this.addToLoadHistory(load);
-          resolve(`Load:   ${sparkline(this.loadHistory, '%')} - current CPU load: ${chalk.bold(load)}%`);
+          resolve(`Load:         ${sparkline(this.loadHistory, '%')} - current CPU load: ${chalk.bold(load)}%`);
         })
         .catch(error => reject(error));
     });

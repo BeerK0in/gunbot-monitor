@@ -17,5 +17,5 @@ if (program.path) {
   settings.pathToGunbot = program.path;
 }
 
-tableData.init();
+tableData.initAvailableTradePairs();
 outputter.start();
