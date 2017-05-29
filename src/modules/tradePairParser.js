@@ -94,6 +94,7 @@ class TradePairParser {
   getProfit(tradePair, market) {
     let collectedData = [];
     collectedData.profit = 0.0;
+    collectedData.profitHistory = '';
 
     return new Promise(resolve => {
 
@@ -115,12 +116,17 @@ class TradePairParser {
           input: readStream
         });
 
-        readLine.on('line', line => {
-          let matches = this.regExpsProfit.profit.exec(line);
-          if (matches && matches.length >= 2) {
-            collectedData.profit += parseFloat(matches[1]);
-          }
-        });
+      readLine.on('line', line => {
+        let matches = this.regExpsProfit.profit.exec(line);
+        if (matches && matches.length >= 2) {
+          let profit = parseFloat(matches[1]);
+          collectedData.profit += profit;
+
+          if (profit > 0) { collectedData.profitHistory += '+' } else
+          if (profit < 0) { collectedData.profitHistory += '-' } else
+          { collectedData.profitHistory += '0' }
+        }
+      });
 
         readLine.on('close', () => resolve(collectedData));
       });

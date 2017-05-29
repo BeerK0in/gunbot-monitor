@@ -23,7 +23,7 @@ class Formatter {
   }
 
   coins(coins) {
-    if (coins === undefined) {
+    if (coins === undefined || coins == 0) {
       return chalk.gray('-');
     }
 
@@ -66,8 +66,9 @@ class Formatter {
 
     let diff = parseFloat(lastPriceInBTC) - parseFloat(boughtPrice);
     let profitPercent = diff * 100 / parseFloat(boughtPrice);
+    let negativePadding = (profitPercent < 0) ? '' : ' '
 
-    return this.profit(currentProfit) + chalk.gray(` ${profitPercent.toFixed(1)}%`);
+    return this.profit(currentProfit) + negativePadding + chalk.gray(` ${profitPercent.toFixed(1)}%`);
   }
 
   totalCurrentProfit(totalBTCValue, totalDiffSinceBuy) {
@@ -102,7 +103,10 @@ class Formatter {
     if (posOfDecimalPoint < 1) {
       posOfDecimalPoint = 1;
     }
-    return price.slice(0, posOfDecimalPoint + 1 + this.numberOfPriceDecimals);
+
+    let priceOut = parseFloat(price).toFixed(4)
+    //return price.slice(0, posOfDecimalPoint + 1 + this.numberOfPriceDecimals);
+    return priceOut;
   }
 
   profit(price) {
@@ -114,14 +118,23 @@ class Formatter {
     }
 
     if (priceAsFloat < 0) {
-      return chalk.red(priceAsFloat);
+      return chalk.red(price);
     }
 
     if (priceAsFloat > 0) {
-      return chalk.green(priceAsFloat);
+      return chalk.green(price);
     }
 
-    return chalk.white(priceAsFloat);
+    return chalk.white(price);
+  }
+
+  profitHistory(history) {
+    let lastHistory = history.slice(-10).split('').reverse().map(function(value) {
+      if (value == '+') { return chalk.green.bold('\u2191'); } 
+      if (value == '-') { return chalk.red.bold('\u2193'); } 
+      return ' ';
+    })
+    return lastHistory.join('');
   }
 
   getLatestBuySellSweetMessage(buyMessageDate, sellMessageDate, sweetMessageDate) {
@@ -178,6 +191,16 @@ class Formatter {
     return chalk.gray('-');
   }
 
+  buyPrice(numberOfCoins, boughtPrice, lastPrice) {
+    if (
+          numberOfCoins === undefined || boughtPrice === undefined || parseFloat(boughtPrice) === 0 ||
+          isNaN(parseFloat(boughtPrice)) || parseFloat(numberOfCoins) === 0
+    ) {
+      return this.price(lastPrice);
+    }
+    return chalk.yellow(this.price(boughtPrice * 10000));
+  }
+
   priceDiff(buyMessageDate, sellMessageDate, sweetMessageDate, buyPrice, sellPrice, lastPrice) {
     if (isNaN(parseFloat(buyPrice)) || isNaN(parseFloat(sellPrice)) || isNaN(parseFloat(lastPrice))) {
       return chalk.gray('-');
@@ -200,7 +223,7 @@ class Formatter {
   }
 
   btcValue(numberOfCoins, lastPriceInBTC) {
-    if (numberOfCoins === undefined || lastPriceInBTC === undefined) {
+    if (numberOfCoins === undefined || lastPriceInBTC === undefined || numberOfCoins == 0) {
       return chalk.gray('-');
     }
 
@@ -258,13 +281,13 @@ class Formatter {
       tendencyOutput = chalk.red.bold('\u2193\u2193');
     }
     if (tendency > -10 && tendency <= -2) {
-      tendencyOutput = chalk.magenta.bold('\u2193');
+      tendencyOutput = chalk.magenta.bold(' \u2193');
     }
     if (tendency > -2 && tendency <= 1) {
-      tendencyOutput = chalk.yellow.bold('\u2192');
+      tendencyOutput = chalk.yellow.bold(' \u2192');
     }
     if (tendency > 1 && tendency <= 9) {
-      tendencyOutput = chalk.cyan.bold('\u2191');
+      tendencyOutput = chalk.cyan.bold(' \u2191');
     }
     if (tendency > 9) {
       tendencyOutput = chalk.green.bold('\u2191\u2191');
@@ -277,7 +300,7 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    return `${this.colorizeTradesInTimeSlots(slots['1hr'])}/${this.colorizeTradesInTimeSlots(slots['6hr'])}/${this.colorizeTradesInTimeSlots(slots['12hr'])}/${this.colorizeTradesInTimeSlots(slots['24hr'])}/${this.colorizeTradesInTimeSlots(slots.older)}`;
+    return `${this.colorizeTradesInTimeSlots(slots['1hr'])} ${this.colorizeTradesInTimeSlots(slots['6hr'])} ${this.colorizeTradesInTimeSlots(slots['12hr'])} ${this.colorizeTradesInTimeSlots(slots['24hr'])} ${this.colorizeTradesInTimeSlots(slots.older)}`;
   }
 
   colorizeTradesInTimeSlots(number) {
@@ -316,7 +339,7 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    return this.colorStatus(pm2Data[pairName].status);
+    return this.colorStatus(pm2Data[pairName].id,pm2Data[pairName].status);
   }
 
   /**
@@ -325,17 +348,17 @@ class Formatter {
    * @param {} status
    * @return
    */
-  colorStatus(status) {
+  colorStatus(id,status) {
     switch (status) {
       case 'online':
-        return chalk.green.bold('on');
+        return chalk.green.bold(id);
       case 'offline':
       case 'stopped':
-        return chalk.red.bold('off');
+        return chalk.red.bold(id + ' off');
       case 'launching':
-        return chalk.blue.bold('launching');
+        return chalk.blue.bold(id + ' launching');
       default:
-        return chalk.red.bold(status);
+        return chalk.red.bold(id + ' ' + status);
     }
   }
 
