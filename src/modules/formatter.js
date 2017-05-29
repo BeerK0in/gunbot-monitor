@@ -272,13 +272,13 @@ class Formatter {
       tendencyOutput = chalk.red.bold('\u2193\u2193');
     }
     if (tendency > -10 && tendency <= -2) {
-      tendencyOutput = chalk.magenta.bold('\u2193');
+      tendencyOutput = chalk.magenta.bold(' \u2193');
     }
     if (tendency > -2 && tendency <= 1) {
-      tendencyOutput = chalk.yellow.bold('\u2192');
+      tendencyOutput = chalk.yellow.bold(' \u2192');
     }
     if (tendency > 1 && tendency <= 9) {
-      tendencyOutput = chalk.cyan.bold('\u2191');
+      tendencyOutput = chalk.cyan.bold(' \u2191');
     }
     if (tendency > 9) {
       tendencyOutput = chalk.green.bold('\u2191\u2191');
