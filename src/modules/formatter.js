@@ -178,6 +178,16 @@ class Formatter {
     return chalk.gray('-');
   }
 
+  buyPrice(numberOfCoins, boughtPrice, lastPrice) {
+    if (
+          numberOfCoins === undefined || boughtPrice === undefined || parseFloat(boughtPrice) === 0 ||
+          isNaN(parseFloat(boughtPrice)) || parseFloat(numberOfCoins) === 0
+    ) {
+      return this.price(lastPrice);
+    }
+    return chalk.yellow(this.price(boughtPrice * 10000));
+  }
+
   priceDiff(buyMessageDate, sellMessageDate, sweetMessageDate, buyPrice, sellPrice, lastPrice) {
     if (isNaN(parseFloat(buyPrice)) || isNaN(parseFloat(sellPrice)) || isNaN(parseFloat(lastPrice))) {
       return chalk.gray('-');
