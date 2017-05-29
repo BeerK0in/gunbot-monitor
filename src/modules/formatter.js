@@ -66,8 +66,9 @@ class Formatter {
 
     let diff = parseFloat(lastPriceInBTC) - parseFloat(boughtPrice);
     let profitPercent = diff * 100 / parseFloat(boughtPrice);
+    let negativePadding = (profitPercent < 0) ? '' : ' '
 
-    return this.profit(currentProfit) + chalk.gray(` ${profitPercent.toFixed(1)}%`);
+    return this.profit(currentProfit) + negativePadding + chalk.gray(` ${profitPercent.toFixed(1)}%`);
   }
 
   totalCurrentProfit(totalBTCValue, totalDiffSinceBuy) {
@@ -121,7 +122,7 @@ class Formatter {
       return chalk.green(priceAsFloat);
     }
 
-    return chalk.white(priceAsFloat);
+    return chalk.white(price);
   }
 
   getLatestBuySellSweetMessage(buyMessageDate, sellMessageDate, sweetMessageDate) {
