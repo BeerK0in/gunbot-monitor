@@ -6,23 +6,29 @@ const settings = require('./settings');
 class TradePairs {
 
   constructor() {
-    this.tradePairs = [];
     this.regExp = this.buildRegExp();
-    this.initTradePairs();
   }
 
   getTradePairs() {
-    let files = fs.readdirSync(settings.pathToGunbot);
-    for (let file of files) {
-      let matches = this.regExp.exec(file);
-      if (matches && matches.length >= 3) {
-        this.tradePairs[matches[1]].push(matches[2]);
+    this.initTradePairs();
+    return new Promise((resolve, reject) => {
+      try {
+        let files = fs.readdirSync(settings.pathToGunbot);
+        for (let file of files) {
+          let matches = this.regExp.exec(file);
+          if (matches && matches.length >= 3) {
+            this.tradePairs[matches[1]].push(matches[2]);
+          }
+        }
+        resolve(this.tradePairs);
+      } catch (error) {
+        reject(error);
       }
-    }
-    return this.tradePairs;
+    });
   }
 
   initTradePairs() {
+    this.tradePairs = [];
     for (let marketPrefix of settings.marketPrefixs) {
       this.tradePairs[marketPrefix] = [];
     }

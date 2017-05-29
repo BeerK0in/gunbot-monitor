@@ -18,19 +18,22 @@ class Outputter {
   }
 
   print() {
-    tableData.initAvailableTradePairs();
     this.collectOutputAndUpdateConsoleLog();
   }
 
   collectOutputAndUpdateConsoleLog() {
     Promise.all([osData.getMemoryGauge(), osData.getLoad(), tableData.getTable()])
       .then(values => logUpdate(this.buildOutput(...values)))
-      .catch(error => logUpdate(this.buildOutput(undefined, undefined, undefined, error)));
+      .catch(error => {
+        console.error(this.newLine + chalk.red.bold(error) + this.newLine);
+        this.stop();
+        return false;
+      });
   }
 
   buildOutput(memory, load, tableData, error) {
     if (error !== undefined) {
-      return error;
+      return this.newLine + chalk.red.bold(error);
     }
 
     let output = this.newLine;
@@ -67,7 +70,7 @@ class Outputter {
     clearInterval(this.interval);
   }
 
-  getServerTime(){
+  getServerTime() {
     let date = new Date();
     return `Server time:  ${chalk.bold(date)}`;
   }
