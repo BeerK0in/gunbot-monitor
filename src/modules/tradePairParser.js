@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('graceful-fs');
 const readline = require('readline');
 const readLastLines = require('read-last-lines');
 const settings = require('./settings');
