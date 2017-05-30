@@ -62,7 +62,7 @@ class Outputter {
 
         this.interval = setInterval(() => {
           this.print();
-        }, settings.outputIntervalDelay);
+        }, settings.outputIntervalDelaySeconds * 1000);
       });
   }
 
@@ -81,7 +81,7 @@ class Outputter {
 
   getSubHeadlineText() {
     let output = `Version ${chalk.bold(this.version)}`;
-    output += ` | Refresh interval ${chalk.bold(settings.outputIntervalDelay / 1000)}s`;
+    output += ` | Refresh interval ${chalk.bold(settings.outputIntervalDelaySeconds)}s`;
 
     return output;
   }

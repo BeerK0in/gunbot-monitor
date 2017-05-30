@@ -3,19 +3,23 @@
 'use strict';
 
 const program = require('commander');
+const path = require('path');
 const settings = require('./modules/settings');
 const outputter = require('./modules/outputter');
 const pj = require('../package.json');
 
 program
   .version(pj.version, '-v, --version')
-  .option('-p, --path [path]', 'Path to the GUNBOT folder')
+  .option('-p, --path <path>', 'Path to the GUNBOT folder')
   .option('-c, --compact', 'Do not draw row lines')
-  .option('-s, --small', 'Reduce colums for small screens')
+  .option('-s, --small', 'Reduce columns for small screens')
+  .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 10, max = 600')
   .parse(process.argv);
 
 if (program.path) {
-  settings.pathToGunbot = program.path;
+  let pathName = path.normalize(program.path + path.sep);
+  console.log(pathName);
+  settings.pathToGunbot = pathName;
 }
 
 if (program.compact) {
@@ -24,6 +28,22 @@ if (program.compact) {
 
 if (program.small) {
   settings.small = true;
+}
+
+if (program.refresh) {
+  let refreshRate = parseInt(program.refresh, 10);
+
+  if (isNaN(refreshRate)) {
+    refreshRate = 10;
+  }
+
+  if (refreshRate < 10) {
+    refreshRate = 10;
+  }
+  if (refreshRate > 600) {
+    refreshRate = 600;
+  }
+  settings.outputIntervalDelaySeconds = refreshRate;
 }
 
 outputter.start();

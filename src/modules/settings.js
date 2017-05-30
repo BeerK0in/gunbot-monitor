@@ -8,7 +8,7 @@ class Settings {
     this._small = false;
     this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
     this.logFileLinesToRead = 35;
-    this.outputIntervalDelay = 1000 * 10; // In seconds
+    this._outputIntervalDelaySeconds = 10;
 
     this.timeColorScheme = {
       ll: {
@@ -69,6 +69,14 @@ class Settings {
 
   get small() {
     return this._small;
+  }
+
+  set outputIntervalDelaySeconds(value) {
+    this._outputIntervalDelaySeconds = value;
+  }
+
+  get outputIntervalDelaySeconds() {
+    return this._outputIntervalDelaySeconds;
   }
 
 }
