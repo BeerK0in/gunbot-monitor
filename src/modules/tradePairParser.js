@@ -51,8 +51,8 @@ class TradePairParser {
     return new Promise((resolve, reject) => {
       Promise.all([
         this.readLogFile(tradePair, market),
-        this.readTradesFile(tradePair, market),
-        this.getProfit(tradePair, market)
+        this.readTradesFile(tradePair, market)
+        // , this.getProfit(tradePair, market)
       ])
         .then(values => {
           resolve(Object.assign({}, ...values));

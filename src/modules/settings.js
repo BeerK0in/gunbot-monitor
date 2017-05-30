@@ -7,7 +7,7 @@ class Settings {
     this._compact = false;
     this._small = false;
     this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
-    this.logFileLinesToRead = 100;
+    this.logFileLinesToRead = 35;
     this.outputIntervalDelay = 1000 * 10; // In seconds
 
     this.timeColorScheme = {

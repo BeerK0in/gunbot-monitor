@@ -54,7 +54,7 @@ class TableData {
           chalk.cyan.bold('price is'),
           chalk.cyan.bold('# buys'),
           chalk.cyan.bold('# sells'),
-          chalk.cyan.bold('profit'),
+          // Chalk.cyan.bold('profit'),
           chalk.cyan.bold('last error')
         ],
         colAligns: [
@@ -70,7 +70,7 @@ class TableData {
           'left', // Price is
           'right', // Buys
           'right', // Sells
-          'right', // Profit
+          // 'right', // Profit
           'left' // Error
         ],
         style: {compact: settings.compact}
@@ -94,7 +94,7 @@ class TableData {
         chalk.cyan.bold('1 6 h d +'),
         chalk.cyan.bold('# sells'),
         chalk.cyan.bold('1 6 h d +'),
-        chalk.cyan.bold('profit'),
+        // Chalk.cyan.bold('profit'),
         chalk.cyan.bold('last error')
       ],
       colAligns: [
@@ -114,7 +114,7 @@ class TableData {
         'left',
         'right', // Sells
         'left',
-        'right', // Profit
+        // 'right', // Profit
         'left' // Error
       ],
       style: {compact: settings.compact}
@@ -141,7 +141,7 @@ class TableData {
         .then(values => {
           let totalBTCValue = 0.0;
           let totalDiffSinceBuy = 0.0;
-          let totalProfit = 0.0;
+          // Let totalProfit = 0.0;
           let availableBitCoins = 0;
           let latestAvailableBitCoinsDate = new Date(0);
           let pm2Result = values[0];
@@ -171,9 +171,9 @@ class TableData {
               totalDiffSinceBuy += parseFloat(formatter.currentProfit(data.coins, data.boughtPrice, data.lastPriceInBTC));
             }
 
-            if (!isNaN(parseFloat(data.profit))) {
-              totalProfit += parseFloat(data.profit);
-            }
+            // If (!isNaN(parseFloat(data.profit))) {
+            //   totalProfit += parseFloat(data.profit);
+            // }
 
             if (settings.small) {
               table.push([
@@ -189,7 +189,7 @@ class TableData {
                 formatter.buySellMessage(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp),
                 formatter.trades(data.buyCounter, data.lastTimeStampBuy),
                 formatter.trades(data.sellCounter, data.lastTimeStampSell),
-                formatter.profit(data.profit),
+                // Formatter.profit(data.profit),
                 formatter.errorCode(data.errors, data.lastTimeStamp)
               ]);
             } else {
@@ -210,7 +210,7 @@ class TableData {
                 formatter.tradesInTimeSlots(data.buys),
                 formatter.trades(data.sellCounter, data.lastTimeStampSell),
                 formatter.tradesInTimeSlots(data.sells),
-                formatter.profit(data.profit),
+                // Formatter.profit(data.profit),
                 formatter.errorCode(data.errors, data.lastTimeStamp)
               ]);
             }
@@ -230,7 +230,7 @@ class TableData {
               '',
               '',
               '',
-              chalk.bold(formatter.profit(totalProfit)),
+              // Chalk.bold(formatter.profit(totalProfit)),
               ''
             ]);
           } else {
@@ -251,7 +251,7 @@ class TableData {
               '',
               '',
               '',
-              chalk.bold(formatter.profit(totalProfit)),
+              // Chalk.bold(formatter.profit(totalProfit)),
               ''
             ]);
           }
