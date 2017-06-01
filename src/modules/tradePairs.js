@@ -7,22 +7,44 @@ class TradePairs {
 
   constructor() {
     this.regExp = this.buildRegExp();
+    this.tradePairs = [];
   }
 
   getTradePairs() {
     this.initTradePairs();
     return new Promise((resolve, reject) => {
       try {
-        let files = fs.readdirSync(settings.pathToGunbot);
-        for (let file of files) {
-          let matches = this.regExp.exec(file);
-          if (matches && matches.length >= 3) {
-            this.tradePairs[matches[1]].push(matches[2]);
+        fs.readdir(settings.pathToGunbot, (error, files) => {
+          // If there is an error ...
+          if (error) {
+            // ... and the tradePairs have never been set, reject.
+            if (this.tradePairs.length === 0) {
+              reject(error);
+              return;
+            }
+            // ... but the tradePairs are already set, just return the last tradePairs.
+            resolve(this.tradePairs);
+            return;
           }
-        }
-        resolve(this.tradePairs);
+
+          for (let file of files) {
+            let matches = this.regExp.exec(file);
+            if (matches && matches.length >= 3) {
+              this.tradePairs[matches[1]].push(matches[2]);
+            }
+          }
+          resolve(this.tradePairs);
+        });
       } catch (error) {
-        reject(error);
+        // If there is an error ...
+
+        // ... and the tradePairs have never been set, reject.
+        if (this.tradePairs.length === 0) {
+          reject(error);
+          return;
+        }
+        // ... but the tradePairs are already set, just return the last tradePairs.
+        resolve(this.tradePairs);
       }
     });
   }

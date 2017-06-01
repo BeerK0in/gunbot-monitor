@@ -270,7 +270,14 @@ class Formatter {
 
       let seconds = Math.floor((lastTimeStamp - oldestErrorDate) / 1000);
 
-      output.push(`${errors[code].counter} x ${chalk.red(code)} in ${this.formatSeconds(seconds, 'errors')}`);
+      let codeOutput = '';
+      if (code === '429') {
+        codeOutput = chalk.bold.bgRed(code);
+      } else {
+        codeOutput = chalk.red(code);
+      }
+
+      output.push(`${errors[code].counter} x ${codeOutput} in ${this.formatSeconds(seconds, 'errors')}`);
     }
 
     return output.join('\n');

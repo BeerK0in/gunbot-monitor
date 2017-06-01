@@ -39,86 +39,51 @@ class TableData {
   }
 
   getHead() {
-    if (settings.small) {
-      return {
-        head: [
-          chalk.cyan.bold('name'),
-          chalk.cyan.bold('pm2'),
-          chalk.cyan.bold('oo?'),
-          chalk.cyan.bold('in BTC'),
-          chalk.cyan.bold('diff since buy'),
-          chalk.cyan.bold('Buy/Bought'),
-          chalk.cyan.bold('Sell'),
-          chalk.cyan.bold('Last Price'),
-          chalk.cyan.bold('price diff'),
-          chalk.cyan.bold('price is'),
-          chalk.cyan.bold('# buys'),
-          chalk.cyan.bold('# sells'),
-          // Chalk.cyan.bold('profit'),
-          chalk.cyan.bold('last error')
-        ],
-        colAligns: [
-          'left', // Name
-          'right',
-          'left', // Oo?
-          'right', // In BTC
-          'right', // Diff
-          'right', // Buy price
-          'right',
-          'right',
-          'right',
-          'left', // Price is
-          'right', // Buys
-          'right', // Sells
-          // 'right', // Profit
-          'left' // Error
-        ],
-        style: {compact: settings.compact}
-      };
-    }
-    return {
+    let header = {
       head: [
-        chalk.cyan.bold('name'),
+        chalk.cyan.bold('Name'),
         chalk.cyan.bold('pm2'),
-        chalk.cyan.bold('ll'),
-        chalk.cyan.bold('oo?'),
-        chalk.cyan.bold('coins'),
+        chalk.cyan.bold('LL'),
+        chalk.cyan.bold('OO?'),
+        chalk.cyan.bold('# Coins'),
         chalk.cyan.bold('in BTC'),
-        chalk.cyan.bold('diff since buy'),
+        chalk.cyan.bold('Diff since buy'),
         chalk.cyan.bold('Buy/Bought'),
         chalk.cyan.bold('Sell'),
-        chalk.cyan.bold('Last Price'),
-        chalk.cyan.bold('price diff'),
-        chalk.cyan.bold('price is'),
-        chalk.cyan.bold('# buys'),
+        chalk.cyan.bold('Last price'),
+        chalk.cyan.bold('Price diff'),
+        chalk.cyan.bold('Price is'),
+        chalk.cyan.bold('# Buys'),
         chalk.cyan.bold('1 6 h d +'),
-        chalk.cyan.bold('# sells'),
+        chalk.cyan.bold('# Sells'),
         chalk.cyan.bold('1 6 h d +'),
-        // Chalk.cyan.bold('profit'),
-        chalk.cyan.bold('last error')
+        chalk.cyan.bold('Profit'),
+        chalk.cyan.bold('Last error')
       ],
       colAligns: [
         'left', // Name
-        'right',
-        'right',
+        'right', // Pm2
+        'right', // Last log time
         'left', // Oo?
         'right', // Coins
         'right', // In BTC
         'right', // Diff
-        'right', // Buy price
-        'right',
-        'right',
-        'right',
+        'right', // Buy / Bought price
+        'right', // Price to sell
+        'right', // Last price
+        'right', // Price diff
         'left', // Price is
         'right', // Buys
-        'left',
+        'left', // 1 6 h d +
         'right', // Sells
-        'left',
-        // 'right', // Profit
+        'left', // 1 6 h d +
+        'right', // Profit
         'left' // Error
       ],
       style: {compact: settings.compact}
     };
+
+    return this.formatTableHeader(header);
   }
 
   fillContent(table) {
@@ -141,7 +106,7 @@ class TableData {
         .then(values => {
           let totalBTCValue = 0.0;
           let totalDiffSinceBuy = 0.0;
-          // Let totalProfit = 0.0;
+          let totalProfit = 0.0;
           let availableBitCoins = 0;
           let latestAvailableBitCoinsDate = new Date(0);
           let pm2Result = values[0];
@@ -171,96 +136,114 @@ class TableData {
               totalDiffSinceBuy += parseFloat(formatter.currentProfit(data.coins, data.boughtPrice, data.lastPriceInBTC));
             }
 
-            // If (!isNaN(parseFloat(data.profit))) {
-            //   totalProfit += parseFloat(data.profit);
-            // }
-
-            if (settings.small) {
-              table.push([
-                formatter.tradePair(data.tradePair),
-                formatter.pm2Status(data.tradePair, pm2Result),
-                formatter.openOrders(data.openOrders || data.noOpenOrders),
-                formatter.btcValue(data.coins, data.lastPriceInBTC),
-                formatter.currentProfitWithPercent(data.coins, data.boughtPrice, data.lastPriceInBTC),
-                formatter.buyPrice(data.coins, data.boughtPrice, data.buyPrice),
-                formatter.price(data.sellPrice),
-                formatter.lastPrice(data.lastPrice, data.tendency),
-                formatter.priceDiff(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp, data.buyPrice, data.sellPrice, data.lastPrice, data.coins),
-                formatter.buySellMessage(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp),
-                formatter.trades(data.buyCounter, data.lastTimeStampBuy),
-                formatter.trades(data.sellCounter, data.lastTimeStampSell),
-                // Formatter.profit(data.profit),
-                formatter.errorCode(data.errors, data.lastTimeStamp)
-              ]);
-            } else {
-              table.push([
-                formatter.tradePair(data.tradePair),
-                formatter.pm2Status(data.tradePair, pm2Result),
-                formatter.timeSince(data.lastTimeStamp),
-                formatter.openOrders(data.openOrders || data.noOpenOrders),
-                formatter.coins(data.coins),
-                formatter.btcValue(data.coins, data.lastPriceInBTC),
-                formatter.currentProfitWithPercent(data.coins, data.boughtPrice, data.lastPriceInBTC),
-                formatter.buyPrice(data.coins, data.boughtPrice, data.buyPrice),
-                formatter.price(data.sellPrice),
-                formatter.lastPrice(data.lastPrice, data.tendency),
-                formatter.priceDiff(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp, data.buyPrice, data.sellPrice, data.lastPrice, data.coins),
-                formatter.buySellMessage(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp),
-                formatter.trades(data.buyCounter, data.lastTimeStampBuy),
-                formatter.tradesInTimeSlots(data.buys),
-                formatter.trades(data.sellCounter, data.lastTimeStampSell),
-                formatter.tradesInTimeSlots(data.sells),
-                // Formatter.profit(data.profit),
-                formatter.errorCode(data.errors, data.lastTimeStamp)
-              ]);
+            if (!isNaN(parseFloat(data.profit))) {
+              totalProfit += parseFloat(data.profit);
             }
+
+            table.push([
+              formatter.tradePair(data.tradePair),
+              formatter.pm2Status(data.tradePair, pm2Result),
+              formatter.timeSince(data.lastTimeStamp),
+              formatter.openOrders(data.openOrders || data.noOpenOrders),
+              formatter.coins(data.coins),
+              formatter.btcValue(data.coins, data.lastPriceInBTC),
+              formatter.currentProfitWithPercent(data.coins, data.boughtPrice, data.lastPriceInBTC),
+              formatter.buyPrice(data.coins, data.boughtPrice, data.buyPrice),
+              formatter.price(data.sellPrice),
+              formatter.lastPrice(data.lastPrice, data.tendency),
+              formatter.priceDiff(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp, data.buyPrice, data.sellPrice, data.lastPrice, data.coins),
+              formatter.buySellMessage(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp),
+              formatter.trades(data.buyCounter, data.lastTimeStampBuy),
+              formatter.tradesInTimeSlots(data.buys),
+              formatter.trades(data.sellCounter, data.lastTimeStampSell),
+              formatter.tradesInTimeSlots(data.sells),
+              formatter.profit(data.profit),
+              formatter.errorCode(data.errors, data.lastTimeStamp)
+            ]);
           }
 
-          if (settings.small) {
-            table.push([
-              chalk.bold(formatter.tradePair('TOTAL')),
-              '',
-              '',
-              chalk.bold(formatter.price(totalBTCValue)),
-              chalk.bold(formatter.totalCurrentProfit(totalBTCValue, totalDiffSinceBuy)),
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              // Chalk.bold(formatter.profit(totalProfit)),
-              ''
-            ]);
-          } else {
-            table.push([
-              chalk.bold(formatter.tradePair('TOTAL')),
-              '',
-              '',
-              '',
-              '',
-              chalk.bold(formatter.price(totalBTCValue)),
-              chalk.bold(formatter.totalCurrentProfit(totalBTCValue, totalDiffSinceBuy)),
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              // Chalk.bold(formatter.profit(totalProfit)),
-              ''
-            ]);
-          }
-          result.table = table;
+          table.push([
+            chalk.bold(formatter.tradePair('TOTAL')),
+            '',
+            '',
+            '',
+            '',
+            chalk.bold(formatter.price(totalBTCValue)),
+            chalk.bold(formatter.totalCurrentProfit(totalBTCValue, totalDiffSinceBuy)),
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            chalk.bold(formatter.profit(totalProfit)),
+            ''
+          ]);
+
+          result.table = this.formatTableContent(table);
           result.availableBitCoins = availableBitCoins;
           resolve(result);
         })
         .catch(error => reject(error));
     });
+  }
+
+  formatTableHeader(header) {
+    if (!settings.parseProfit) {
+      // Profit
+      header.head.splice(-2, 1);
+      header.colAligns.splice(-2, 1);
+    }
+
+    if (settings.small) {
+      // Last Log
+      header.head.splice(2, 1);
+      header.colAligns.splice(2, 1);
+
+      // Coins
+      header.head.splice(3, 1);
+      header.colAligns.splice(3, 1);
+
+      // Coins
+      header.head.splice(11, 1);
+      header.colAligns.splice(11, 1);
+
+      // Coins
+      header.head.splice(12, 1);
+      header.colAligns.splice(12, 1);
+    }
+
+    return header;
+  }
+
+  formatTableContent(table) {
+    if (!settings.parseProfit) {
+      for (let content of table) {
+        // Profit
+        content.splice(-2, 1);
+      }
+    }
+
+    if (settings.small) {
+      for (let content of table) {
+        // Last Log
+        content.splice(2, 1);
+
+        // Coins
+        content.splice(3, 1);
+
+        // Coins
+        content.splice(11, 1);
+
+        // Coins
+        content.splice(12, 1);
+      }
+    }
+
+    return table;
   }
 
 }
