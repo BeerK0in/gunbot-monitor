@@ -14,6 +14,7 @@ program
   .option('-c, --compact', 'Do not draw row lines')
   .option('-s, --small', 'Reduce columns for small screens')
   .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 10, max = 600')
+  .option('-P, --profit', 'Use to activate the parsing of the profit. I WILL SLOW DOWN YOUR SYSTEM!')
   .parse(process.argv);
 
 if (program.path) {
@@ -44,6 +45,10 @@ if (program.refresh) {
     refreshRate = 600;
   }
   settings.outputIntervalDelaySeconds = refreshRate;
+}
+
+if (program.profit) {
+  settings.parseProfit = true;
 }
 
 outputter.start();

@@ -6,9 +6,10 @@ class Settings {
     this._pathToGunbot = './';
     this._compact = false;
     this._small = false;
+    this._parseProfit = false;
     this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
-    this.logFileLinesToRead = 35;
-    this._outputIntervalDelaySeconds = 10;
+    this.logFileLinesToRead = 55;
+    this._outputIntervalDelaySeconds = 60;
 
     this.timeColorScheme = {
       ll: {
@@ -69,6 +70,14 @@ class Settings {
 
   get small() {
     return this._small;
+  }
+
+  set parseProfit(value) {
+    this._parseProfit = value;
+  }
+
+  get parseProfit() {
+    return this._parseProfit;
   }
 
   set outputIntervalDelaySeconds(value) {
