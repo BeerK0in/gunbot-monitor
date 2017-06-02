@@ -7,9 +7,11 @@ class Settings {
     this._compact = false;
     this._small = false;
     this._parseProfit = false;
+    this._outputIntervalDelaySeconds = 60;
+    this.newLine = '\n';
     this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
     this.logFileLinesToRead = 55;
-    this._outputIntervalDelaySeconds = 60;
+    this.marketApiIps = {poloniex: ['104.20.12.48', '104.20.13.48'], kraken: [], bittrex: []};
 
     this.timeColorScheme = {
       ll: {

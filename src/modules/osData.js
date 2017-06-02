@@ -4,12 +4,13 @@ const os = require('os');
 const exec = require('child_process').exec;
 const clui = require('clui');
 const chalk = require('chalk');
+const settings = require('./settings');
 
 class OsData {
 
   constructor() {
     this.megaByte = 1 / (Math.pow(1024, 2));
-    this.loadHistory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this.loadHistory = Array(80).fill(0);
     this.cpuTimingsTicks = 0;
     this.cpuTimingsLoad = 0;
   }
@@ -29,12 +30,26 @@ class OsData {
 
       this.calculateMemory()
         .then(stats => {
-          let total = this.inMegabyte(stats.total);
-          let available = this.inMegabyte(stats.available);
-          let used = total - available;
-          let usedPercent = Math.floor(used / total * 100);
+          let memoryTotal = this.inMegabyte(stats.total);
+          let memoryAvailable = this.inMegabyte(stats.available);
+          let memoryUsed = memoryTotal - memoryAvailable;
+          let memoryUsedPercent = Math.floor(memoryUsed / memoryTotal * 100);
 
-          resolve(`Memory:       ${gauge(used, total, 29, total * 0.8, `${usedPercent}% used`)} - available: ${chalk.bold(available)} MB of ${chalk.bold(total)} MB`);
+          let output = `Memory:       ${gauge(memoryUsed, memoryTotal, 79, memoryTotal * 0.8, `${memoryUsedPercent}% used`)} - available: ${chalk.bold(memoryAvailable)} MB of ${chalk.bold(memoryTotal)} MB`;
+
+          if (!stats.swaptotal || stats.swaptotal === 0) {
+            resolve(output);
+            return;
+          }
+
+          let swapTotal = this.inMegabyte(stats.swaptotal);
+          let swapAvailable = this.inMegabyte(stats.swapfree);
+          let swapUsed = this.inMegabyte(stats.swapused);
+          let swapUsedPercent = Math.floor(swapUsed / swapTotal * 100);
+
+          output += settings.newLine;
+          output += `Swap:         ${gauge(swapUsed, swapTotal, 79, swapTotal * 0.8, `${swapUsedPercent}% used`)} - available: ${chalk.bold(swapAvailable)} MB of ${chalk.bold(swapTotal)} MB`;
+          resolve(output);
         })
         .catch(error => reject(error));
     });
@@ -96,12 +111,16 @@ class OsData {
 
         active: os.totalmem() - os.freemem(),     // Temporarily (fallback)
         available: os.freemem(),                  // Temporarily (fallback)
-        buffcache: 0
+        buffcache: 0,
+
+        swaptotal: 0,
+        swapused: 0,
+        swapfree: 0
       };
 
-      // LINUX
-      // ------------------------------------------------------------------
       if (os.type() === 'Linux') {
+        // LINUX
+        // ------------------------------------------------------------------
         exec('free -b', function (error, stdout) {
           if (!error) {
             let lines = stdout.toString().split('\n');
@@ -118,15 +137,18 @@ class OsData {
               result.available = result.free + result.buffcache;
             }
             result.active = result.total - result.free - result.buffcache;
+
+            let swap = lines[2].replace(/ +/g, ' ').split(' ');
+            result.swaptotal = parseInt(swap[1], 10);
+            result.swapfree = parseInt(swap[3], 10);
+            result.swapused = parseInt(swap[2], 10);
           }
           resolve(result);
         });
-      }
-
-      // OSX
-      // ------------------------------------------------------------------
-      if (os.type() === 'Darwin') {
-        exec('vm_stat | grep \'Pages active\'', function (error, stdout) {
+      } else if (os.type() === 'Darwin') {
+        // OSX
+        // ------------------------------------------------------------------
+        exec('vm_stat | grep "Pages active"', function (error, stdout) {
           if (!error) {
             let lines = stdout.toString().split('\n');
 
@@ -134,13 +156,34 @@ class OsData {
             result.buffcache = result.used - result.active;
             result.available = result.free + result.buffcache;
           }
-          resolve(result);
-        });
-      }
+          exec('sysctl -n vm.swapusage', function (error, stdout) {
+            if (!error) {
+              let lines = stdout.toString().split('\n');
+              if (lines.length > 0) {
+                let line = lines[0].replace(/,/g, '.').replace(/M/g, '');
+                line = line.trim().split('  ');
+                for (let i = 0; i < line.length; i++) {
+                  if (line[i].toLowerCase().indexOf('total') !== -1) {
+                    result.swaptotal = parseFloat(line[i].split('=')[1].trim()) * 1024 * 1024;
+                  }
+                  if (line[i].toLowerCase().indexOf('used') !== -1) {
+                    result.swapused = parseFloat(line[i].split('=')[1].trim()) * 1024 * 1024;
+                  }
+                  if (line[i].toLowerCase().indexOf('free') !== -1) {
+                    result.swapfree = parseFloat(line[i].split('=')[1].trim()) * 1024 * 1024;
+                  }
+                }
+              }
+            }
 
-      // All other OS.
-      // ------------------------------------------------------------------
-      resolve(result);
+            resolve(result);
+          });
+        });
+      } else {
+        // All other OS.
+        // ------------------------------------------------------------------
+        resolve(result);
+      }
     });
   }
 

@@ -1,5 +1,6 @@
 'use strict';
 
+const netData = require('./netData');
 const osData = require('./osData');
 const tableData = require('./tabelData');
 const settings = require('./settings');
@@ -12,7 +13,6 @@ class Outputter {
 
   constructor() {
     this.interval = null;
-    this.newLine = '\n';
     this.headline = '   >>>   GUNBOT - MONITOR / BETA  <<<';
     this.version = pj.version;
   }
@@ -22,35 +22,37 @@ class Outputter {
   }
 
   collectOutputAndUpdateConsoleLog() {
-    Promise.all([osData.getMemoryGauge(), osData.getLoad(), tableData.getTable()])
+    Promise.all([osData.getMemoryGauge(), osData.getLoad(), netData.getConnections(), tableData.getTable()])
       .then(values => logUpdate(this.buildOutput(...values)))
       .catch(error => {
-        console.error(this.newLine + chalk.red.bold(error) + this.newLine);
+        console.error(settings.newLine + chalk.red.bold(error) + settings.newLine);
         this.stop();
         return false;
       });
   }
 
-  buildOutput(memory, load, tableData, error) {
+  buildOutput(memory, load, connections, tableData, error) {
     if (error !== undefined) {
-      return this.newLine + chalk.red.bold(error);
+      return settings.newLine + chalk.red.bold(error);
     }
 
-    let output = this.newLine;
+    let output = settings.newLine;
     output += this.getServerTime();
-    output += this.newLine;
+    output += settings.newLine;
     output += memory;
-    output += this.newLine;
+    output += settings.newLine;
     output += load;
-    output += this.newLine;
-    output += this.newLine;
+    output += settings.newLine;
+    output += connections;
+    output += settings.newLine;
+    output += settings.newLine;
     output += ` Available BitCoins: ${tableData.availableBitCoins}`;
-    output += this.newLine;
+    output += settings.newLine;
     output += tableData.table;
-    output += this.newLine;
-    output += this.newLine;
+    output += settings.newLine;
+    output += settings.newLine;
     output += chalk.italic('Use `CTRL+C` to exit.');
-    output += this.newLine;
+    output += settings.newLine;
 
     return output;
   }
@@ -88,7 +90,7 @@ class Outputter {
 
   printHeadline() {
     return new Promise(resolve => {
-      let newLine = this.newLine;
+      let newLine = settings.newLine;
       let headline = this.getHeadlineText();
       let subHeadline = this.getSubHeadlineText();
 
