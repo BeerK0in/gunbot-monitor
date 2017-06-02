@@ -18,9 +18,7 @@ program
   .parse(process.argv);
 
 if (program.path) {
-  let pathName = path.normalize(program.path + path.sep);
-  console.log(pathName);
-  settings.pathToGunbot = pathName;
+  settings.pathToGunbot = path.normalize(program.path + path.sep);
 }
 
 if (program.compact) {

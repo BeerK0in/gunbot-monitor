@@ -1,6 +1,6 @@
 {
   "name": "gunbot-monitor",
-  "version": "0.0.25",
+  "version": "0.0.27",
   "description": "Monitors your GUNBOTs",
   "homepage": "https://github.com/BeerK0in/gunbot-monitor",
   "author": {
@@ -39,6 +39,7 @@
     "figlet": "^1.2.0",
     "graceful-fs": "^4.1.11",
     "log-update": "^2.0.0",
+    "node-netstat": "^1.4.2",
     "read-last-lines": "^1.1.2"
   },
   "jest": {
