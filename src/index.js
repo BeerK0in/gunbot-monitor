@@ -15,6 +15,7 @@ program
   .option('-s, --small', 'Reduce columns for small screens')
   .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 10, max = 600')
   .option('-P, --profit', 'Use to activate the parsing of the profit. I WILL SLOW DOWN YOUR SYSTEM!')
+  .option('--show-all-errors', 'Use to list 422 errors in the last column.')
   .parse(process.argv);
 
 if (program.path) {
@@ -47,6 +48,10 @@ if (program.refresh) {
 
 if (program.profit) {
   settings.parseProfit = true;
+}
+
+if(program.showAllErrors){
+  settings.showAllErrors = true;
 }
 
 outputter.start();

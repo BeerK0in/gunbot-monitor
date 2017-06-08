@@ -259,6 +259,10 @@ class Formatter {
     let oldestErrorDate = new Date();
 
     for (let code of Object.keys(errors)) {
+      if (code === '422' && !settings.showAllErrors) {
+          continue;
+      }
+
       for (let date of errors[code].dates) {
         if (!(date instanceof Date)) {
           date = new Date(date);
