@@ -42,7 +42,6 @@ class TableData {
     let header = {
       head: [
         chalk.cyan.bold('Name'),
-        chalk.cyan.bold('M'),
         chalk.cyan.bold('Str'),
         chalk.cyan.bold('pm2'),
         chalk.cyan.bold('LL'),
@@ -64,7 +63,6 @@ class TableData {
       ],
       colAligns: [
         'left', // Name
-        'left', // Market
         'left', // Strategies
         'right', // Pm2
         'right', // Last log time
@@ -156,8 +154,7 @@ class TableData {
             }
 
             table.push([
-              formatter.tradePair(data.tradePair),
-              formatter.market(data.market),
+              formatter.tradePair(data.tradePair, data.market),
               formatter.strategies(data.buyStrategy, data.sellStrategy),
               formatter.pm2Status(data.tradePair, pm2Result),
               formatter.timeSince(data.lastTimeStamp),
@@ -181,7 +178,6 @@ class TableData {
 
           table.push([
             chalk.bold(formatter.tradePair('TOTAL')),
-            '',
             '',
             '',
             '',
@@ -218,10 +214,6 @@ class TableData {
     }
 
     if (settings.small) {
-      // Market
-      header.head.splice(1, 1);
-      header.colAligns.splice(1, 1);
-
       // Strategies
       header.head.splice(1, 1);
       header.colAligns.splice(1, 1);
@@ -256,9 +248,6 @@ class TableData {
 
     if (settings.small) {
       for (let content of table) {
-        // Market
-        content.splice(1, 1);
-
         // Strategies
         content.splice(1, 1);
 

@@ -9,12 +9,12 @@ const PRICE_IS_SWEET = 1200;
 
 class Formatter {
 
-  tradePair(tradePair) {
+  tradePair(tradePair, marketName) {
     if (tradePair === undefined) {
       return chalk.gray('-');
     }
 
-    return chalk.green.bold(tradePair);
+    return `${this.market(marketName)}${chalk.green.bold(tradePair)}`;
   }
 
   coins(coins) {
@@ -341,20 +341,20 @@ class Formatter {
 
   market(marketName) {
     if (marketName === undefined || marketName.length === 0) {
-      return chalk.gray('-');
+      return '';
     }
 
     let market = marketName[0].toUpperCase();
 
     switch (market) {
       case 'P':
-        return chalk.cyan(market);
+        return `${chalk.cyan(market)} `;
       case 'K':
-        return chalk.yellow(market);
+        return `${chalk.yellow(market)} `;
       case 'B':
-        return chalk.blue(market);
+        return `${chalk.blue(market)} `;
       default:
-        return chalk.red(market);
+        return `${chalk.red(market)} `;
     }
 
   }
