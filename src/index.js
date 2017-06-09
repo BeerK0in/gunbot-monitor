@@ -13,6 +13,7 @@ program
   .option('-p, --path <path>', 'Path to the GUNBOT folder')
   .option('-c, --compact', 'Do not draw row lines')
   .option('-s, --small', 'Reduce columns for small screens')
+  .option('-d, --digits <digits>', 'Amount of digits for all numbers. Min = 0, max = 10')
   .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 10, max = 600')
   .option('-P, --profit', 'Use to activate the parsing of the profit. I WILL SLOW DOWN YOUR SYSTEM!')
   .option('--show-all-errors', 'Use to list 422 errors in the last column.')
@@ -28,6 +29,22 @@ if (program.compact) {
 
 if (program.small) {
   settings.small = true;
+}
+
+if (program.digits) {
+  let numberOfDigits = parseInt(program.digits, 10);
+
+  if (isNaN(numberOfDigits)) {
+    numberOfDigits = 4;
+  }
+
+  if (numberOfDigits < 0) {
+    numberOfDigits = 0;
+  }
+  if (numberOfDigits > 10) {
+    numberOfDigits = 10;
+  }
+  settings.numberOfDigits = numberOfDigits;
 }
 
 if (program.refresh) {

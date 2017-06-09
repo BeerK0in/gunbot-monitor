@@ -95,7 +95,7 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    let priceOut = parseFloat(price).toFixed(4);
+    let priceOut = parseFloat(price).toFixed(settings.numberOfDigits);
     return priceOut;
   }
 

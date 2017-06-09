@@ -9,6 +9,7 @@ class Settings {
     this._parseProfit = false;
     this._outputIntervalDelaySeconds = 60;
     this._showAllErrors = false;
+    this._numberOfDigits = 4;
     this.newLine = '\n';
     this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
     this.logFileLinesToRead = 55;
@@ -97,6 +98,14 @@ class Settings {
 
   get showAllErrors() {
     return this._showAllErrors;
+  }
+
+  set numberOfDigits(value) {
+    this._numberOfDigits = value;
+  }
+
+  get numberOfDigits() {
+    return this._numberOfDigits;
   }
 
 }
