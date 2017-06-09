@@ -245,10 +245,10 @@ class Formatter {
     }
 
     let padding = '  ';
-    if(numberOfTrades > 9){
+    if (numberOfTrades > 9) {
       padding = ' ';
     }
-    if(numberOfTrades > 99){
+    if (numberOfTrades > 99) {
       padding = '';
     }
 
