@@ -8,6 +8,9 @@ class Settings {
     this._small = false;
     this._parseProfit = false;
     this._outputIntervalDelaySeconds = 60;
+    this._showAllErrors = false;
+    this._numberOfDigits = 4;
+    this._hideInactiveAfterHours = 720;
     this.newLine = '\n';
     this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
     this.logFileLinesToRead = 55;
@@ -88,6 +91,30 @@ class Settings {
 
   get outputIntervalDelaySeconds() {
     return this._outputIntervalDelaySeconds;
+  }
+
+  set showAllErrors(value) {
+    this._showAllErrors = value;
+  }
+
+  get showAllErrors() {
+    return this._showAllErrors;
+  }
+
+  set numberOfDigits(value) {
+    this._numberOfDigits = value;
+  }
+
+  get numberOfDigits() {
+    return this._numberOfDigits;
+  }
+
+  set hideInactiveAfterHours(value) {
+    this._hideInactiveAfterHours = value;
+  }
+
+  get hideInactiveAfterHours() {
+    return this._hideInactiveAfterHours;
   }
 
 }

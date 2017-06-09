@@ -9,12 +9,12 @@ const PRICE_IS_SWEET = 1200;
 
 class Formatter {
 
-  tradePair(tradePair) {
+  tradePair(tradePair, marketName) {
     if (tradePair === undefined) {
       return chalk.gray('-');
     }
 
-    return chalk.green.bold(tradePair);
+    return `${this.market(marketName)}${chalk.green.bold(tradePair)}`;
   }
 
   coins(coins) {
@@ -95,7 +95,7 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    let priceOut = parseFloat(price).toFixed(4);
+    let priceOut = parseFloat(price).toFixed(settings.numberOfDigits);
     return priceOut;
   }
 
@@ -259,6 +259,10 @@ class Formatter {
     let oldestErrorDate = new Date();
 
     for (let code of Object.keys(errors)) {
+      if (code === '422' && !settings.showAllErrors) {
+        continue;
+      }
+
       for (let date of errors[code].dates) {
         if (!(date instanceof Date)) {
           date = new Date(date);
@@ -333,6 +337,37 @@ class Formatter {
     }
 
     return pm2Data[pairName].id;
+  }
+
+  market(marketName) {
+    if (marketName === undefined || marketName.length === 0) {
+      return '';
+    }
+
+    let market = marketName[0].toUpperCase();
+
+    switch (market) {
+      case 'P':
+        return `${chalk.cyan(market)} `;
+      case 'K':
+        return `${chalk.yellow(market)} `;
+      case 'B':
+        return `${chalk.blue(market)} `;
+      default:
+        return `${chalk.red(market)} `;
+    }
+  }
+
+  strategies(buyStrategy, sellStrategy) {
+    if (buyStrategy === undefined || buyStrategy.length === 0) {
+      return chalk.gray('-');
+    }
+
+    if (sellStrategy === undefined || sellStrategy.length === 0) {
+      return chalk.gray('-');
+    }
+
+    return `${buyStrategy[0].toUpperCase()}-${sellStrategy[0].toUpperCase()}`;
   }
 
   /**

@@ -42,6 +42,7 @@ class TableData {
     let header = {
       head: [
         chalk.cyan.bold('Name'),
+        chalk.cyan.bold('Str'),
         chalk.cyan.bold('pm2'),
         chalk.cyan.bold('LL'),
         chalk.cyan.bold('OO?'),
@@ -62,6 +63,7 @@ class TableData {
       ],
       colAligns: [
         'left', // Name
+        'left', // Strategies
         'right', // Pm2
         'right', // Last log time
         'left', // Oo?
@@ -117,6 +119,16 @@ class TableData {
               continue;
             }
 
+            // Hides inactive pairs.
+            let inactiveFilterTimestamp = Math.round(new Date().getTime() / 1000) - (settings.hideInactiveAfterHours * 60 * 60);
+            let lastLogTimestamp = Math.round(new Date(data.lastTimeStamp).getTime() / 1000);
+
+            if (inactiveFilterTimestamp > lastLogTimestamp) {
+              continue;
+            }
+
+            // Get amount of available bitcoins
+            // TODO: by market
             if (data.availableBitCoins !== undefined && data.availableBitCoins.length > 0) {
               if (!(data.availableBitCoinsTimeStamp instanceof Date)) {
                 data.availableBitCoinsTimeStamp = new Date(data.availableBitCoinsTimeStamp || 0);
@@ -141,7 +153,8 @@ class TableData {
             }
 
             table.push([
-              formatter.tradePair(data.tradePair),
+              formatter.tradePair(data.tradePair, data.market),
+              formatter.strategies(data.buyStrategy, data.sellStrategy),
               formatter.pm2Status(data.tradePair, pm2Result),
               formatter.timeSince(data.lastTimeStamp),
               formatter.openOrders(data.openOrders || data.noOpenOrders),
@@ -164,6 +177,7 @@ class TableData {
 
           table.push([
             chalk.bold(formatter.tradePair('TOTAL')),
+            '',
             '',
             '',
             '',
@@ -199,6 +213,10 @@ class TableData {
     }
 
     if (settings.small) {
+      // Strategies
+      header.head.splice(1, 1);
+      header.colAligns.splice(1, 1);
+
       // Last Log
       header.head.splice(2, 1);
       header.colAligns.splice(2, 1);
@@ -229,6 +247,9 @@ class TableData {
 
     if (settings.small) {
       for (let content of table) {
+        // Strategies
+        content.splice(1, 1);
+
         // Last Log
         content.splice(2, 1);
 

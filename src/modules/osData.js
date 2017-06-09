@@ -121,7 +121,7 @@ class OsData {
       if (os.type() === 'Linux') {
         // LINUX
         // ------------------------------------------------------------------
-        exec('free -b', function (error, stdout) {
+        exec('free -b', (error, stdout) => {
           if (!error) {
             let lines = stdout.toString().split('\n');
 
@@ -148,7 +148,7 @@ class OsData {
       } else if (os.type() === 'Darwin') {
         // OSX
         // ------------------------------------------------------------------
-        exec('vm_stat | grep "Pages active"', function (error, stdout) {
+        exec('vm_stat | grep "Pages active"', (error, stdout) => {
           if (!error) {
             let lines = stdout.toString().split('\n');
 
@@ -156,7 +156,7 @@ class OsData {
             result.buffcache = result.used - result.active;
             result.available = result.free + result.buffcache;
           }
-          exec('sysctl -n vm.swapusage', function (error, stdout) {
+          exec('sysctl -n vm.swapusage', (error, stdout) => {
             if (!error) {
               let lines = stdout.toString().split('\n');
               if (lines.length > 0) {
