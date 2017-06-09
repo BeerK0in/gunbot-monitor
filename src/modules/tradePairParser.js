@@ -84,18 +84,26 @@ class TradePairParser {
   readConfigFile(tradePair, market) {
     return new Promise(resolve => {
       let collectedData = [];
-      let configFile = {};
+      let configFilePair = {};
+      let configFileAllPair = {};
 
       try {
-        configFile = require(`${settings.pathToGunbot}${market}-${tradePair}-config.js`);
+        configFilePair = require(`${settings.pathToGunbot}${market}-${tradePair}-config.js`);
       } catch (error) {
         resolve(collectedData);
+        return;
+      }
+
+      try {
+        configFileAllPair = require(`${settings.pathToGunbot}ALLPAIRS-params.js`);
+      } catch (error) {
+        // Go on if there is no ALLPAIR
       }
 
       collectedData.tradePair = tradePair;
       collectedData.market = market;
-      collectedData.buyStrategy = configFile.BUY_STRATEGY;
-      collectedData.sellStrategy = configFile.SELL_STRATEGY;
+      collectedData.buyStrategy = configFileAllPair.BUY_STRATEGY || configFilePair.BUY_STRATEGY;
+      collectedData.sellStrategy = configFileAllPair.SELL_STRATEGY || configFilePair.SELL_STRATEGY;
 
       resolve(collectedData);
     });
