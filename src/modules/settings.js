@@ -10,6 +10,7 @@ class Settings {
     this._outputIntervalDelaySeconds = 60;
     this._showAllErrors = false;
     this._numberOfDigits = 4;
+    this._hideInactiveAfterHours = 720;
     this.newLine = '\n';
     this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
     this.logFileLinesToRead = 55;
@@ -106,6 +107,14 @@ class Settings {
 
   get numberOfDigits() {
     return this._numberOfDigits;
+  }
+
+  set hideInactiveAfterHours(value) {
+    this._hideInactiveAfterHours = value;
+  }
+
+  get hideInactiveAfterHours() {
+    return this._hideInactiveAfterHours;
   }
 
 }

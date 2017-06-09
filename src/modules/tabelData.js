@@ -117,6 +117,17 @@ class TableData {
               continue;
             }
 
+            // Hides inactive pairs.
+            let inactiveFilterTimestamp = Math.round(new Date().getTime()/1000) - (settings.hideInactiveAfterHours * 60 * 60);
+            let lastLogTimestamp = Math.round(new Date(data.lastTimeStamp).getTime()/1000);
+
+            if (inactiveFilterTimestamp > lastLogTimestamp) {
+              continue;
+            }
+
+
+            // Get amount of available bitcoins
+            // TODO: by market
             if (data.availableBitCoins !== undefined && data.availableBitCoins.length > 0) {
               if (!(data.availableBitCoinsTimeStamp instanceof Date)) {
                 data.availableBitCoinsTimeStamp = new Date(data.availableBitCoinsTimeStamp || 0);
