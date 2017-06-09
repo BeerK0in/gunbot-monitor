@@ -21,7 +21,9 @@ program
   .parse(process.argv);
 
 if (program.path) {
-  settings.pathToGunbot = path.normalize(program.path + path.sep);
+  settings.pathToGunbot = path.normalize(process.cwd() + path.sep + program.path + path.sep);
+} else {
+  settings.pathToGunbot = path.normalize(process.cwd() + path.sep);
 }
 
 if (program.compact) {

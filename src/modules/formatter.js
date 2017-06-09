@@ -260,7 +260,7 @@ class Formatter {
 
     for (let code of Object.keys(errors)) {
       if (code === '422' && !settings.showAllErrors) {
-          continue;
+        continue;
       }
 
       for (let date of errors[code].dates) {
@@ -337,6 +337,38 @@ class Formatter {
     }
 
     return pm2Data[pairName].id;
+  }
+
+  market(marketName) {
+    if (marketName === undefined || marketName.length === 0) {
+      return chalk.gray('-');
+    }
+
+    let market = marketName[0].toUpperCase();
+
+    switch (market) {
+      case 'P':
+        return chalk.cyan(market);
+      case 'K':
+        return chalk.yellow(market);
+      case 'B':
+        return chalk.blue(market);
+      default:
+        return chalk.red(market);
+    }
+
+  }
+
+  strategies(buyStrategy, sellStrategy) {
+    if (buyStrategy === undefined || buyStrategy.length === 0) {
+      return chalk.gray('-');
+    }
+
+    if (sellStrategy === undefined || sellStrategy.length === 0) {
+      return chalk.gray('-');
+    }
+
+    return `${buyStrategy[0].toUpperCase()}-${sellStrategy[0].toUpperCase()}`;
   }
 
   /**

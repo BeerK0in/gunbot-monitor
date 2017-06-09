@@ -52,7 +52,8 @@ class TradePairParser {
       Promise.all([
         this.readLogFile(tradePair, market),
         this.readTradesFile(tradePair, market),
-        this.getProfit(tradePair, market)
+        this.getProfit(tradePair, market),
+        this.readConfigFile(tradePair, market)
       ])
         .then(values => {
           resolve(Object.assign({}, ...values));
@@ -77,6 +78,27 @@ class TradePairParser {
           })
           .catch(error => reject(error));
       });
+    });
+  }
+
+  readConfigFile(tradePair, market) {
+    return new Promise((resolve, reject) => {
+
+      let collectedData = [];
+      let configFile = {};
+
+      try {
+        configFile = require(`${settings.pathToGunbot}${market}-${tradePair}-config.js`);
+      } catch (error) {
+        resolve(collectedData);
+      }
+
+      collectedData.tradePair = tradePair;
+      collectedData.market = market;
+      collectedData.buyStrategy = configFile.BUY_STRATEGY;
+      collectedData.sellStrategy = configFile.SELL_STRATEGY;
+
+      resolve(collectedData);
     });
   }
 
