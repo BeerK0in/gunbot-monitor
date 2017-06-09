@@ -59,7 +59,7 @@ class TableData {
         chalk.cyan.bold('# Sells'),
         chalk.cyan.bold('1 6 h d +'),
         chalk.cyan.bold('Profit'),
-        chalk.cyan.bold('Last error')
+        chalk.cyan.bold('Errors')
       ],
       colAligns: [
         'left', // Name
@@ -80,7 +80,7 @@ class TableData {
         'left', // Sells
         'left', // 1 6 h d +
         'right', // Profit
-        'left' // Error
+        'left' // Errors
       ],
       style: {compact: settings.compact}
     };
