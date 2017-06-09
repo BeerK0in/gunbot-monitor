@@ -75,9 +75,9 @@ class TableData {
         'right', // Last price
         'right', // Price diff
         'left', // Price is
-        'right', // Buys
+        'left', // Buys
         'left', // 1 6 h d +
-        'right', // Sells
+        'left', // Sells
         'left', // 1 6 h d +
         'right', // Profit
         'left' // Error

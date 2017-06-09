@@ -243,7 +243,16 @@ class Formatter {
     if (numberOfTrades <= 0) {
       return chalk.gray('-');
     }
-    return `${chalk.bold(numberOfTrades)} ${this.timeSince(lastTradeDate, 'trades')}`;
+
+    let padding = '  ';
+    if(numberOfTrades > 9){
+      padding = ' ';
+    }
+    if(numberOfTrades > 99){
+      padding = '';
+    }
+
+    return `${padding}${chalk.bold(numberOfTrades)} ${this.timeSince(lastTradeDate, 'trades')}`;
   }
 
   errorCode(errors, lastTimeStamp) {
@@ -438,39 +447,39 @@ class Formatter {
     let interval = Math.floor(seconds / 31536000);
 
     if (interval > 1) {
-      return chalk[settings.timeColorScheme[timeColorSchemeName].yearsColor](interval + 'Y ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].yearsColor](interval + 'Y');
     }
 
     interval = Math.floor(seconds / 2592000);
     if (interval > 1) {
-      return chalk[settings.timeColorScheme[timeColorSchemeName].monthColor](interval + 'M ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].monthColor](interval + 'M');
     }
 
     interval = Math.floor(seconds / 86400);
     if (interval > 1) {
-      return chalk[settings.timeColorScheme[timeColorSchemeName].daysColor](interval + 'D ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].daysColor](interval + 'D');
     }
 
     interval = Math.floor(seconds / 3600);
     if (interval > 1 && interval < 6) {
-      return chalk[settings.timeColorScheme[timeColorSchemeName].hours1pColor](interval + 'h ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].hours1pColor](interval + 'h');
     }
     if (interval > 1 && interval < 24) {
-      return chalk[settings.timeColorScheme[timeColorSchemeName].hours6pColor](interval + 'h ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].hours6pColor](interval + 'h');
     }
     if (interval > 1 && interval < 49) {
-      return chalk[settings.timeColorScheme[timeColorSchemeName].hours24pColor](interval + 'h ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].hours24pColor](interval + 'h');
     }
     if (interval > 1) {
-      return chalk[settings.timeColorScheme[timeColorSchemeName].hours48pColor](interval + 'h ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].hours48pColor](interval + 'h');
     }
 
     interval = Math.floor(seconds / 60);
     if (interval > 1) {
-      return chalk[settings.timeColorScheme[timeColorSchemeName].minutesColor](interval + 'm ');
+      return chalk[settings.timeColorScheme[timeColorSchemeName].minutesColor](interval + 'm');
     }
 
-    return chalk[settings.timeColorScheme[timeColorSchemeName].secondsColor](Math.floor(seconds) + 's ');
+    return chalk[settings.timeColorScheme[timeColorSchemeName].secondsColor](Math.floor(seconds) + 's');
   }
 
 }
