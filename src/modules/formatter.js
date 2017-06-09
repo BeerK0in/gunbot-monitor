@@ -293,6 +293,10 @@ class Formatter {
       output.push(`${errors[code].counter} x ${codeOutput} in ${this.formatSeconds(seconds, 'errors')}`);
     }
 
+    if (output.length === 0) {
+      return chalk.gray('-');
+    }
+
     return output.join('\n');
   }
 
