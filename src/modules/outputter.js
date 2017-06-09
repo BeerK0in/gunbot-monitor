@@ -96,7 +96,7 @@ class Outputter {
 
       figLet.text(headline, {
         font: 'Small'
-      }, function (err, data) {
+      }, (err, data) => {
         if (err) {
           console.log(newLine + chalk.bold.yellow(headline));
           console.log(newLine + chalk.white(subHeadline));

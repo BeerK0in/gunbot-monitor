@@ -32,22 +32,27 @@ class NetData {
 
   calculateConnections() {
     let counter = 0;
-    netstat({
-      filter: {
-        state: 'ESTABLISHED'
-      },
-      limit: 100,
-      done: () => this.addToConnectionsHistory(counter)
-    }, function (data) {
-      if (!data || !data.remote || !data.remote.address) {
-        return;
-      }
-      for (let ip of settings.marketApiIps.poloniex) {
-        if (data.remote.address === ip) {
-          counter++;
+    try {
+      netstat({
+        filter: {
+          state: 'ESTABLISHED'
+        },
+        limit: 100,
+        done: () => this.addToConnectionsHistory(counter)
+      }, (data) => {
+        if (!data || !data.remote || !data.remote.address) {
+          return;
         }
-      }
-    });
+        for (let ip of settings.marketApiIps.poloniex) {
+          if (data.remote.address === ip) {
+            counter++;
+          }
+        }
+      });
+    } catch (error) {
+      // Just go on with 0
+      this.addToConnectionsHistory(0);
+    }
   }
 
 }
