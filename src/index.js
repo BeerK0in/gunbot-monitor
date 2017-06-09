@@ -86,7 +86,7 @@ if (program.hideInactive) {
   settings.hideInactiveAfterHours = hideInactiveAfterHours;
 }
 
-if(program.showAllErrors){
+if (program.showAllErrors) {
   settings.showAllErrors = true;
 }
 

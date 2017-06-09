@@ -356,7 +356,6 @@ class Formatter {
       default:
         return `${chalk.red(market)} `;
     }
-
   }
 
   strategies(buyStrategy, sellStrategy) {

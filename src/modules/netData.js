@@ -39,7 +39,7 @@ class NetData {
         },
         limit: 100,
         done: () => this.addToConnectionsHistory(counter)
-      }, (data) => {
+      }, data => {
         if (!data || !data.remote || !data.remote.address) {
           return;
         }

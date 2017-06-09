@@ -82,8 +82,7 @@ class TradePairParser {
   }
 
   readConfigFile(tradePair, market) {
-    return new Promise((resolve, reject) => {
-
+    return new Promise(resolve => {
       let collectedData = [];
       let configFile = {};
 
