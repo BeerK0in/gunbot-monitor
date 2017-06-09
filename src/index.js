@@ -20,8 +20,12 @@ program
   .option('--show-all-errors', 'Use to list 422 errors in the last column.')
   .parse(process.argv);
 
-if (program.path) {
-  settings.pathToGunbot = path.normalize(process.cwd() + path.sep + program.path + path.sep);
+if (program.path && program.path.length > 0) {
+  if (program.path[0] === path.sep) {
+    settings.pathToGunbot = path.normalize(program.path + path.sep);
+  } else {
+    settings.pathToGunbot = path.normalize(process.cwd() + path.sep + program.path + path.sep);
+  }
 } else {
   settings.pathToGunbot = path.normalize(process.cwd() + path.sep);
 }
