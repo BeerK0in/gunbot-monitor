@@ -146,9 +146,17 @@ class TradePairParser {
           input: readStream
         });
 
+        let previousLineData = '';
+
         readLine.on('line', line => {
           let matches = this.regExpsProfit.profit.exec(line);
           if (matches && matches.length >= 2) {
+            let lineWithoutDate = line.substring(19);
+            if (lineWithoutDate === previousLineData) {
+              return;
+            }
+            previousLineData = lineWithoutDate;
+
             collectedData.profit += parseFloat(matches[1]);
           }
         });
@@ -239,6 +247,8 @@ class TradePairParser {
         older: 0
       };
 
+      let previousLineData = '';
+
       const readStream = fs.createReadStream(`${settings.pathToGunbot}${market}-${tradePair}-trades.txt`);
       readStream.on('error', () => {
         resolve(collectedData);
@@ -249,6 +259,12 @@ class TradePairParser {
       });
 
       readLine.on('line', line => {
+        let lineWithoutDate = line.substring(19);
+        if (lineWithoutDate === previousLineData) {
+          return;
+        }
+        previousLineData = lineWithoutDate;
+
         let matches = this.regExpsTrades.buyCounter.exec(line);
         if (matches && matches.length >= 3) {
           collectedData.buyCounter++;
