@@ -2,7 +2,7 @@
 
 const fs = require('graceful-fs');
 const readline = require('readline');
-const readLastLines = require('read-last-lines');
+const readLastLines = require('./read-last-lines');
 const settings = require('./settings');
 
 class TradePairParser {
