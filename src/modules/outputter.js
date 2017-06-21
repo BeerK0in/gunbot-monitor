@@ -51,7 +51,11 @@ class Outputter {
     output += tableData.table;
     output += settings.newLine;
     output += settings.newLine;
-    output += chalk.italic('Use `CTRL+C` to exit.');
+    output += chalk.italic(`Use ${chalk.bold('CTRL+C')} to exit.`);
+    output += '   |   ';
+    output += chalk.italic(`Type ${chalk.bold('gmon -h')} to see all options.`);
+    output += '   |   ';
+    output += chalk.red(`Currently there is a bug in the calculated number of trades and the profit - don't rely on it.`);
     output += settings.newLine;
 
     return output;

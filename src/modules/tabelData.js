@@ -176,7 +176,7 @@ class TableData {
           }
 
           table.push([
-            chalk.bold(formatter.tradePair('TOTAL')),
+            chalk.bold(formatter.tradePair(' = TOTAL = ')),
             '',
             '',
             '',
