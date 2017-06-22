@@ -6,57 +6,57 @@ const settings = require('./settings');
 class TradePairs {
 
   constructor() {
-    this.regExp = this.buildRegExp();
-    this.tradePairs = [];
+    this.regExp = TradePairs.buildRegExp();
   }
 
-  getTradePairs() {
-    this.initTradePairs();
+  getTradePairs(path) {
+    let pairs = TradePairs.initTradePairs();
     return new Promise((resolve, reject) => {
       try {
-        fs.readdir(settings.pathToGunbot, (error, files) => {
+        fs.readdir(path, (error, files) => {
           // If there is an error ...
           if (error) {
-            // ... and the tradePairs have never been set, reject.
-            if (this.tradePairs.length === 0) {
+            // ... and the pairs have never been set, reject.
+            if (pairs.length === 0) {
               reject(error);
               return;
             }
-            // ... but the tradePairs are already set, just return the last tradePairs.
-            resolve(this.tradePairs);
+            // ... but the pairs are already set, just return the last pairs.
+            resolve(pairs);
             return;
           }
 
           for (let file of files) {
             let matches = this.regExp.exec(file);
             if (matches && matches.length >= 3) {
-              this.tradePairs[matches[1]].push(matches[2]);
+              pairs[matches[1]].push(matches[2]);
             }
           }
-          resolve(this.tradePairs);
+          resolve(pairs);
         });
       } catch (error) {
         // If there is an error ...
 
-        // ... and the tradePairs have never been set, reject.
-        if (this.tradePairs.length === 0) {
+        // ... and the pairs have never been set, reject.
+        if (pairs.length === 0) {
           reject(error);
           return;
         }
-        // ... but the tradePairs are already set, just return the last tradePairs.
-        resolve(this.tradePairs);
+        // ... but the pairs are already set, just return the last pairs.
+        resolve(pairs);
       }
     });
   }
 
-  initTradePairs() {
-    this.tradePairs = [];
+  static initTradePairs() {
+    let pairs = [];
     for (let marketPrefix of settings.marketPrefixs) {
-      this.tradePairs[marketPrefix] = [];
+      pairs[marketPrefix] = [];
     }
+    return pairs;
   }
 
-  buildRegExp() {
+  static buildRegExp() {
     let regExStr = '(';
     for (let marketPrefix of settings.marketPrefixs) {
       regExStr += marketPrefix + '|';

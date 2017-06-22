@@ -4,13 +4,6 @@ const exec = require('child_process').exec;
 
 class Pm2Data {
 
-  constructor() {
-    this.megaByte = 1 / (Math.pow(1024, 2));
-    this.loadHistory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    this.cpuTimingsTicks = 0;
-    this.cpuTimingsLoad = 0;
-  }
-
   getProcesses() {
     return new Promise(resolve => {
       let result = {};

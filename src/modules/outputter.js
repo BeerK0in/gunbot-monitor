@@ -22,7 +22,7 @@ class Outputter {
   }
 
   collectOutputAndUpdateConsoleLog() {
-    Promise.all([osData.getMemoryGauge(), osData.getLoad(), netData.getConnections(), tableData.getTable()])
+    Promise.all([osData.getMemoryGauge(), osData.getLoad(), netData.getConnections(), tableData.getTables()])
       .then(values => logUpdate(this.buildOutput(...values)))
       .catch(error => {
         console.error(settings.newLine + chalk.red.bold(error) + settings.newLine);
@@ -42,14 +42,15 @@ class Outputter {
     output += memory;
     output += settings.newLine;
     output += load;
-    output += settings.newLine;
-    output += connections;
+    if (tableData.availableBitCoinsPerMarket.poloniex && tableData.availableBitCoinsPerMarket.poloniex.length > 0) {
+      output += settings.newLine;
+      output += connections;
+    }
     output += settings.newLine;
     output += settings.newLine;
     output += ` Available BitCoins: ${tableData.availableBitCoins}`;
     output += settings.newLine;
-    output += tableData.table;
-    output += settings.newLine;
+    output += tableData.tables;
     output += settings.newLine;
     output += chalk.italic(`Use ${chalk.bold('CTRL+C')} to exit.`);
     output += '   |   ';

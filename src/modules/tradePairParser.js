@@ -47,13 +47,13 @@ class TradePairParser {
     };
   }
 
-  getData(tradePair, market) {
+  getData(tradePair, market, pathToGunbot) {
     return new Promise((resolve, reject) => {
       Promise.all([
-        this.readLogFile(tradePair, market),
-        this.readTradesFile(tradePair, market),
-        this.getProfit(tradePair, market),
-        this.readConfigFile(tradePair, market)
+        this.readLogFile(tradePair, market, pathToGunbot),
+        this.readTradesFile(tradePair, market, pathToGunbot),
+        this.getProfit(tradePair, market, pathToGunbot),
+        this.readConfigFile(tradePair, market, pathToGunbot)
       ])
         .then(values => {
           resolve(Object.assign({}, ...values));
@@ -62,9 +62,9 @@ class TradePairParser {
     });
   }
 
-  readLogFile(tradePair, market) {
+  readLogFile(tradePair, market, pathToGunbot) {
     return new Promise((resolve, reject) => {
-      let filePath = `${settings.pathToGunbot}${market}-${tradePair}-log.txt`;
+      let filePath = `${pathToGunbot}${market}-${tradePair}-log.txt`;
 
       fs.stat(filePath, error => {
         if (error) {
@@ -81,21 +81,21 @@ class TradePairParser {
     });
   }
 
-  readConfigFile(tradePair, market) {
+  readConfigFile(tradePair, market, pathToGunbot) {
     return new Promise(resolve => {
       let collectedData = [];
       let configFilePair = {};
       let configFileAllPair = {};
 
       try {
-        configFilePair = require(`${settings.pathToGunbot}${market}-${tradePair}-config.js`);
+        configFilePair = require(`${pathToGunbot}${market}-${tradePair}-config.js`);
       } catch (error) {
         resolve(collectedData);
         return;
       }
 
       try {
-        configFileAllPair = require(`${settings.pathToGunbot}ALLPAIRS-params.js`);
+        configFileAllPair = require(`${pathToGunbot}ALLPAIRS-params.js`);
       } catch (error) {
         // Go on if there is no ALLPAIR
       }
@@ -109,16 +109,16 @@ class TradePairParser {
     });
   }
 
-  readTradesFile(tradePair, market) {
+  readTradesFile(tradePair, market, pathToGunbot) {
     return new Promise((resolve, reject) => {
       // If there is no trade summery from gunbot monitor, we need to parse the whole file.
-      this.parseTradeDataFirstTime(tradePair, market)
+      this.parseTradeDataFirstTime(tradePair, market, pathToGunbot)
         .then(collectedData => resolve(collectedData))
         .catch(error => reject(error));
     });
   }
 
-  getProfit(tradePair, market) {
+  getProfit(tradePair, market, pathToGunbot) {
     let collectedData = [];
     collectedData.profit = 0.0;
     collectedData.profitHistory = '';
@@ -129,7 +129,7 @@ class TradePairParser {
         return;
       }
 
-      let filePath = `${settings.pathToGunbot}${market}-${tradePair}-log.txt`;
+      let filePath = `${pathToGunbot}${market}-${tradePair}-log.txt`;
 
       fs.stat(filePath, error => {
         if (error) {
@@ -225,7 +225,7 @@ class TradePairParser {
     return collectedData;
   }
 
-  parseTradeDataFirstTime(tradePair, market) {
+  parseTradeDataFirstTime(tradePair, market, pathToGunbot) {
     return new Promise(resolve => {
       let collectedData = [];
       collectedData.buyCounter = 0;
@@ -249,7 +249,7 @@ class TradePairParser {
 
       let previousLineData = '';
 
-      const readStream = fs.createReadStream(`${settings.pathToGunbot}${market}-${tradePair}-trades.txt`);
+      const readStream = fs.createReadStream(`${pathToGunbot}${market}-${tradePair}-trades.txt`);
       readStream.on('error', () => {
         resolve(collectedData);
       });

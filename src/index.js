@@ -10,7 +10,7 @@ const pj = require('../package.json');
 
 program
   .version(pj.version, '-v, --version')
-  .option('-p, --path <path>', 'Path to the GUNBOT folder. [Default: current folder]')
+  .option('-p, --path <path>', 'Path to the GUNBOT folder. Seperate multiple paths with ":" (like: -p /path1:/path2). [Default: current folder]')
   .option('-c, --compact', 'Do not draw row lines')
   .option('-s, --small', 'Reduce columns for small screens')
   .option('-d, --digits <digits>', 'Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]')
@@ -21,13 +21,17 @@ program
   .parse(process.argv);
 
 if (program.path && program.path.length > 0) {
-  if (program.path[0] === path.sep) {
-    settings.pathToGunbot = path.normalize(program.path + path.sep);
-  } else {
-    settings.pathToGunbot = path.normalize(process.cwd() + path.sep + program.path + path.sep);
+  let pathsToGunbot = program.path.split(':');
+  for (let pathToGunbot of pathsToGunbot) {
+    if (pathToGunbot[0] === path.sep) {
+      pathToGunbot = path.normalize(pathToGunbot + path.sep);
+    } else {
+      pathToGunbot = path.normalize(process.cwd() + path.sep + pathToGunbot + path.sep);
+    }
+    settings.pathsToGunbot = pathsToGunbot;
   }
 } else {
-  settings.pathToGunbot = path.normalize(process.cwd() + path.sep);
+  settings.pathsToGunbot = [path.normalize(process.cwd() + path.sep)];
 }
 
 if (program.compact) {
