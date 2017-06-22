@@ -22,13 +22,13 @@ program
 
 if (program.path && program.path.length > 0) {
   let pathsToGunbot = program.path.split(':');
+  settings.pathsToGunbot = [];
   for (let pathToGunbot of pathsToGunbot) {
     if (pathToGunbot[0] === path.sep) {
-      pathToGunbot = path.normalize(pathToGunbot + path.sep);
+      settings.pathsToGunbot.push(path.normalize(pathToGunbot + path.sep));
     } else {
-      pathToGunbot = path.normalize(process.cwd() + path.sep + pathToGunbot + path.sep);
+      settings.pathsToGunbot.push(path.normalize(process.cwd() + path.sep + pathToGunbot + path.sep));
     }
-    settings.pathsToGunbot = pathsToGunbot;
   }
 } else {
   settings.pathsToGunbot = [path.normalize(process.cwd() + path.sep)];
