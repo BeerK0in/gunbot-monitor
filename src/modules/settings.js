@@ -3,7 +3,7 @@
 class Settings {
 
   constructor() {
-    this._pathToGunbot = './';
+    this._pathsToGunbot = ['./'];
     this._compact = false;
     this._small = false;
     this._parseProfit = false;
@@ -53,12 +53,12 @@ class Settings {
     };
   }
 
-  set pathToGunbot(path) {
-    this._pathToGunbot = path;
+  set pathsToGunbot(paths) {
+    this._pathsToGunbot = paths;
   }
 
-  get pathToGunbot() {
-    return this._pathToGunbot;
+  get pathsToGunbot() {
+    return this._pathsToGunbot;
   }
 
   set compact(value) {

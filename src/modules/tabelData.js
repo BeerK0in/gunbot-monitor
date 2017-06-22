@@ -9,29 +9,55 @@ const settings = require('./settings');
 
 class TableData {
 
-  constructor() {
-    this.tradePairs = [];
-  }
-
-  parseAvailableTradePairsNames() {
-    this.tradePairs = [];
+  parseAvailableTradePairsNames(pathToGunbot) {
     return new Promise(resolve => {
-      tradePairs.getTradePairs()
-        .then(pairs => {
-          this.tradePairs = pairs;
-        })
-        .catch(error => console.error(error))
-        .then(() => resolve());
+      tradePairs.getTradePairs(pathToGunbot)
+        .then(pairs => resolve(pairs))
+        .catch(error => console.error(error));
     });
   }
 
-  getTable() {
+  getTables() {
+    return new Promise((resolve, reject) => {
+      let allPromises = [];
+
+      for (let pathToGunbot of settings.pathsToGunbot) {
+        allPromises.push(this.getTable(pathToGunbot));
+      }
+
+      Promise.all(allPromises)
+        .then(tables => {
+          let tableData = {
+            tables: '',
+            availableBitCoins: '',
+            availableBitCoinsPerMarket: {}
+          };
+
+          for (let table of tables) {
+            tableData.availableBitCoinsPerMarket = Object.assign({}, tableData.availableBitCoinsPerMarket, table.availableBitCoins);
+            tableData.tables += table.table;
+            tableData.tables += settings.newLine;
+          }
+
+          for (let market of Object.keys(tableData.availableBitCoinsPerMarket)) {
+            if (tableData.availableBitCoinsPerMarket[market] && tableData.availableBitCoinsPerMarket[market].length > 0) {
+              tableData.availableBitCoins += `  ${market} ${tableData.availableBitCoinsPerMarket[market]}  `;
+            }
+          }
+
+          resolve(tableData);
+        })
+        .catch(error => reject(error));
+    });
+  }
+
+  getTable(pathToGunbot) {
     return new Promise((resolve, reject) => {
       let table = new CliTable(this.getHead());
 
-      this.parseAvailableTradePairsNames()
-        .then(() => {
-          this.fillContent(table)
+      this.parseAvailableTradePairsNames(pathToGunbot)
+        .then(pairs => {
+          this.fillContent(table, pairs, pathToGunbot)
             .then(table => resolve(table))
             .catch(error => reject(error));
         });
@@ -88,19 +114,25 @@ class TableData {
     return this.formatTableHeader(header);
   }
 
-  fillContent(table) {
+  fillContent(table, pairs, pathToGunbot) {
     return new Promise((resolve, reject) => {
       let result = {};
+      let availableBitCoins = {};
+      let latestAvailableBitCoinsDate = {};
 
       let allPromises = [];
       allPromises.push(pm2Data.getProcesses());
-      for (let market of Object.keys(this.tradePairs)) {
-        if (this.tradePairs[market].length === 0) {
+
+      for (let market of Object.keys(pairs)) {
+        availableBitCoins[market] = 0;
+        latestAvailableBitCoinsDate[market] = new Date(0);
+
+        if (pairs[market].length === 0) {
           continue;
         }
 
-        for (let tradePair of this.tradePairs[market]) {
-          allPromises.push(tradePairParser.getData(tradePair, market));
+        for (let tradePair of pairs[market]) {
+          allPromises.push(tradePairParser.getData(tradePair, market, pathToGunbot));
         }
       }
 
@@ -109,9 +141,8 @@ class TableData {
           let totalBTCValue = 0.0;
           let totalDiffSinceBuy = 0.0;
           let totalProfit = 0.0;
-          let availableBitCoins = 0;
-          let latestAvailableBitCoinsDate = new Date(0);
           let pm2Result = values[0];
+
           values.shift();
 
           for (let data of values) {
@@ -128,15 +159,14 @@ class TableData {
             }
 
             // Get amount of available bitcoins
-            // TODO: by market
             if (data.availableBitCoins !== undefined && data.availableBitCoins.length > 0) {
               if (!(data.availableBitCoinsTimeStamp instanceof Date)) {
                 data.availableBitCoinsTimeStamp = new Date(data.availableBitCoinsTimeStamp || 0);
               }
 
-              if (data.availableBitCoinsTimeStamp > latestAvailableBitCoinsDate) {
-                availableBitCoins = data.availableBitCoins;
-                latestAvailableBitCoinsDate = data.availableBitCoinsTimeStamp;
+              if (data.availableBitCoinsTimeStamp > latestAvailableBitCoinsDate[data.market]) {
+                availableBitCoins[data.market] = data.availableBitCoins;
+                latestAvailableBitCoinsDate[data.market] = data.availableBitCoinsTimeStamp;
               }
             }
 
@@ -213,25 +243,21 @@ class TableData {
     }
 
     if (settings.small) {
-      // Strategies
-      header.head.splice(1, 1);
-      header.colAligns.splice(1, 1);
-
       // Last Log
-      header.head.splice(2, 1);
-      header.colAligns.splice(2, 1);
-
-      // Coins
       header.head.splice(3, 1);
       header.colAligns.splice(3, 1);
 
       // Coins
-      header.head.splice(11, 1);
-      header.colAligns.splice(11, 1);
+      header.head.splice(4, 1);
+      header.colAligns.splice(4, 1);
 
       // Coins
       header.head.splice(12, 1);
       header.colAligns.splice(12, 1);
+
+      // Coins
+      header.head.splice(13, 1);
+      header.colAligns.splice(13, 1);
     }
 
     return header;
@@ -247,20 +273,17 @@ class TableData {
 
     if (settings.small) {
       for (let content of table) {
-        // Strategies
-        content.splice(1, 1);
-
         // Last Log
-        content.splice(2, 1);
-
-        // Coins
         content.splice(3, 1);
 
         // Coins
-        content.splice(11, 1);
+        content.splice(4, 1);
 
         // Coins
         content.splice(12, 1);
+
+        // Coins
+        content.splice(13, 1);
       }
     }
 
