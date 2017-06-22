@@ -213,25 +213,21 @@ class TableData {
     }
 
     if (settings.small) {
-      // Strategies
-      header.head.splice(1, 1);
-      header.colAligns.splice(1, 1);
-
       // Last Log
-      header.head.splice(2, 1);
-      header.colAligns.splice(2, 1);
-
-      // Coins
       header.head.splice(3, 1);
       header.colAligns.splice(3, 1);
 
       // Coins
-      header.head.splice(11, 1);
-      header.colAligns.splice(11, 1);
+      header.head.splice(4, 1);
+      header.colAligns.splice(4, 1);
 
       // Coins
       header.head.splice(12, 1);
       header.colAligns.splice(12, 1);
+
+      // Coins
+      header.head.splice(13, 1);
+      header.colAligns.splice(13, 1);
     }
 
     return header;
@@ -247,20 +243,18 @@ class TableData {
 
     if (settings.small) {
       for (let content of table) {
-        // Strategies
-        content.splice(1, 1);
 
         // Last Log
-        content.splice(2, 1);
-
-        // Coins
         content.splice(3, 1);
 
         // Coins
-        content.splice(11, 1);
+        content.splice(4, 1);
 
         // Coins
         content.splice(12, 1);
+
+        // Coins
+        content.splice(13, 1);
       }
     }
 
