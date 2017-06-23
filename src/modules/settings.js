@@ -11,10 +11,15 @@ class Settings {
     this._showAllErrors = false;
     this._numberOfDigits = 4;
     this._hideInactiveAfterHours = 720;
+    this._iHaveSentATip = false;
     this.newLine = '\n';
-    this.marketPrefixs = ['poloniex', 'kraken', 'bittrex'];
+    this.marketPrefixs = ['poloniex', 'bittrex', 'kraken'];
     this.logFileLinesToRead = 55;
-    this.marketApiIps = {poloniex: ['104.20.12.48', '104.20.13.48'], kraken: [], bittrex: []};
+    this.marketApiIps = {
+      poloniex: ['104.20.12.48', '104.20.13.48'],
+      bittrex: ['104.17.152.108', '104.17.153.108', '104.17.154.108', '104.17.155.108', '104.17.156.108'],
+      kraken: ['104.16.211.191', '104.16.212.191', '104.16.213.191', '104.16.214.191', '104.16.215.191']
+    };
 
     this.timeColorScheme = {
       ll: {
@@ -115,6 +120,14 @@ class Settings {
 
   get hideInactiveAfterHours() {
     return this._hideInactiveAfterHours;
+  }
+
+  set iHaveSentATip(value) {
+    this._iHaveSentATip = value;
+  }
+
+  get iHaveSentATip() {
+    return this._iHaveSentATip;
   }
 
 }

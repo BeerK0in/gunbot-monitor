@@ -7,20 +7,28 @@ class NetData {
 
   constructor() {
     this.interval = null;
-    this.connectionsHistory = Array(80).fill(0);
+    this.connectionsHistory = {};
+    this.connectionsHistory.poloniex = Array(80).fill(0);
+    this.connectionsHistory.bittrex = Array(80).fill(0);
+    this.connectionsHistory.kraken = Array(80).fill(0);
 
     this.start();
   }
 
-  addToConnectionsHistory(value) {
-    this.connectionsHistory.shift();
-    this.connectionsHistory.push(value);
+  addToConnectionsHistory(market, value) {
+    this.connectionsHistory[market].shift();
+    this.connectionsHistory[market].push(value);
   }
 
   getConnections() {
     return new Promise(resolve => {
       let sparkline = require('clui').Sparkline;
-      resolve(`Connections:  ${sparkline(this.connectionsHistory, ' cons/sec')} - Connections to Poloniex per sec.`);
+      let result = {};
+      result.poloniex = `Connections:  ${sparkline(this.connectionsHistory.poloniex, ' cons/sec')} - Connections to Poloniex per sec.`;
+      result.bittrex = `Connections:  ${sparkline(this.connectionsHistory.bittrex, ' cons/sec')} - Connections to Bittrex per sec.`;
+      result.kraken = `Connections:  ${sparkline(this.connectionsHistory.kraken, ' cons/sec')} - Connections to Kraken per sec.`;
+
+      resolve(result);
     });
   }
 
@@ -31,27 +39,29 @@ class NetData {
   }
 
   calculateConnections() {
-    let counter = 0;
-    try {
-      netstat({
-        filter: {
-          state: 'ESTABLISHED'
-        },
-        limit: 100,
-        done: () => this.addToConnectionsHistory(counter)
-      }, data => {
-        if (!data || !data.remote || !data.remote.address) {
-          return;
-        }
-        for (let ip of settings.marketApiIps.poloniex) {
-          if (data.remote.address === ip) {
-            counter++;
+    for (let market of settings.marketPrefixs) {
+      let counter = 0;
+      try {
+        netstat({
+          filter: {
+            state: 'ESTABLISHED'
+          },
+          limit: 100,
+          done: () => this.addToConnectionsHistory(market, counter)
+        }, data => {
+          if (!data || !data.remote || !data.remote.address) {
+            return;
           }
-        }
-      });
-    } catch (error) {
-      // Just go on with 0
-      this.addToConnectionsHistory(0);
+          for (let ip of settings.marketApiIps[market]) {
+            if (data.remote.address === ip) {
+              counter++;
+            }
+          }
+        });
+      } catch (error) {
+        // Just go on with 0
+        this.addToConnectionsHistory(0);
+      }
     }
   }
 

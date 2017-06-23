@@ -18,6 +18,7 @@ program
   .option('-P, --profit', 'Use to activate the parsing of the profit. I WILL SLOW DOWN YOUR SYSTEM!')
   .option('-H, --hide-inactive <hours>', 'Hides trading pairs which las log entry is older than given hours. Min = 1, max = 854400. [Default: 720]')
   .option('-E, --show-all-errors', 'Use to list 422 errors in the last column.')
+  .option('-T, --i-have-sent-a-tip', 'Use this if you have sent a tip to BTC wallet: 1GJCGZPn6okFefrRjPPWU73XgMrctSW1jT')
   .parse(process.argv);
 
 if (program.path && program.path.length > 0) {
@@ -96,6 +97,10 @@ if (program.hideInactive) {
 
 if (program.showAllErrors) {
   settings.showAllErrors = true;
+}
+
+if (program.iHaveSentATip) {
+  settings.iHaveSentATip = true;
 }
 
 outputter.start();

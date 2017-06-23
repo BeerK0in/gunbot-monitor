@@ -30,19 +30,31 @@ class TableData {
           let tableData = {
             tables: '',
             availableBitCoins: '',
-            availableBitCoinsPerMarket: {}
+            availableBitCoinsPerMarket: {},
+            foundMarkets: []
           };
 
           for (let table of tables) {
-            tableData.availableBitCoinsPerMarket = Object.assign({}, tableData.availableBitCoinsPerMarket, table.availableBitCoins);
+            tableData.availableBitCoins = '';
+            tableData.availableBitCoinsPerMarket = {};
+
+            for (let market of settings.marketPrefixs) {
+              if (table.availableBitCoins[market] && table.availableBitCoins[market].length > 1) {
+                tableData.availableBitCoinsPerMarket[market] = table.availableBitCoins[market];
+                tableData.foundMarkets.push(market);
+              }
+            }
+
+            for (let market of Object.keys(tableData.availableBitCoinsPerMarket)) {
+              if (tableData.availableBitCoinsPerMarket[market] && tableData.availableBitCoinsPerMarket[market].length > 0) {
+                tableData.availableBitCoins += `  ${market} ${tableData.availableBitCoinsPerMarket[market]}  `;
+              }
+            }
+
+            tableData.tables += ` Available BitCoins: ${tableData.availableBitCoins}`;
+            tableData.tables += settings.newLine;
             tableData.tables += table.table;
             tableData.tables += settings.newLine;
-          }
-
-          for (let market of Object.keys(tableData.availableBitCoinsPerMarket)) {
-            if (tableData.availableBitCoinsPerMarket[market] && tableData.availableBitCoinsPerMarket[market].length > 0) {
-              tableData.availableBitCoins += `  ${market} ${tableData.availableBitCoinsPerMarket[market]}  `;
-            }
           }
 
           resolve(tableData);
