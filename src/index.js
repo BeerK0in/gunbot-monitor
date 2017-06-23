@@ -15,7 +15,7 @@ program
   .option('-s, --small', 'Reduce columns for small screens')
   .option('-d, --digits <digits>', 'Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]')
   .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 10, max = 600. [Default: 60]')
-  .option('-P, --profit', 'Use to activate the parsing of the profit. I WILL SLOW DOWN YOUR SYSTEM!')
+  .option('-P, --profit', 'Use to activate the parsing of the profit. THIS WILL SLOW DOWN YOUR SYSTEM!')
   .option('-H, --hide-inactive <hours>', 'Hides trading pairs which las log entry is older than given hours. Min = 1, max = 854400. [Default: 720]')
   .option('-E, --show-all-errors', 'Use to list 422 errors in the last column.')
   .option('-T, --i-have-sent-a-tip', 'Use this if you have sent a tip to BTC wallet: 1GJCGZPn6okFefrRjPPWU73XgMrctSW1jT')
