@@ -49,6 +49,13 @@ Run the command inside the folder of your gunbot logs, or use `-p /path/to/gunbo
 
 https://github.com/BeerK0in/gunbot-monitor/issues/15
 
+## Support & Tips
+
+You like gmon and it helps you earning money?
+
+- Report bugs in [this forum thread](https://gunthy.org/index.php?topic=319.0) or via pm in the Gunbot Telegram group at @BeerK0in
+- Support gmon and send a tip to BTC wallet: 1GJCGZPn6okFefrRjPPWU73XgMrctSW1jT
+
 ## License
 
 MIT © [BeerK0in](https://github.com/BeerK0in)
