@@ -32,7 +32,7 @@ $ gmon [options]
 ```sh
     -h, --help                   Output usage information
     -v, --version                Output the version number
-    -p, --path <path>            Path to the GUNBOT folder. Seperate multiple paths with ":" (like: -p /path1:/path2). [Default: current folder]
+    -p, --path <path>            Path to the GUNBOT folder. Separate multiple paths with ":" (like: -p /path1:/path2). [Default: current folder]
     -c, --compact                Do not draw row lines
     -s, --small                  Reduce columns for small screens
     -d, --digits <digits>        Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]

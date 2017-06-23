@@ -10,7 +10,7 @@ const pj = require('../package.json');
 
 program
   .version(pj.version, '-v, --version')
-  .option('-p, --path <path>', 'Path to the GUNBOT folder. Seperate multiple paths with ":" (like: -p /path1:/path2). [Default: current folder]')
+  .option('-p, --path <path>', 'Path to the GUNBOT folder. Separate multiple paths with ":" (like: -p /path1:/path2). [Default: current folder]')
   .option('-c, --compact', 'Do not draw row lines')
   .option('-s, --small', 'Reduce columns for small screens')
   .option('-d, --digits <digits>', 'Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]')
