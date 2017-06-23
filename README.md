@@ -2,14 +2,15 @@
 > Monitors your GUNBOTs
 
 **Warning - The current state of the Monitor is an early BETA version.**
+
 So,
-- it is only tested on Ubuntu and OSX
+- it works best on Unix based systems (Linux and OSX)
 - it requires nodejs 6 or newer and npm
 - the monitor and I as creator of it are not responsible/liable for wrong numbers or wrong calculations
 - it uses up to 100MB memory
 - you should not use it if your server has less than 230MB available free memory
 - it shows stats I'm interested in, so chances are high you'll miss some information
-- it is not very efficient in parsing all the logs, so it could slow down your server
+- it is not very efficient in parsing the logs for the "profit information", so it will slow down your server
 - you need a wide window / screen
 - Finally: use at own risk
 
@@ -29,16 +30,16 @@ $ gmon [options]
 **Options**
 
 ```sh
-    -h, --help               output usage information
-    -v, --version            output the version number
-    -p, --path <path>        Path to the GUNBOT folder. [Default: current folder]
-    -c, --compact            Do not draw row lines
-    -s, --small              Reduce columns for small screens
-    -d, --digits <digits>    Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]
-    -r, --refresh <seconds>  Seconds between table refresh. Min = 10, max = 600. [Default: 60]
-    -P, --profit             Use to activate the parsing of the profit. I WILL SLOW DOWN YOUR SYSTEM!
-    --hide-inactive <hours>  Hides trading pairs which las log entry is older than given hours. Min = 1, max = 854400. [Default: 720]
-    --show-all-errors        Use to list 422 errors in the last column.
+    -h, --help                   Output usage information
+    -v, --version                Output the version number
+    -p, --path <path>            Path to the GUNBOT folder. Separate multiple paths with ":" (like: -p /path1:/path2). [Default: current folder]
+    -c, --compact                Do not draw row lines
+    -s, --small                  Reduce columns for small screens
+    -d, --digits <digits>        Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]
+    -r, --refresh <seconds>      Seconds between table refresh. Min = 10, max = 600. [Default: 60]
+    -P, --profit                 Use to activate the parsing of the profit. THIS WILL SLOW DOWN YOUR SYSTEM!
+    -H, --hide-inactive <hours>  Hides trading pairs which las log entry is older than given hours. Min = 1, max = 854400. [Default: 720]
+    -E, --show-all-errors        Use to list 422 errors in the last column.
 
 ```
 

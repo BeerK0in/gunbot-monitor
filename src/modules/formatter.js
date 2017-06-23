@@ -18,7 +18,7 @@ class Formatter {
   }
 
   coins(coins) {
-    if (coins === undefined || parseFloat(coins) === 0) {
+    if (coins === undefined || isNaN(parseFloat(coins)) || parseFloat(coins) === 0) {
       return chalk.gray('-');
     }
 
@@ -228,7 +228,7 @@ class Formatter {
   }
 
   btcValue(numberOfCoins, lastPriceInBTC) {
-    if (numberOfCoins === undefined || lastPriceInBTC === undefined || parseFloat(numberOfCoins) === 0) {
+    if (numberOfCoins === undefined || lastPriceInBTC === undefined || isNaN(parseFloat(numberOfCoins)) || parseFloat(numberOfCoins) === 0) {
       return chalk.gray('-');
     }
 
