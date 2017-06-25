@@ -47,7 +47,7 @@ class TableData {
 
             for (let market of Object.keys(tableData.availableBitCoinsPerMarket)) {
               if (tableData.availableBitCoinsPerMarket[market] && tableData.availableBitCoinsPerMarket[market].length > 0) {
-                tableData.availableBitCoins += `  ${market} ${tableData.availableBitCoinsPerMarket[market]}  `;
+                tableData.availableBitCoins += `  ${market} ${parseFloat(tableData.availableBitCoinsPerMarket[market])}  `;
               }
             }
 
