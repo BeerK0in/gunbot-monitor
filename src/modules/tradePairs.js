@@ -28,7 +28,7 @@ class TradePairs {
 
           for (let file of files) {
             let matches = this.regExp.exec(file);
-            if (matches && matches.length >= 3) {
+            if (matches && matches.length >= 4) {
               pairs[matches[1]].push(matches[2]);
             }
           }
@@ -62,7 +62,7 @@ class TradePairs {
       regExStr += marketPrefix + '|';
     }
     regExStr = regExStr.slice(0, -1);
-    regExStr += ')-(BTC_[A-Z0-9]{2,16})-log.txt';
+    regExStr += ')-((BTC|XBT|ETH|USDT)_[A-Z0-9]{2,16})-log.txt';
     return new RegExp(regExStr);
   }
 

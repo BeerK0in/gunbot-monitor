@@ -16,6 +16,9 @@ class NetData {
   }
 
   addToConnectionsHistory(market, value) {
+    if (!this.connectionsHistory[market] || this.connectionsHistory[market] === undefined) {
+      return false;
+    }
     this.connectionsHistory[market].shift();
     this.connectionsHistory[market].push(value);
   }

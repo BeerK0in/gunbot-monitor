@@ -61,7 +61,7 @@ class Outputter {
     if (settings.iHaveSentATip) {
       output += chalk.bold.green(`You are awesome! Thank you :)`);
     } else {
-      output += chalk.red(`Support gmon and send a tip to BTC wallet: 1GJCGZPn6okFefrRjPPWU73XgMrctSW1jT`);
+      output += chalk.bold.yellow(`Support gmon and send a tip to BTC wallet: 1GJCGZPn6okFefrRjPPWU73XgMrctSW1jT`);
     }
     output += settings.newLine;
 
