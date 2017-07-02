@@ -12,8 +12,8 @@ class Settings {
     this._numberOfDigits = 4;
     this._hideInactiveAfterHours = 720;
     this._iHaveSentATip = false;
+    this._marketPrefixs = ['poloniex', 'bittrex', 'kraken'];
     this.newLine = '\n';
-    this.marketPrefixs = ['poloniex', 'bittrex', 'kraken'];
     this.logFileLinesToRead = 55;
     this.marketApiIps = {
       poloniex: ['104.20.12.48', '104.20.13.48'],
@@ -80,6 +80,14 @@ class Settings {
 
   get small() {
     return this._small;
+  }
+
+  set marketPrefixs(value) {
+    this._marketPrefixs = value;
+  }
+
+  get marketPrefixs() {
+    return this._marketPrefixs;
   }
 
   set parseProfit(value) {

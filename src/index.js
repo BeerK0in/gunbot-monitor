@@ -15,6 +15,7 @@ program
   .option('-s, --small', 'Reduce columns for small screens')
   .option('-d, --digits <digits>', 'Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]')
   .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 1, max = 600. [Default: 60]')
+  .option('-m, --markets <markets>', 'List of markets to show. Separate multiple markets with ":" (like: -m poloniex:kraken) [Default: poloniex:kraken:bittrex]')
   .option('-P, --profit', 'Use to activate the parsing of the profit. THIS WILL SLOW DOWN YOUR SYSTEM!')
   .option('-H, --hide-inactive <hours>', 'Hides trading pairs which las log entry is older than given hours. Min = 1, max = 854400. [Default: 720]')
   .option('-E, --show-all-errors', 'Use to list 422 errors in the last column.')
@@ -75,6 +76,17 @@ if (program.refresh) {
   settings.outputIntervalDelaySeconds = refreshRate;
 }
 
+if (program.markets && program.markets.length > 0) {
+  let markets = program.markets.split(':');
+  const allowedMarkets = ['poloniex', 'bittrex', 'kraken'];
+  settings.marketPrefixs = [];
+  for (let market of markets) {
+    if (allowedMarkets.includes(market)) {
+      settings.marketPrefixs.push(market);
+    }
+  }
+}
+
 if (program.profit) {
   settings.parseProfit = true;
 }
@@ -83,14 +95,14 @@ if (program.hideInactive) {
   let hideInactiveAfterHours = parseInt(program.hideInactive, 10);
 
   if (isNaN(hideInactiveAfterHours)) {
-    hideInactiveAfterHours = 10;
+    hideInactiveAfterHours = 720;
   }
 
-  if (hideInactiveAfterHours < 10) {
-    hideInactiveAfterHours = 10;
+  if (hideInactiveAfterHours < 1) {
+    hideInactiveAfterHours = 1;
   }
-  if (hideInactiveAfterHours > 600) {
-    hideInactiveAfterHours = 600;
+  if (hideInactiveAfterHours > 854400) {
+    hideInactiveAfterHours = 854400;
   }
   settings.hideInactiveAfterHours = hideInactiveAfterHours;
 }
