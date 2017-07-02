@@ -14,7 +14,7 @@ program
   .option('-c, --compact', 'Do not draw row lines')
   .option('-s, --small', 'Reduce columns for small screens')
   .option('-d, --digits <digits>', 'Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]')
-  .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 10, max = 600. [Default: 60]')
+  .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 1, max = 600. [Default: 60]')
   .option('-P, --profit', 'Use to activate the parsing of the profit. THIS WILL SLOW DOWN YOUR SYSTEM!')
   .option('-H, --hide-inactive <hours>', 'Hides trading pairs which las log entry is older than given hours. Min = 1, max = 854400. [Default: 720]')
   .option('-E, --show-all-errors', 'Use to list 422 errors in the last column.')
@@ -63,11 +63,11 @@ if (program.refresh) {
   let refreshRate = parseInt(program.refresh, 10);
 
   if (isNaN(refreshRate)) {
-    refreshRate = 10;
+    refreshRate = 60;
   }
 
-  if (refreshRate < 10) {
-    refreshRate = 10;
+  if (refreshRate < 1) {
+    refreshRate = 1;
   }
   if (refreshRate > 600) {
     refreshRate = 600;
