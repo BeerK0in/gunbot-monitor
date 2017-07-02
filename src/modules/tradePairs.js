@@ -31,7 +31,7 @@ class TradePairs {
             if (!matches || matches.length < 2) {
               continue;
             }
-            if(pairs[matches[1]] === undefined) {
+            if (pairs[matches[1]] === undefined) {
               continue;
             }
             pairs[matches[1]].push(matches[2]);
