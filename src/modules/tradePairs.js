@@ -28,9 +28,13 @@ class TradePairs {
 
           for (let file of files) {
             let matches = this.regExp.exec(file);
-            if (matches && matches.length >= 4) {
-              pairs[matches[1]].push(matches[2]);
+            if (!matches || matches.length < 2) {
+              continue;
             }
+            if (pairs[matches[1]] === undefined) {
+              continue;
+            }
+            pairs[matches[1]].push(matches[2]);
           }
           resolve(pairs);
         });
