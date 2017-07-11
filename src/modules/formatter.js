@@ -45,10 +45,6 @@ class Formatter {
     let diff = parseFloat(lastPriceInBTC) - parseFloat(boughtPrice);
     let profit = this.price(parseFloat(numberOfCoins) * diff);
 
-    if (diff >= 0) {
-      return this.price(profit);
-    }
-
     return this.price(profit);
   }
 
@@ -67,24 +63,24 @@ class Formatter {
     return `${this.profit(currentProfit)} ${negativePadding}${percentPadding}${chalk.gray(`${profitPercent.toFixed(1)}%`)}`;
   }
 
-  totalCurrentProfit(totalBTCValue, totalDiffSinceBuy) {
-    if (totalBTCValue === undefined || totalDiffSinceBuy === undefined) {
+  profitPercent(boughtPrice, diffSinceBuy) {
+    if (boughtPrice === undefined || diffSinceBuy === undefined) {
       return chalk.gray('-');
     }
 
-    if (parseFloat(totalBTCValue) === 0 || parseFloat(totalDiffSinceBuy) === 0) {
+    if (isNaN(parseFloat(boughtPrice)) || isNaN(parseFloat(diffSinceBuy))) {
       return chalk.gray('-');
     }
 
-    if (isNaN(parseFloat(totalBTCValue)) || isNaN(parseFloat(totalDiffSinceBuy))) {
+    if (parseFloat(boughtPrice) === 0 || parseFloat(diffSinceBuy) === 0) {
       return chalk.gray('-');
     }
 
-    let profitPercent = parseFloat(totalDiffSinceBuy) * 100 / parseFloat(totalBTCValue);
+    let profitPercent = parseFloat(diffSinceBuy) * 100 / parseFloat(boughtPrice);
     let negativePadding = (profitPercent < 0) ? '' : ' ';
     let percentPadding = (profitPercent >= 10 || profitPercent <= -10) ? '' : ' ';
 
-    return `${this.profit(totalDiffSinceBuy)} ${negativePadding}${percentPadding}${chalk.gray(`${profitPercent.toFixed(1)}%`)}`;
+    return `${this.profit(diffSinceBuy)} ${negativePadding}${percentPadding}${chalk.gray(`${profitPercent.toFixed(1)}%`)}`;
   }
 
   price(price) {
