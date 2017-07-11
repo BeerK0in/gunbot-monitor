@@ -43,7 +43,6 @@ if (program.compact) {
   if (groupSize > 0 && groupSize < 1000) {
     settings.compactGroupSize = groupSize;
   }
-
 }
 
 if (program.small) {

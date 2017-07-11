@@ -228,7 +228,6 @@ class TableData {
             ]);
           }
 
-
           table.push([]);
 
           table.push([
