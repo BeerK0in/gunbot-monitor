@@ -5,6 +5,7 @@ class Settings {
   constructor() {
     this._pathsToGunbot = ['./'];
     this._compact = false;
+    this._compactGroupSize = 0;
     this._small = false;
     this._parseProfit = false;
     this._outputIntervalDelaySeconds = 60;
@@ -72,6 +73,14 @@ class Settings {
 
   get compact() {
     return this._compact;
+  }
+
+  set compactGroupSize(value) {
+    this._compactGroupSize = value;
+  }
+
+  get compactGroupSize() {
+    return this._compactGroupSize;
   }
 
   set small(value) {

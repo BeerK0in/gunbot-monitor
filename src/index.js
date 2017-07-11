@@ -11,7 +11,7 @@ const pj = require('../package.json');
 program
   .version(pj.version, '-v, --version')
   .option('-p, --path <path>', 'Path to the GUNBOT folder. Separate multiple paths with ":" (like: -p /path1:/path2). [Default: current folder]')
-  .option('-c, --compact', 'Do not draw row lines')
+  .option('-c, --compact [groupSize]', 'Do not draw row lines. Optional set the number of rows after which a line is drawn. [Default: 0]')
   .option('-s, --small', 'Reduce columns for small screens')
   .option('-d, --digits <digits>', 'Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]')
   .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 1, max = 600. [Default: 60]')
@@ -38,6 +38,11 @@ if (program.path && program.path.length > 0) {
 
 if (program.compact) {
   settings.compact = true;
+
+  let groupSize = parseInt(program.compact, 10);
+  if (groupSize > 0 && groupSize < 1000) {
+    settings.compactGroupSize = groupSize;
+  }
 }
 
 if (program.small) {

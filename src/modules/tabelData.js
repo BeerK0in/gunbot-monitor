@@ -152,8 +152,10 @@ class TableData {
         .then(values => {
           let totalBTCValue = 0.0;
           let totalDiffSinceBuy = 0.0;
+          let totalBoughtPrice = 0.0;
           let totalProfit = 0.0;
           let pm2Result = values[0];
+          let counter = 0;
 
           values.shift();
 
@@ -190,9 +192,18 @@ class TableData {
               totalDiffSinceBuy += parseFloat(formatter.currentProfit(data.coins, data.boughtPrice, data.lastPriceInBTC));
             }
 
+            if (!isNaN(parseFloat(data.boughtPrice)) && !isNaN(parseFloat(data.coins))) {
+              totalBoughtPrice += parseFloat(data.boughtPrice) * parseFloat(data.coins);
+            }
+
             if (!isNaN(parseFloat(data.profit))) {
               totalProfit += parseFloat(data.profit);
             }
+
+            if (settings.compact && counter % settings.compactGroupSize === 0) {
+              table.push([]);
+            }
+            counter++;
 
             table.push([
               formatter.tradePair(data.tradePair, data.market),
@@ -217,6 +228,8 @@ class TableData {
             ]);
           }
 
+          table.push([]);
+
           table.push([
             chalk.bold(formatter.tradePair(' = TOTAL = ')),
             '',
@@ -225,7 +238,7 @@ class TableData {
             '',
             '',
             chalk.bold(formatter.price(totalBTCValue)),
-            chalk.bold(formatter.totalCurrentProfit(totalBTCValue, totalDiffSinceBuy)),
+            chalk.bold(formatter.profitPercent(totalBoughtPrice, totalDiffSinceBuy)),
             '',
             '',
             '',
