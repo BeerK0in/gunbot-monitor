@@ -212,7 +212,7 @@ class TableData {
             table.push([
               formatter.tradePair(data.tradePair, data.market),
               formatter.strategies(data.buyStrategy, data.sellStrategy),
-              formatter.pm2Status(data.tradePair, pm2Result),
+              formatter.pm2Status(data.tradePair, pm2Result, data.market),
               formatter.timeSince(data.lastTimeStamp),
               formatter.openOrders(data.openOrders || data.noOpenOrders),
               formatter.coins(data.coins),
