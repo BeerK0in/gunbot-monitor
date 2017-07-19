@@ -9,11 +9,11 @@ class TradePairs {
     this.regExp = TradePairs.buildRegExp();
   }
 
-  getTradePairs(path) {
+  getTradePairs(pathToGunbot) {
     let pairs = TradePairs.initTradePairs();
     return new Promise((resolve, reject) => {
       try {
-        fs.readdir(path, (error, files) => {
+        fs.readdir(pathToGunbot.path, (error, files) => {
           // If there is an error ...
           if (error) {
             // ... and the pairs have never been set, reject.

@@ -51,6 +51,10 @@ class TableData {
               }
             }
 
+            if (table.name && table.name.length > 0) {
+              tableData.tables += `${chalk.bold.blue(table.name)} `;
+            }
+
             tableData.tables += ` Available BitCoins: ${tableData.availableBitCoins}`;
             tableData.tables += settings.newLine;
             tableData.tables += table.table;
@@ -254,6 +258,7 @@ class TableData {
 
           result.table = this.formatTableContent(table);
           result.availableBitCoins = availableBitCoins;
+          result.name = pathToGunbot.name;
           resolve(result);
         })
         .catch(error => reject(error));

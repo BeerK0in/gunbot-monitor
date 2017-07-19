@@ -50,10 +50,10 @@ class TradePairParser {
   getData(tradePair, market, pathToGunbot) {
     return new Promise((resolve, reject) => {
       Promise.all([
-        this.readLogFile(tradePair, market, pathToGunbot),
-        this.readTradesFile(tradePair, market, pathToGunbot),
-        this.getProfit(tradePair, market, pathToGunbot),
-        this.readConfigFile(tradePair, market, pathToGunbot)
+        this.readLogFile(tradePair, market, pathToGunbot.path),
+        this.readTradesFile(tradePair, market, pathToGunbot.path),
+        this.getProfit(tradePair, market, pathToGunbot.path),
+        this.readConfigFile(tradePair, market, pathToGunbot.path)
       ])
         .then(values => {
           resolve(Object.assign({}, ...values));

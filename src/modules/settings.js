@@ -3,7 +3,7 @@
 class Settings {
 
   constructor() {
-    this._pathsToGunbot = ['./'];
+    this._pathsToGunbot = [{path: './', name: ''}];
     this._compact = false;
     this._compactGroupSize = 0;
     this._small = false;

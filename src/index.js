@@ -11,6 +11,7 @@ const pj = require('../package.json');
 program
   .version(pj.version, '-v, --version')
   .option('-p, --path <path>', 'Path to the GUNBOT folder. Separate multiple paths with ":" (like: -p /path1:/path2). [Default: current folder]')
+  .option('-N, --path-name <name>', 'Optional name for each path to the GUNBOT folder(s). Separate multiple path names with ":" (like: -N Kraken_Bot:Proxy_Mega_Bot). [Default: No path name]')
   .option('-c, --compact [groupSize]', 'Do not draw row lines. Optional set the number of rows after which a line is drawn. [Default: 0]')
   .option('-s, --small', 'Reduce columns for small screens')
   .option('-d, --digits <digits>', 'Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]')
@@ -24,16 +25,38 @@ program
 
 if (program.path && program.path.length > 0) {
   let pathsToGunbot = program.path.split(':');
+  let pathNames = [];
+
+  if (program.pathName && program.pathName.length > 0) {
+    pathNames = program.pathName.split(':');
+  }
+
   settings.pathsToGunbot = [];
-  for (let pathToGunbot of pathsToGunbot) {
+
+  for (const [index, pathToGunbot] of pathsToGunbot.entries()) {
+    let pathName = '';
+
+    if (pathNames[index] && pathNames[index].length > 0) {
+      pathName = pathNames[index];
+    }
+
     if (pathToGunbot[0] === path.sep) {
-      settings.pathsToGunbot.push(path.normalize(pathToGunbot + path.sep));
+      settings.pathsToGunbot.push({
+        path: path.normalize(pathToGunbot + path.sep),
+        name: pathName
+      });
     } else {
-      settings.pathsToGunbot.push(path.normalize(process.cwd() + path.sep + pathToGunbot + path.sep));
+      settings.pathsToGunbot.push({
+        path: path.normalize(process.cwd() + path.sep + pathToGunbot + path.sep),
+        name: pathName
+      });
     }
   }
 } else {
-  settings.pathsToGunbot = [path.normalize(process.cwd() + path.sep)];
+  settings.pathsToGunbot = [{
+    path: path.normalize(process.cwd() + path.sep),
+    name: ''
+  }];
 }
 
 if (program.compact) {
