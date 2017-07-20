@@ -399,7 +399,6 @@ class Formatter {
       // 2. Test for upper case suffix.
       pairName = `${pairName}_${market[0].toUpperCase()}`;
       if (pm2Data[pairName] === undefined || pm2Data[pairName].status === undefined) {
-
         // 3. Test for lower case suffix.
         pairName = `${pairName}_${market[0].toLowerCase()}`;
         if (pm2Data[pairName] === undefined || pm2Data[pairName].status === undefined) {

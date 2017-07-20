@@ -136,7 +136,6 @@ if (program.hideInactive) {
   settings.hideInactiveAfterHours = hideInactiveAfterHours;
 }
 
-
 if (program.connectionsCheckDelay) {
   let connectionsCheckDelay = parseInt(program.connectionsCheckDelay, 10);
 
