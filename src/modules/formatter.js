@@ -390,13 +390,21 @@ class Formatter {
       return chalk.gray('-');
     }
 
+    // 1. Test for no suffix.
     if (pm2Data[pairName] === undefined || pm2Data[pairName].status === undefined) {
       if (market === undefined || market.length === 0) {
         return chalk.gray('-');
       }
+
+      // 2. Test for upper case suffix.
       pairName = `${pairName}_${market[0].toUpperCase()}`;
       if (pm2Data[pairName] === undefined || pm2Data[pairName].status === undefined) {
-        return chalk.gray('-');
+
+        // 3. Test for lower case suffix.
+        pairName = `${pairName}_${market[0].toLowerCase()}`;
+        if (pm2Data[pairName] === undefined || pm2Data[pairName].status === undefined) {
+          return chalk.gray('-');
+        }
       }
     }
 
