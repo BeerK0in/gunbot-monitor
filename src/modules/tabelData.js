@@ -30,12 +30,14 @@ class TableData {
           let tableData = {
             tables: '',
             availableBitCoins: '',
+            totalAvailableBitCoins: 0,
             availableBitCoinsPerMarket: {},
             foundMarkets: []
           };
 
           for (let table of tables) {
             tableData.availableBitCoins = '';
+            tableData.totalAvailableBitCoins = 0;
             tableData.availableBitCoinsPerMarket = {};
 
             for (let market of settings.marketPrefixs) {
@@ -48,6 +50,7 @@ class TableData {
             for (let market of Object.keys(tableData.availableBitCoinsPerMarket)) {
               if (tableData.availableBitCoinsPerMarket[market] && tableData.availableBitCoinsPerMarket[market].length > 0) {
                 tableData.availableBitCoins += `  ${market} ${parseFloat(tableData.availableBitCoinsPerMarket[market])}  `;
+                tableData.totalAvailableBitCoins += parseFloat(tableData.availableBitCoinsPerMarket[market]);
               }
             }
 
@@ -55,7 +58,7 @@ class TableData {
               tableData.tables += `${chalk.bold.blue(table.name)} `;
             }
 
-            tableData.tables += ` Available BitCoins: ${tableData.availableBitCoins}`;
+            tableData.tables += ` Available BitCoins: ${tableData.availableBitCoins} |   Total BTC value: ${chalk.bold.green(tableData.totalAvailableBitCoins + parseFloat(table.totalBtcInAltCoins))} (in BTC: ${tableData.totalAvailableBitCoins}, in ALTs: ${table.totalBtcInAltCoins})`;
             tableData.tables += settings.newLine;
             tableData.tables += table.table;
             tableData.tables += settings.newLine;
@@ -261,6 +264,7 @@ class TableData {
 
           result.table = this.formatTableContent(table);
           result.availableBitCoins = availableBitCoins;
+          result.totalBtcInAltCoins = totalBTCValue;
           result.name = pathToGunbot.name;
           resolve(result);
         })
