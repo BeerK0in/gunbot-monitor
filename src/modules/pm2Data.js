@@ -10,7 +10,7 @@ class Pm2Data {
       let isJson = this.isJson;
 
       try {
-        exec('pm2 jlist', (error, stdout) => {
+        exec('pm2 jlist', {maxBuffer: 1024 * 2000}, (error, stdout) => {
           if (error) {
             resolve(result);
             return;
