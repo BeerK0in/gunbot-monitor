@@ -23,8 +23,7 @@ $ npm install -g gunbot-monitor
 ## Update
 
 ```sh
-$ npm uninstall -g gunbot-monitor
-$ npm install -g gunbot-monitor
+$ npm uninstall -g gunbot-monitor && npm install -g gunbot-monitor
 ```
 
 ## Usage
