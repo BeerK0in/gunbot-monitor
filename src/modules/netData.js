@@ -8,11 +8,9 @@ class NetData {
   constructor() {
     this.interval = null;
     this.connectionsHistory = {};
-    this.connectionsHistory.poloniex = Array(80).fill(0);
-    this.connectionsHistory.bittrex = Array(80).fill(0);
-    this.connectionsHistory.kraken = Array(80).fill(0);
-
-    this.start();
+    this.connectionsHistory.poloniex = new Array(80).fill(0);
+    this.connectionsHistory.bittrex = new Array(80).fill(0);
+    this.connectionsHistory.kraken = new Array(80).fill(0);
   }
 
   addToConnectionsHistory(market, value) {
@@ -24,12 +22,16 @@ class NetData {
   }
 
   getConnections() {
+    if (this.interval === null) {
+      this.start();
+    }
+
     return new Promise(resolve => {
-      let sparkline = require('clui').Sparkline;
+      let sparkLine = require('clui').Sparkline;
       let result = {};
-      result.poloniex = `Connections:  ${sparkline(this.connectionsHistory.poloniex, ' cons/sec')} - Connections to Poloniex per sec.`;
-      result.bittrex = `Connections:  ${sparkline(this.connectionsHistory.bittrex, ' cons/sec')} - Connections to Bittrex per sec.`;
-      result.kraken = `Connections:  ${sparkline(this.connectionsHistory.kraken, ' cons/sec')} - Connections to Kraken per sec.`;
+      result.poloniex = `Connections:  ${sparkLine(this.connectionsHistory.poloniex, ' cons/sec')} - Connections to Poloniex per sec.`;
+      result.bittrex = `Connections:  ${sparkLine(this.connectionsHistory.bittrex, ' cons/sec')} - Connections to Bittrex per sec.`;
+      result.kraken = `Connections:  ${sparkLine(this.connectionsHistory.kraken, ' cons/sec')} - Connections to Kraken per sec.`;
 
       resolve(result);
     });
@@ -38,7 +40,7 @@ class NetData {
   start() {
     this.calculateConnections();
 
-    this.interval = setInterval(() => this.calculateConnections(), 1000);
+    this.interval = setInterval(() => this.calculateConnections(), settings.connectionsCheckDelay * 1000);
   }
 
   calculateConnections() {

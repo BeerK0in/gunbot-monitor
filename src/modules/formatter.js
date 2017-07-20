@@ -380,19 +380,31 @@ class Formatter {
   }
 
   /**
-   * Converts the given date in a string of status.
-   * Like if the date is 300 sec in the past, return "offline".
    * @param pairName
    * @param pm2Data
+   * @param market
    * @returns {*}
    */
-  pm2Status(pairName, pm2Data) {
+  pm2Status(pairName, pm2Data, market) {
     if (pairName === undefined || pm2Data === undefined) {
       return chalk.gray('-');
     }
 
+    // 1. Test for no suffix.
     if (pm2Data[pairName] === undefined || pm2Data[pairName].status === undefined) {
-      return chalk.gray('-');
+      if (market === undefined || market.length === 0) {
+        return chalk.gray('-');
+      }
+
+      // 2. Test for upper case suffix.
+      pairName = `${pairName}_${market[0].toUpperCase()}`;
+      if (pm2Data[pairName] === undefined || pm2Data[pairName].status === undefined) {
+        // 3. Test for lower case suffix.
+        pairName = `${pairName}_${market[0].toLowerCase()}`;
+        if (pm2Data[pairName] === undefined || pm2Data[pairName].status === undefined) {
+          return chalk.gray('-');
+        }
+      }
     }
 
     return this.colorStatus(pm2Data[pairName].id, pm2Data[pairName].status);

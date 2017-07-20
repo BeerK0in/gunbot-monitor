@@ -18,8 +18,9 @@ program
   .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 1, max = 600. [Default: 60]')
   .option('-m, --markets <markets>', 'List of markets to show. Separate multiple markets with ":" (like: -m poloniex:kraken) [Default: poloniex:kraken:bittrex]')
   .option('-P, --profit', 'Use to activate the parsing of the profit. THIS WILL SLOW DOWN YOUR SYSTEM!')
-  .option('-H, --hide-inactive <hours>', 'Hides trading pairs which las log entry is older than given hours. Min = 1, max = 854400. [Default: 720]')
+  .option('-H, --hide-inactive <hours>', 'Hides trading pairs which last log entry is older than given hours. Min = 1, max = 854400. [Default: 720]')
   .option('-E, --show-all-errors', 'Use to list 422 errors in the last column.')
+  .option('-C, --connections-check-delay <seconds>', 'Seconds between netstats checks. Higher numbers result in more inaccurate statistics but reduce cpu usage. Min = 1, max = 600. [Default: 1]')
   .option('-T, --i-have-sent-a-tip', 'Use this if you have sent a tip to BTC wallet: 1GJCGZPn6okFefrRjPPWU73XgMrctSW1jT')
   .parse(process.argv);
 
@@ -133,6 +134,22 @@ if (program.hideInactive) {
     hideInactiveAfterHours = 854400;
   }
   settings.hideInactiveAfterHours = hideInactiveAfterHours;
+}
+
+if (program.connectionsCheckDelay) {
+  let connectionsCheckDelay = parseInt(program.connectionsCheckDelay, 10);
+
+  if (isNaN(connectionsCheckDelay)) {
+    connectionsCheckDelay = 1;
+  }
+
+  if (connectionsCheckDelay < 1) {
+    connectionsCheckDelay = 1;
+  }
+  if (connectionsCheckDelay > 600) {
+    connectionsCheckDelay = 600;
+  }
+  settings.connectionsCheckDelay = connectionsCheckDelay;
 }
 
 if (program.showAllErrors) {

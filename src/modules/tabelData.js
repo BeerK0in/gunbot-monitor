@@ -30,12 +30,14 @@ class TableData {
           let tableData = {
             tables: '',
             availableBitCoins: '',
+            totalAvailableBitCoins: 0,
             availableBitCoinsPerMarket: {},
             foundMarkets: []
           };
 
           for (let table of tables) {
             tableData.availableBitCoins = '';
+            tableData.totalAvailableBitCoins = 0;
             tableData.availableBitCoinsPerMarket = {};
 
             for (let market of settings.marketPrefixs) {
@@ -48,6 +50,7 @@ class TableData {
             for (let market of Object.keys(tableData.availableBitCoinsPerMarket)) {
               if (tableData.availableBitCoinsPerMarket[market] && tableData.availableBitCoinsPerMarket[market].length > 0) {
                 tableData.availableBitCoins += `  ${market} ${parseFloat(tableData.availableBitCoinsPerMarket[market])}  `;
+                tableData.totalAvailableBitCoins += parseFloat(tableData.availableBitCoinsPerMarket[market]);
               }
             }
 
@@ -55,7 +58,10 @@ class TableData {
               tableData.tables += `${chalk.bold.blue(table.name)} `;
             }
 
-            tableData.tables += ` Available BitCoins: ${tableData.availableBitCoins}`;
+            const totalBtcValue = (parseFloat(tableData.totalAvailableBitCoins) + parseFloat(table.totalBtcInAltCoins)).toFixed(settings.numberOfDigits);
+            const totalAvailableBtc = parseFloat(tableData.totalAvailableBitCoins).toFixed(settings.numberOfDigits);
+            const totalBtcInAlts = parseFloat(table.totalBtcInAltCoins).toFixed(settings.numberOfDigits);
+            tableData.tables += ` Available BitCoins: ${tableData.availableBitCoins} |   Total BTC value: ${chalk.bold.green(totalBtcValue)} (in BTC: ${totalAvailableBtc}, in ALTs: ${totalBtcInAlts})`;
             tableData.tables += settings.newLine;
             tableData.tables += table.table;
             tableData.tables += settings.newLine;
@@ -212,7 +218,7 @@ class TableData {
             table.push([
               formatter.tradePair(data.tradePair, data.market),
               formatter.strategies(data.buyStrategy, data.sellStrategy),
-              formatter.pm2Status(data.tradePair, pm2Result),
+              formatter.pm2Status(data.tradePair, pm2Result, data.market),
               formatter.timeSince(data.lastTimeStamp),
               formatter.openOrders(data.openOrders || data.noOpenOrders),
               formatter.coins(data.coins),
@@ -232,10 +238,13 @@ class TableData {
             ]);
           }
 
-          table.push([]);
+          const numberOfRows = table.length;
+          if (settings.compact) {
+            table.push([]);
+          }
 
           table.push([
-            chalk.bold(formatter.tradePair(' = TOTAL = ')),
+            chalk.bold(formatter.tradePair(`= TOTAL (${numberOfRows}) =`)),
             '',
             '',
             '',
@@ -258,6 +267,7 @@ class TableData {
 
           result.table = this.formatTableContent(table);
           result.availableBitCoins = availableBitCoins;
+          result.totalBtcInAltCoins = totalBTCValue;
           result.name = pathToGunbot.name;
           resolve(result);
         })
