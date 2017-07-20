@@ -12,6 +12,7 @@ class Settings {
     this._showAllErrors = false;
     this._numberOfDigits = 4;
     this._hideInactiveAfterHours = 720;
+    this._connectionsCheckDelay = 1;
     this._iHaveSentATip = false;
     this._marketPrefixs = ['poloniex', 'bittrex', 'kraken'];
     this.newLine = '\n';
@@ -137,6 +138,14 @@ class Settings {
 
   get hideInactiveAfterHours() {
     return this._hideInactiveAfterHours;
+  }
+
+  set connectionsCheckDelay(value) {
+    this._connectionsCheckDelay = value;
+  }
+
+  get connectionsCheckDelay() {
+    return this._connectionsCheckDelay;
   }
 
   set iHaveSentATip(value) {
