@@ -58,7 +58,10 @@ class TableData {
               tableData.tables += `${chalk.bold.blue(table.name)} `;
             }
 
-            tableData.tables += ` Available BitCoins: ${tableData.availableBitCoins} |   Total BTC value: ${chalk.bold.green(tableData.totalAvailableBitCoins + parseFloat(table.totalBtcInAltCoins))} (in BTC: ${tableData.totalAvailableBitCoins}, in ALTs: ${table.totalBtcInAltCoins})`;
+            const totalBtcValue = (parseFloat(tableData.totalAvailableBitCoins) + parseFloat(table.totalBtcInAltCoins)).toFixed(settings.numberOfDigits);
+            const totalAvailableBtc = parseFloat(tableData.totalAvailableBitCoins).toFixed(settings.numberOfDigits);
+            const totalBtcInAlts = parseFloat(table.totalBtcInAltCoins).toFixed(settings.numberOfDigits);
+            tableData.tables += ` Available BitCoins: ${tableData.availableBitCoins} |   Total BTC value: ${chalk.bold.green(totalBtcValue)} (in BTC: ${totalAvailableBtc}, in ALTs: ${totalBtcInAlts})`;
             tableData.tables += settings.newLine;
             tableData.tables += table.table;
             tableData.tables += settings.newLine;

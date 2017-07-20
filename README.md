@@ -14,12 +14,18 @@ So,
 - you need a wide window / screen
 - Finally: use at own risk
 
-## Installation and Update
+## Installation
 
 ```sh
 $ npm install -g gunbot-monitor
 ```
-Use the same command to update to the latest version.
+
+## Update
+
+```sh
+$ npm uninstall -g gunbot-monitor
+$ npm install -g gunbot-monitor
+```
 
 ## Usage
 
