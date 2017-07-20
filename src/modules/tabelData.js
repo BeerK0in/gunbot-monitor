@@ -232,10 +232,13 @@ class TableData {
             ]);
           }
 
-          table.push([]);
+          const numberOfRows = table.length;
+          if (settings.compact) {
+            table.push([]);
+          }
 
           table.push([
-            chalk.bold(formatter.tradePair(' = TOTAL = ')),
+            chalk.bold(formatter.tradePair(`= TOTAL (${numberOfRows}) =`)),
             '',
             '',
             '',
