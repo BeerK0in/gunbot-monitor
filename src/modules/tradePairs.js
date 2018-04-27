@@ -4,9 +4,8 @@ const fs = require('graceful-fs');
 const settings = require('./settings');
 
 class TradePairs {
-
   constructor() {
-    this.regExp = TradePairs.buildRegExp();
+    this.fileRegExp = TradePairs.buildFileRegExp();
   }
 
   getTradePairs(pathToGunbot) {
@@ -27,7 +26,7 @@ class TradePairs {
           }
 
           for (let file of files) {
-            let matches = this.regExp.exec(file);
+            let matches = this.fileRegExp.exec(file);
             if (!matches || matches.length < 2) {
               continue;
             }
@@ -60,16 +59,15 @@ class TradePairs {
     return pairs;
   }
 
-  static buildRegExp() {
+  static buildFileRegExp() {
     let regExStr = '(';
     for (let marketPrefix of settings.marketPrefixs) {
       regExStr += marketPrefix + '|';
     }
     regExStr = regExStr.slice(0, -1);
-    regExStr += ')-((BTC|XBT|ETH|USDT)_[A-Z0-9]{2,16})-log.txt';
+    regExStr += ')-(([A-Z0-9]{3,4})-[A-Z0-9]{2,16})-state.json';
     return new RegExp(regExStr);
   }
-
 }
 
 module.exports = new TradePairs();

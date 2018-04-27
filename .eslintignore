@@ -1,1 +1,4 @@
-coverage
+.idea/
+coverage/
+dev-data/
+node_modules/

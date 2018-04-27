@@ -3,7 +3,6 @@
 const exec = require('child_process').exec;
 
 class Pm2Data {
-
   getProcesses() {
     return new Promise(resolve => {
       let result = {};
@@ -53,7 +52,6 @@ class Pm2Data {
 
     return false;
   }
-
 }
 
 module.exports = new Pm2Data();

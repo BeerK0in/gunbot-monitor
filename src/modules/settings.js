@@ -1,9 +1,11 @@
 'use strict';
 
-class Settings {
+const fs = require('graceful-fs');
+const path = require('path');
 
+class Settings {
   constructor() {
-    this._pathsToGunbot = [{path: './', name: ''}];
+    this._pathsToGunbot = [{path: './', name: null}];
     this._compact = false;
     this._compactGroupSize = 0;
     this._small = false;
@@ -14,13 +16,26 @@ class Settings {
     this._hideInactiveAfterHours = 720;
     this._connectionsCheckDelay = 1;
     this._iHaveSentATip = false;
-    this._marketPrefixs = ['poloniex', 'bittrex', 'kraken'];
+    this._marketPrefixs = [
+      'binance',
+      'bittrex',
+      'bitfinex',
+      'cex',
+      'cryptopia',
+      'gdax',
+      'kraken',
+      'poloniex'
+    ];
     this.newLine = '\n';
-    this.logFileLinesToRead = 55;
     this.marketApiIps = {
-      poloniex: ['104.20.12.48', '104.20.13.48'],
+      binance: ['13.114.29.1', '54.65.237.133', '54.230.79.162', '54.192.122.25', '54.192.122.83', '54.192.122.102', '54.192.122.106', '54.192.122.121', '54.192.122.126', '54.192.122.135', '54.192.122.179'],
       bittrex: ['104.17.152.108', '104.17.153.108', '104.17.154.108', '104.17.155.108', '104.17.156.108'],
-      kraken: ['104.16.211.191', '104.16.212.191', '104.16.213.191', '104.16.214.191', '104.16.215.191']
+      bitfinex: ['104.16.171.181', '104.16.172.181', '104.16.173.181', '104.16.174.181', '104.16.175.181'],
+      cex: ['104.20.33.190', '104.20.34.190'],
+      cryptopia: ['45.60.11.241', '45.60.13.241'],
+      gdax: ['104.16.107.31', '104.16.108.31'],
+      kraken: ['104.16.211.191', '104.16.212.191', '104.16.213.191', '104.16.214.191', '104.16.215.191'],
+      poloniex: ['104.20.12.48', '104.20.13.48']
     };
 
     this.timeColorScheme = {
@@ -156,6 +171,48 @@ class Settings {
     return this._iHaveSentATip;
   }
 
+  prepareSetupsFolders() {
+    let pathsToSetups = [];
+    for (let pathToGunbot of this._pathsToGunbot) {
+      // Check if this path contains state.json files.
+      let files;
+      try {
+        files = fs.readdirSync(`${pathToGunbot.path}`);
+      } catch (e) {
+        throw new Error(`Can not find directory ${pathToGunbot.path}. Please run gmon in the root Gunbot directory.`);
+      }
+      const stateFileRegExp = new RegExp('.*-[A-Z0-9]{3,4}-[A-Z0-9]{2,16}-state.json');
+      for (let file of files) {
+        let matches = stateFileRegExp.exec(file);
+        if (matches && matches.length > 0) {
+          // Set Gunbot root path as one source of state files.
+          pathsToSetups.push({
+            path: `${pathToGunbot.path}`,
+            name: pathToGunbot.name || 'Root dir'
+          });
+
+          break;
+        }
+      }
+
+      // Checks if the gui version is running
+      let setups;
+      try {
+        setups = fs.readdirSync(`${pathToGunbot.path}setups${path.sep}`);
+      } catch (e) {
+        setups = [];
+      }
+
+      let index = 1;
+      for (let setup of setups) {
+        pathsToSetups.push({
+          path: `${pathToGunbot.path}setups${path.sep}${setup}${path.sep}`,
+          name: pathToGunbot.name || `Setup ${index++}`
+        });
+      }
+    }
+    this._pathsToGunbot = pathsToSetups;
+  }
 }
 
 module.exports = new Settings();
