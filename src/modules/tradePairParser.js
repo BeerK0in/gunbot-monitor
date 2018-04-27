@@ -116,17 +116,19 @@ class TradePairParser {
           resolve([]);
           return;
         }
+
+        let collectedData = [];
+
         const contents = fs.readFileSync(filePath);
         let config;
         try {
           config = JSON.parse(contents);
+          collectedData.strategy = config.pairs[market][tradePair].strategy || '';
         } catch (e) {
-          resolve([]);
+          resolve(collectedData);
           return;
         }
 
-        let collectedData = [];
-        collectedData.strategy = config.pairs[market][tradePair].strategy || '';
         resolve(collectedData);
       });
     });
