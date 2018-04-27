@@ -8,7 +8,6 @@ const TOO_HIGH_TO_BUY = 1100;
 const PRICE_IS_SWEET = 1200;
 
 class Formatter {
-
   tradePair(tradePair, marketName) {
     if (tradePair === undefined) {
       return chalk.gray('-');
@@ -22,19 +21,19 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    return this.price(coins);
+    return parseFloat(coins).toFixed(settings.numberOfDigits);
   }
 
-  currentProfit(numberOfCoins, boughtPrice, lastPriceInBTC) {
-    if (numberOfCoins === undefined || boughtPrice === undefined || lastPriceInBTC === undefined) {
+  currentProfit(numberOfCoins, boughtPrice, lastPrice) {
+    if (numberOfCoins === undefined || boughtPrice === undefined || lastPrice === undefined) {
       return chalk.gray('-');
     }
 
-    if (parseFloat(lastPriceInBTC) === 0 || parseFloat(boughtPrice) === 0) {
+    if (parseFloat(lastPrice) === 0 || parseFloat(boughtPrice) === 0) {
       return chalk.gray('-');
     }
 
-    if (isNaN(parseFloat(lastPriceInBTC)) || isNaN(parseFloat(boughtPrice))) {
+    if (isNaN(parseFloat(lastPrice)) || isNaN(parseFloat(boughtPrice))) {
       return chalk.gray('-');
     }
 
@@ -42,20 +41,20 @@ class Formatter {
       return chalk.gray('-');
     }
 
-    let diff = parseFloat(lastPriceInBTC) - parseFloat(boughtPrice);
+    let diff = parseFloat(lastPrice) - parseFloat(boughtPrice);
     let profit = this.price(parseFloat(numberOfCoins) * diff);
 
     return this.price(profit);
   }
 
-  currentProfitWithPercent(numberOfCoins, boughtPrice, lastPriceInBTC) {
-    let currentProfit = this.currentProfit(numberOfCoins, boughtPrice, lastPriceInBTC);
+  currentProfitWithPercent(numberOfCoins, boughtPrice, lastPrice) {
+    let currentProfit = this.currentProfit(numberOfCoins, boughtPrice, lastPrice);
 
     if (currentProfit === undefined || currentProfit === chalk.gray('-') || currentProfit === '-') {
       return chalk.gray('-');
     }
 
-    let diff = parseFloat(lastPriceInBTC) - parseFloat(boughtPrice);
+    let diff = parseFloat(lastPrice) - parseFloat(boughtPrice);
     let profitPercent = diff * 100 / parseFloat(boughtPrice);
     let negativePadding = (profitPercent < 0) ? '' : ' ';
     let percentPadding = (profitPercent >= 10 || profitPercent <= -10) ? '' : ' ';
@@ -84,7 +83,7 @@ class Formatter {
   }
 
   price(price) {
-    if (price === '--not set--') {
+    if (price === null) {
       return chalk.gray('-');
     }
     if (price === undefined) {
@@ -93,6 +92,25 @@ class Formatter {
 
     let priceOut = parseFloat(price).toFixed(settings.numberOfDigits);
     return priceOut;
+  }
+
+  priceFormatSmallNumbers(price) {
+    if (price === 0 || price === null) {
+      return this.price(null);
+    }
+    if (price < 0.01) {
+      return this.price(price * 10000);
+    }
+    if (price < 0.001) {
+      return this.price(price * 100000);
+    }
+    if (price < 0.0001) {
+      return this.price(price * 1000000);
+    }
+    if (price < 0.00001) {
+      return this.price(price * 10000000);
+    }
+    return this.price(price);
   }
 
   profit(price) {
@@ -142,8 +160,8 @@ class Formatter {
     return false;
   }
 
-  openOrders(message) {
-    if (message === 'Open orders') {
+  openOrders(count) {
+    if (count > 0) {
       return chalk.red('yes');
     }
 
@@ -174,61 +192,76 @@ class Formatter {
       parseFloat(boughtPrice) === 0 ||
       isNaN(parseFloat(boughtPrice)) ||
       parseFloat(numberOfCoins) === 0) {
-      return this.price(buyPrice);
+      return this.priceFormatSmallNumbers(buyPrice);
     }
-    return chalk.yellow(this.price(boughtPrice * 10000));
+    return chalk.yellow(this.priceFormatSmallNumbers(boughtPrice));
   }
 
-  priceDiff(buyMessageDate, sellMessageDate, sweetMessageDate, buyPrice, sellPrice, lastPrice, coins) {
-    if (isNaN(parseFloat(lastPrice))) {
-      return chalk.red('No LP found');
+  priceDiff(buyPrice, sellPrice, lastPrice, coins) {
+    const bp = parseFloat(buyPrice) || 0;
+    const sp = parseFloat(sellPrice) || 0;
+    const lp = parseFloat(lastPrice) || 0;
+    const c = parseFloat(coins) || 0;
+
+    if (lp === 0) {
+      return chalk.red('No last price found');
     }
 
-    let bss = this.getLatestBuySellSweetMessage(buyMessageDate, sellMessageDate, sweetMessageDate);
-
-    if (bss === TOO_LOW_TO_SELL && !isNaN(parseFloat(sellPrice))) {
-      let diff = parseFloat(sellPrice) - parseFloat(lastPrice);
-      let percent = (diff / parseFloat(sellPrice) * 100).toFixed(2);
-      let percentPadding = (percent >= 10 || percent <= -10) ? '' : ' ';
-
-      return `${chalk.magenta(this.price(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
+    if (c > 0 && sp === 0) {
+      return chalk.red('No sell price found');
     }
 
-    if (bss === TOO_HIGH_TO_BUY && !isNaN(parseFloat(buyPrice))) {
-      let diff = parseFloat(lastPrice) - parseFloat(buyPrice);
-      let percent = (diff / parseFloat(lastPrice) * 100).toFixed(2);
+    if (c === 0 && bp === 0) {
+      return chalk.red('No buy price found');
+    }
+
+    return this.calculatePriceDiff(c, sp, bp, lp);
+  }
+
+  calculatePriceDiff(c, sp, bp, lp) {
+    if (c > 0 && sp > lp) {
+      let diff = sp - lp;
+      let percent = (diff / sp * 100).toFixed(2);
       let percentPadding = (percent >= 10 || percent <= -10) ? '' : ' ';
 
-      return `${chalk.blue(this.price(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
+      return `${chalk.magenta(this.priceFormatSmallNumbers(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
+    }
+
+    if (c === 0 && lp > bp) {
+      let diff = lp - bp;
+      let percent = (diff / lp * 100).toFixed(2);
+      let percentPadding = (percent >= 10 || percent <= -10) ? '' : ' ';
+
+      return `${chalk.blue(this.priceFormatSmallNumbers(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
     }
 
     // Sweet to sell
-    if (bss === PRICE_IS_SWEET && parseFloat(coins) > 0 && !isNaN(parseFloat(sellPrice))) {
-      let diff = parseFloat(lastPrice) - parseFloat(sellPrice);
-      let percent = (diff / parseFloat(lastPrice) * 100).toFixed(2);
+    if (c > 0 && lp > sp) {
+      let diff = lp - sp;
+      let percent = (diff / lp * 100).toFixed(2);
       let percentPadding = (percent >= 10 || percent <= -10) ? '' : ' ';
 
-      return `${chalk.green(this.price(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
+      return `${chalk.green(this.priceFormatSmallNumbers(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
     }
 
     // Sweet to buy
-    if (bss === PRICE_IS_SWEET && parseFloat(coins) === 0 && !isNaN(parseFloat(buyPrice))) {
-      let diff = parseFloat(buyPrice) - parseFloat(lastPrice);
-      let percent = (diff / parseFloat(buyPrice) * 100).toFixed(2);
+    if (c === 0 && bp > lp) {
+      let diff = bp - lp;
+      let percent = (diff / bp * 100).toFixed(2);
       let percentPadding = (percent >= 10 || percent <= -10) ? '' : ' ';
 
-      return `${chalk.green(this.price(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
+      return `${chalk.green(this.priceFormatSmallNumbers(diff))} ${percentPadding}${chalk.gray(`${percent}%`)}`;
     }
 
     return chalk.gray('-');
   }
 
-  btcValue(numberOfCoins, lastPriceInBTC) {
-    if (numberOfCoins === undefined || lastPriceInBTC === undefined || isNaN(parseFloat(numberOfCoins)) || parseFloat(numberOfCoins) === 0) {
+  btcValue(numberOfCoins, lastPrice) {
+    if (numberOfCoins === undefined || lastPrice === undefined || isNaN(parseFloat(numberOfCoins)) || parseFloat(numberOfCoins) === 0) {
       return chalk.gray('-');
     }
 
-    return this.price(parseFloat(numberOfCoins) * parseFloat(lastPriceInBTC));
+    return this.price(parseFloat(numberOfCoins) * parseFloat(lastPrice));
   }
 
   trades(numberOfTrades, lastTradeDate) {
@@ -352,31 +385,34 @@ class Formatter {
     if (marketName === undefined || marketName.length === 0) {
       return '';
     }
-
-    let market = marketName[0].toUpperCase();
-
-    switch (market) {
-      case 'P':
-        return `${chalk.cyan(market)} `;
-      case 'K':
-        return `${chalk.yellow(market)} `;
-      case 'B':
-        return `${chalk.blue(market)} `;
+    switch (marketName) {
+      case 'binance':
+        return `${chalk.yellow('Bi')} `;
+      case 'bittrex':
+        return `${chalk.blue('Bt')} `;
+      case 'bitfinex':
+        return `${chalk.green('Bf')} `;
+      case 'cex':
+        return `${chalk.magenta('CX')} `;
+      case 'cryptopia':
+        return `${chalk.gray('Cr')} `;
+      case 'gdax':
+        return `${chalk.cyan('GD')} `;
+      case 'kraken':
+        return `${chalk.yellow('Kr')} `;
+      case 'poloniex':
+        return `${chalk.cyan('Po')} `;
       default:
-        return `${chalk.red(market)} `;
+        return `${chalk.red(marketName)} `;
     }
   }
 
-  strategies(buyStrategy, sellStrategy) {
-    if (buyStrategy === undefined || buyStrategy.length === 0) {
+  strategies(strategy) {
+    if (strategy === undefined || strategy.length === 0) {
       return chalk.gray('-');
     }
 
-    if (sellStrategy === undefined || sellStrategy.length === 0) {
-      return chalk.gray('-');
-    }
-
-    return `${buyStrategy[0].toUpperCase()}-${sellStrategy[0].toUpperCase()}`;
+    return strategy;
   }
 
   /**
@@ -493,7 +529,6 @@ class Formatter {
 
     return chalk[settings.timeColorScheme[timeColorSchemeName].secondsColor](Math.floor(seconds) + 's');
   }
-
 }
 
 module.exports = new Formatter();

@@ -4,6 +4,7 @@
 
 const program = require('commander');
 const path = require('path');
+const chalk = require('chalk');
 const settings = require('./modules/settings');
 const outputter = require('./modules/outputter');
 const pj = require('../package.json');
@@ -16,14 +17,15 @@ program
   .option('-s, --small', 'Reduce columns for small screens')
   .option('-d, --digits <digits>', 'Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]')
   .option('-r, --refresh <seconds>', 'Seconds between table refresh. Min = 1, max = 600. [Default: 60]')
-  .option('-m, --markets <markets>', 'List of markets to show. Separate multiple markets with ":" (like: -m poloniex:kraken) [Default: poloniex:kraken:bittrex]')
-  .option('-P, --profit', 'Use to activate the parsing of the profit. THIS WILL SLOW DOWN YOUR SYSTEM!')
+  .option('-m, --markets <markets>', 'Filter of markets to show. Separate multiple markets with ":" (like: -m poloniex:kraken) [Default: all]')
+  .option('-P, --profit', 'Use to activate the parsing of the profit. NOT WORKING CORRECTLY!')
   .option('-H, --hide-inactive <hours>', 'Hides trading pairs which last log entry is older than given hours. Min = 1, max = 854400. [Default: 720]')
-  .option('-E, --show-all-errors', 'Use to list 422 errors in the last column.')
+  // .option('-E, --show-all-errors', 'Use to list 422 errors in the last column.')
   .option('-C, --connections-check-delay <seconds>', 'Seconds between netstats checks. Higher numbers result in more inaccurate statistics but reduce cpu usage. Min = 1, max = 600. [Default: 1]')
   .option('-T, --i-have-sent-a-tip', 'Use this if you have sent a tip to BTC wallet: 1GJCGZPn6okFefrRjPPWU73XgMrctSW1jT')
   .parse(process.argv);
 
+// Set all paths to gunbot setup sub folders.
 if (program.path && program.path.length > 0) {
   let pathsToGunbot = program.path.split(':');
   let pathNames = [];
@@ -35,7 +37,7 @@ if (program.path && program.path.length > 0) {
   settings.pathsToGunbot = [];
 
   for (const [index, pathToGunbot] of pathsToGunbot.entries()) {
-    let pathName = '';
+    let pathName = null;
 
     if (pathNames[index] && pathNames[index].length > 0) {
       pathName = pathNames[index];
@@ -56,10 +58,20 @@ if (program.path && program.path.length > 0) {
 } else {
   settings.pathsToGunbot = [{
     path: path.normalize(process.cwd() + path.sep),
-    name: ''
+    name: null
   }];
 }
 
+// Set all setups folder contents.
+try {
+  settings.prepareSetupsFolders();
+} catch (error) {
+  console.error(chalk.red(''));
+  console.error(chalk.red(`Error: ${error.message}`));
+  process.exit();
+}
+
+// Enable compact mode.
 if (program.compact) {
   settings.compact = true;
 
@@ -69,10 +81,12 @@ if (program.compact) {
   }
 }
 
+// Enable small mode.
 if (program.small) {
   settings.small = true;
 }
 
+// Set number of displayed digits.
 if (program.digits) {
   let numberOfDigits = parseInt(program.digits, 10);
 
@@ -89,6 +103,7 @@ if (program.digits) {
   settings.numberOfDigits = numberOfDigits;
 }
 
+// Set refresh rate.
 if (program.refresh) {
   let refreshRate = parseInt(program.refresh, 10);
 
@@ -105,9 +120,19 @@ if (program.refresh) {
   settings.outputIntervalDelaySeconds = refreshRate;
 }
 
+// Set the markets to display.
 if (program.markets && program.markets.length > 0) {
   let markets = program.markets.split(':');
-  const allowedMarkets = ['poloniex', 'bittrex', 'kraken'];
+  const allowedMarkets = [
+    'binance',
+    'bittrex',
+    'bitfinex',
+    'cex',
+    'cryptopia',
+    'gdax',
+    'kraken',
+    'poloniex'
+  ];
   settings.marketPrefixs = [];
   for (let market of markets) {
     if (allowedMarkets.includes(market)) {
@@ -116,10 +141,12 @@ if (program.markets && program.markets.length > 0) {
   }
 }
 
+// Set profit mode.
 if (program.profit) {
   settings.parseProfit = true;
 }
 
+// Set hide inactive mode.
 if (program.hideInactive) {
   let hideInactiveAfterHours = parseInt(program.hideInactive, 10);
 
@@ -136,6 +163,7 @@ if (program.hideInactive) {
   settings.hideInactiveAfterHours = hideInactiveAfterHours;
 }
 
+// Set delay of checks of open connections.
 if (program.connectionsCheckDelay) {
   let connectionsCheckDelay = parseInt(program.connectionsCheckDelay, 10);
 
@@ -152,12 +180,14 @@ if (program.connectionsCheckDelay) {
   settings.connectionsCheckDelay = connectionsCheckDelay;
 }
 
-if (program.showAllErrors) {
-  settings.showAllErrors = true;
-}
+// If (program.showAllErrors) {
+//   settings.showAllErrors = true;
+// }
 
+// Set whether there is a thank you message.
 if (program.iHaveSentATip) {
   settings.iHaveSentATip = true;
 }
 
+// And the magic begins.
 outputter.start();

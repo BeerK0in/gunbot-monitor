@@ -7,7 +7,6 @@ const chalk = require('chalk');
 const settings = require('./settings');
 
 class OsData {
-
   constructor() {
     this.megaByte = 1 / (Math.pow(1024, 2));
     this.loadHistory = Array(80).fill(0);
@@ -109,8 +108,8 @@ class OsData {
         free: os.freemem(),
         used: os.totalmem() - os.freemem(),
 
-        active: os.totalmem() - os.freemem(),     // Temporarily (fallback)
-        available: os.freemem(),                  // Temporarily (fallback)
+        active: os.totalmem() - os.freemem(), // Temporarily (fallback)
+        available: os.freemem(), // Temporarily (fallback)
         buffcache: 0,
 
         swaptotal: 0,
@@ -129,10 +128,10 @@ class OsData {
             result.total = parseInt(mem[1], 10);
             result.free = parseInt(mem[3], 10);
 
-            if (lines.length === 4) {                   // Free (since free von procps-ng 3.3.10)
+            if (lines.length === 4) { // Free (since free von procps-ng 3.3.10)
               result.buffcache = parseInt(mem[5], 10);
               result.available = parseInt(mem[6], 10);
-            } else {                                    // Free (older versions)
+            } else { // Free (older versions)
               result.buffcache = parseInt(mem[5], 10) + parseInt(mem[6], 10);
               result.available = result.free + result.buffcache;
             }
@@ -186,7 +185,6 @@ class OsData {
       }
     });
   }
-
 }
 
 module.exports = new OsData();

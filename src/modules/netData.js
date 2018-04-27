@@ -4,13 +4,18 @@ const netstat = require('node-netstat');
 const settings = require('./settings');
 
 class NetData {
-
   constructor() {
     this.interval = null;
-    this.connectionsHistory = {};
-    this.connectionsHistory.poloniex = new Array(80).fill(0);
-    this.connectionsHistory.bittrex = new Array(80).fill(0);
-    this.connectionsHistory.kraken = new Array(80).fill(0);
+    this.connectionsHistory = {
+      binance: new Array(80).fill(0),
+      bittrex: new Array(80).fill(0),
+      bitfinex: new Array(80).fill(0),
+      cex: new Array(80).fill(0),
+      cryptopia: new Array(80).fill(0),
+      gdax: new Array(80).fill(0),
+      kraken: new Array(80).fill(0),
+      poloniex: new Array(80).fill(0)
+    };
   }
 
   addToConnectionsHistory(market, value) {
@@ -28,10 +33,16 @@ class NetData {
 
     return new Promise(resolve => {
       let sparkLine = require('clui').Sparkline;
-      let result = {};
-      result.poloniex = `Connections:  ${sparkLine(this.connectionsHistory.poloniex, ' cons/sec')} - Connections to Poloniex per sec.`;
-      result.bittrex = `Connections:  ${sparkLine(this.connectionsHistory.bittrex, ' cons/sec')} - Connections to Bittrex per sec.`;
-      result.kraken = `Connections:  ${sparkLine(this.connectionsHistory.kraken, ' cons/sec')} - Connections to Kraken per sec.`;
+      let result = {
+        binance: `Connections:  ${sparkLine(this.connectionsHistory.binance, ' cons/sec')} - Connections to Binance per sec.`,
+        bittrex: `Connections:  ${sparkLine(this.connectionsHistory.bittrex, ' cons/sec')} - Connections to Bittrex per sec.`,
+        bitfinex: `Connections:  ${sparkLine(this.connectionsHistory.bitfinex, ' cons/sec')} - Connections to Bitfinex per sec.`,
+        cex: `Connections:  ${sparkLine(this.connectionsHistory.cex, ' cons/sec')} - Connections to CEX per sec.`,
+        cryptopia: `Connections:  ${sparkLine(this.connectionsHistory.cryptopia, ' cons/sec')} - Connections to Cryptopia per sec.`,
+        gdax: `Connections:  ${sparkLine(this.connectionsHistory.gdax, ' cons/sec')} - Connections to GDAX per sec.`,
+        kraken: `Connections:  ${sparkLine(this.connectionsHistory.kraken, ' cons/sec')} - Connections to Kraken per sec.`,
+        poloniex: `Connections:  ${sparkLine(this.connectionsHistory.poloniex, ' cons/sec')} - Connections to Poloniex per sec.`
+      };
 
       resolve(result);
     });
@@ -69,7 +80,6 @@ class NetData {
       }
     }
   }
-
 }
 
 module.exports = new NetData();

@@ -10,10 +10,9 @@ const chalk = require('chalk');
 const pj = require('../../package.json');
 
 class Outputter {
-
   constructor() {
     this.interval = null;
-    this.headline = '   >>>   GUNBOT - MONITOR / BETA  <<<';
+    this.headline = '   >>>   GUNBOT - MONITOR  <<<';
     this.version = pj.version;
   }
 
@@ -23,7 +22,7 @@ class Outputter {
 
   collectOutputAndUpdateConsoleLog() {
     Promise.all([osData.getMemoryGauge(), osData.getLoad(), netData.getConnections(), tableData.getTables()])
-      .then(values => logUpdate(this.buildOutput(...values)))
+      .then(values => logUpdate(this.buildOutput(values)))
       .catch(error => {
         console.error(settings.newLine + chalk.red.bold(error) + settings.newLine);
         this.stop();
@@ -31,7 +30,8 @@ class Outputter {
       });
   }
 
-  buildOutput(memory, load, connections, tableData, error) {
+  buildOutput(values) {
+    const [memory, load, connections, tableData, error] = values;
     if (error !== undefined) {
       return settings.newLine + chalk.red.bold(error);
     }
@@ -96,8 +96,6 @@ class Outputter {
     let output = `Version ${chalk.bold(this.version)}`;
     output += '  |  ';
     output += `Refresh interval ${chalk.bold(settings.outputIntervalDelaySeconds)}s`;
-    output += '  |  ';
-    output += chalk.red(`Currently there is a bug in the calculated number of trades and the profit - don't rely on it.`);
 
     return output;
   }
@@ -123,7 +121,6 @@ class Outputter {
       });
     });
   }
-
 }
 
 module.exports = new Outputter();

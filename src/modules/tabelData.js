@@ -4,11 +4,9 @@ const chalk = require('chalk');
 const tradePairs = require('./tradePairs');
 const tradePairParser = require('./tradePairParser');
 const formatter = require('./formatter');
-const pm2Data = require('./pm2Data');
 const settings = require('./settings');
 
 class TableData {
-
   parseAvailableTradePairsNames(pathToGunbot) {
     return new Promise(resolve => {
       tradePairs.getTradePairs(pathToGunbot)
@@ -41,14 +39,14 @@ class TableData {
             tableData.availableBitCoinsPerMarket = {};
 
             for (let market of settings.marketPrefixs) {
-              if (table.availableBitCoins[market] && table.availableBitCoins[market].length > 1) {
+              if (table.availableBitCoins[market] && table.availableBitCoins[market] > 0) {
                 tableData.availableBitCoinsPerMarket[market] = table.availableBitCoins[market];
                 tableData.foundMarkets.push(market);
               }
             }
 
             for (let market of Object.keys(tableData.availableBitCoinsPerMarket)) {
-              if (tableData.availableBitCoinsPerMarket[market] && tableData.availableBitCoinsPerMarket[market].length > 0) {
+              if (tableData.availableBitCoinsPerMarket[market] && tableData.availableBitCoinsPerMarket[market] > 0) {
                 tableData.availableBitCoins += `  ${market} ${parseFloat(tableData.availableBitCoinsPerMarket[market])}  `;
                 tableData.totalAvailableBitCoins += parseFloat(tableData.availableBitCoinsPerMarket[market]);
               }
@@ -61,7 +59,7 @@ class TableData {
             const totalBtcValue = (parseFloat(tableData.totalAvailableBitCoins) + parseFloat(table.totalBtcInAltCoins)).toFixed(settings.numberOfDigits);
             const totalAvailableBtc = parseFloat(tableData.totalAvailableBitCoins).toFixed(settings.numberOfDigits);
             const totalBtcInAlts = parseFloat(table.totalBtcInAltCoins).toFixed(settings.numberOfDigits);
-            tableData.tables += ` Available BitCoins: ${tableData.availableBitCoins} |   Total BTC value: ${chalk.bold.green(totalBtcValue)} (in BTC: ${totalAvailableBtc}, in ALTs: ${totalBtcInAlts})`;
+            tableData.tables += ` Available BitCoins: ${tableData.availableBitCoins} |   Total BTC value: ${chalk.bold.green(totalBtcValue)} (as BTC: ${totalAvailableBtc}, as ALTs: ${totalBtcInAlts})`;
             tableData.tables += settings.newLine;
             tableData.tables += table.table;
             tableData.tables += settings.newLine;
@@ -91,7 +89,6 @@ class TableData {
       head: [
         chalk.cyan.bold('Name'),
         chalk.cyan.bold('Str'),
-        chalk.cyan.bold('pm2'),
         chalk.cyan.bold('LL'),
         chalk.cyan.bold('OO?'),
         chalk.cyan.bold('# Coins'),
@@ -101,18 +98,15 @@ class TableData {
         chalk.cyan.bold('Sell'),
         chalk.cyan.bold('Last price'),
         chalk.cyan.bold('Price diff'),
-        chalk.cyan.bold('Price is'),
         chalk.cyan.bold('# Buys'),
         chalk.cyan.bold('1 6 h d +'),
         chalk.cyan.bold('# Sells'),
         chalk.cyan.bold('1 6 h d +'),
-        chalk.cyan.bold('Profit'),
-        chalk.cyan.bold('Errors')
+        chalk.cyan.bold('Profit')
       ],
       colAligns: [
         'left', // Name
         'left', // Strategies
-        'right', // Pm2
         'right', // Last log time
         'left', // Oo?
         'right', // Coins
@@ -122,13 +116,11 @@ class TableData {
         'right', // Price to sell
         'right', // Last price
         'right', // Price diff
-        'left', // Price is
         'left', // Buys
         'left', // 1 6 h d +
         'left', // Sells
         'left', // 1 6 h d +
-        'right', // Profit
-        'left' // Errors
+        'right' // Profit
       ],
       style: {compact: settings.compact}
     };
@@ -143,7 +135,6 @@ class TableData {
       let latestAvailableBitCoinsDate = {};
 
       let allPromises = [];
-      allPromises.push(pm2Data.getProcesses());
 
       for (let market of Object.keys(pairs)) {
         availableBitCoins[market] = 0;
@@ -164,10 +155,9 @@ class TableData {
           let totalDiffSinceBuy = 0.0;
           let totalBoughtPrice = 0.0;
           let totalProfit = 0.0;
-          let pm2Result = values[0];
           let counter = 0;
 
-          values.shift();
+          // Values.shift();
 
           for (let data of values) {
             if (data === undefined || data.lastTimeStamp === undefined) {
@@ -183,7 +173,7 @@ class TableData {
             }
 
             // Get amount of available bitcoins
-            if (data.availableBitCoins !== undefined && data.availableBitCoins.length > 0) {
+            if (data.availableBitCoins !== undefined) {
               if (!(data.availableBitCoinsTimeStamp instanceof Date)) {
                 data.availableBitCoinsTimeStamp = new Date(data.availableBitCoinsTimeStamp || 0);
               }
@@ -194,12 +184,12 @@ class TableData {
               }
             }
 
-            if (!isNaN(parseFloat(formatter.btcValue(data.coins, data.lastPriceInBTC)))) {
-              totalBTCValue += parseFloat(formatter.btcValue(data.coins, data.lastPriceInBTC));
+            if (!isNaN(parseFloat(formatter.btcValue(data.coins, data.lastPrice)))) {
+              totalBTCValue += parseFloat(formatter.btcValue(data.coins, data.lastPrice));
             }
 
-            if (!isNaN(parseFloat(formatter.currentProfit(data.coins, data.boughtPrice, data.lastPriceInBTC)))) {
-              totalDiffSinceBuy += parseFloat(formatter.currentProfit(data.coins, data.boughtPrice, data.lastPriceInBTC));
+            if (!isNaN(parseFloat(formatter.currentProfit(data.coins, data.boughtPrice, data.lastPrice)))) {
+              totalDiffSinceBuy += parseFloat(formatter.currentProfit(data.coins, data.boughtPrice, data.lastPrice));
             }
 
             if (!isNaN(parseFloat(data.boughtPrice)) && !isNaN(parseFloat(data.coins))) {
@@ -217,24 +207,21 @@ class TableData {
 
             table.push([
               formatter.tradePair(data.tradePair, data.market),
-              formatter.strategies(data.buyStrategy, data.sellStrategy),
-              formatter.pm2Status(data.tradePair, pm2Result, data.market),
+              formatter.strategies(data.strategy),
               formatter.timeSince(data.lastTimeStamp),
-              formatter.openOrders(data.openOrders || data.noOpenOrders),
+              formatter.openOrders(data.openOrders),
               formatter.coins(data.coins),
-              formatter.btcValue(data.coins, data.lastPriceInBTC),
-              formatter.currentProfitWithPercent(data.coins, data.boughtPrice, data.lastPriceInBTC),
+              formatter.btcValue(data.coins, data.lastPrice),
+              formatter.currentProfitWithPercent(data.coins, data.boughtPrice, data.lastPrice),
               formatter.buyPrice(data.coins, data.boughtPrice, data.buyPrice),
-              formatter.price(data.sellPrice),
-              formatter.lastPrice(data.lastPrice, data.tendency),
-              formatter.priceDiff(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp, data.buyPrice, data.sellPrice, data.lastPrice, data.coins),
-              formatter.buySellMessage(data.priceStatusBuyTimeStamp, data.priceStatusSellTimeStamp, data.priceStatusSweetTimeStamp),
+              formatter.priceFormatSmallNumbers(data.sellPrice),
+              formatter.priceFormatSmallNumbers(data.lastPrice),
+              formatter.priceDiff(data.buyPrice, data.sellPrice, data.lastPrice, data.coins),
               formatter.trades(data.buyCounter, data.lastTimeStampBuy),
               formatter.tradesInTimeSlots(data.buys),
               formatter.trades(data.sellCounter, data.lastTimeStampSell),
               formatter.tradesInTimeSlots(data.sells),
-              formatter.profit(data.profit),
-              formatter.errorCode(data.errors, data.lastTimeStamp)
+              formatter.profit(data.profit)
             ]);
           }
 
@@ -249,7 +236,6 @@ class TableData {
             '',
             '',
             '',
-            '',
             chalk.bold(formatter.price(totalBTCValue)),
             chalk.bold(formatter.profitPercent(totalBoughtPrice, totalDiffSinceBuy)),
             '',
@@ -260,9 +246,7 @@ class TableData {
             '',
             '',
             '',
-            '',
-            chalk.bold(formatter.profit(totalProfit)),
-            ''
+            chalk.bold(formatter.profit(totalProfit))
           ]);
 
           result.table = this.formatTableContent(table);
@@ -278,26 +262,26 @@ class TableData {
   formatTableHeader(header) {
     if (!settings.parseProfit) {
       // Profit
-      header.head.splice(-2, 1);
-      header.colAligns.splice(-2, 1);
+      header.head.splice(-1, 1);
+      header.colAligns.splice(-1, 1);
     }
 
     if (settings.small) {
-      // Last Log
+      // Open Order
       header.head.splice(3, 1);
       header.colAligns.splice(3, 1);
 
-      // Coins
-      header.head.splice(4, 1);
-      header.colAligns.splice(4, 1);
+      // Number of Coins
+      header.head.splice(3, 1);
+      header.colAligns.splice(3, 1);
 
-      // Coins
-      header.head.splice(12, 1);
-      header.colAligns.splice(12, 1);
+      // Buys per time
+      header.head.splice(10, 1);
+      header.colAligns.splice(10, 1);
 
-      // Coins
-      header.head.splice(13, 1);
-      header.colAligns.splice(13, 1);
+      // Sells per time
+      header.head.splice(11, 1);
+      header.colAligns.splice(11, 1);
     }
 
     return header;
@@ -307,29 +291,28 @@ class TableData {
     if (!settings.parseProfit) {
       for (let content of table) {
         // Profit
-        content.splice(-2, 1);
+        content.splice(-1, 1);
       }
     }
 
     if (settings.small) {
       for (let content of table) {
-        // Last Log
+        // Open Order
         content.splice(3, 1);
 
-        // Coins
-        content.splice(4, 1);
+        // Number of Coins
+        content.splice(3, 1);
 
-        // Coins
-        content.splice(12, 1);
+        // Buys per time
+        content.splice(10, 1);
 
-        // Coins
-        content.splice(13, 1);
+        // Sells per time
+        content.splice(11, 1);
       }
     }
 
     return table;
   }
-
 }
 
 module.exports = new TableData();
