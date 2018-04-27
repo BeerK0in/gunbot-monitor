@@ -124,10 +124,16 @@ class TradePairParser {
           resolve([]);
           return;
         }
-
-        let collectedData = [];
-        collectedData.strategy = config.pairs[market][tradePair].strategy || '';
-        resolve(collectedData);
+        
+        try {
+          let collectedData = [];
+          collectedData.strategy = config.pairs[market][tradePair].strategy || '';
+          resolve(collectedData);
+        } catch (e) {
+          resolve([]);
+          return;
+        }
+        
       });
     });
   }
