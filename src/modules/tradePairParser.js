@@ -38,6 +38,7 @@ class TradePairParser {
         let collectedData = this.getOrderData(state);
 
         // 2. Step: Set all other needed data.
+        const openOrders = state.openOrders || [];
         collectedData.tradePair = tradePair;
         collectedData.market = market;
         collectedData.lastTimeStamp = new Date(stats.mtime).getTime() || 0;
@@ -48,7 +49,7 @@ class TradePairParser {
         collectedData.lastPrice = collectedData.coins === null ? state.Ask || 0 : state.Bid || 0;
         collectedData.lastErrorCode = '';
         collectedData.lastErrorTimeStamp = '';
-        collectedData.openOrders = state.openOrders.length || 0;
+        collectedData.openOrders = openOrders.length || 0;
         collectedData.availableBitCoins = state.baseBalance || 0;
         collectedData.availableBitCoinsTimeStamp = new Date(stats.mtime).getTime() || 0;
         collectedData.profit = state.profitbtc || 0;
@@ -78,8 +79,9 @@ class TradePairParser {
       '24hr': 0,
       older: 0
     };
+    const orders = state.orders || {};
 
-    let orderIds = Object.keys(state.orders);
+    let orderIds = Object.keys(orders);
     for (let orderId of orderIds) {
       const order = state.orders[orderId];
 
@@ -116,17 +118,19 @@ class TradePairParser {
           resolve([]);
           return;
         }
+
+        let collectedData = [];
+
         const contents = fs.readFileSync(filePath);
         let config;
         try {
           config = JSON.parse(contents);
+          collectedData.strategy = config.pairs[market][tradePair].strategy || '';
         } catch (e) {
-          resolve([]);
+          resolve(collectedData);
           return;
         }
 
-        let collectedData = [];
-        collectedData.strategy = config.pairs[market][tradePair].strategy || '';
         resolve(collectedData);
       });
     });
