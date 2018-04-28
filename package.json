@@ -28,8 +28,6 @@
     "lint": "eslint . --fix",
     "pretest": "npm run lint",
     "test": "jest",
-    "nsp": "nsp check --reporter table",
-    "prerelease": "npm run nsp",
     "release": "np"
   },
   "devDependencies": {
@@ -38,8 +36,7 @@
     "eslint-config-xo-space": "0.18.0",
     "jest": "22.4.3",
     "jest-cli": "22.4.3",
-    "np": "2.20.1",
-    "nsp": "3.2.1"
+    "np": "2.20.1"
   },
   "dependencies": {
     "chalk": "2.4.1",
