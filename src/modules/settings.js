@@ -205,6 +205,12 @@ class Settings {
 
       let index = 1;
       for (let setup of setups) {
+        try {
+          fs.statSync(`${pathToGunbot.path}setups${path.sep}${setup}${path.sep}`).isDirectory();
+        } catch (e) {
+          continue;
+        }
+
         pathsToSetups.push({
           path: `${pathToGunbot.path}setups${path.sep}${setup}${path.sep}`,
           name: pathToGunbot.name || `Setup ${index++}`

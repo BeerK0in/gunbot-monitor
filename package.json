@@ -28,7 +28,8 @@
     "lint": "eslint . --fix",
     "pretest": "npm run lint",
     "test": "jest",
-    "prerelease": "nsp check --reporter table",
+    "nsp": "nsp check --reporter table",
+    "prerelease": "npm run nsp",
     "release": "np"
   },
   "devDependencies": {
