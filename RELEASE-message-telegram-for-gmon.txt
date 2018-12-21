@@ -1,0 +1,22 @@
+gmon update v0.0.51 is available now.
+
+Changelog
+
+- Bugfix: Show pm2 ids for process names like `AAA_XXX`, `AAA_XXX_M` and `AAA_XXX_m`
+- Added total number of monitored pairs per folder.
+- Added total BTC value of available BTC and current ALT value.
+- Added option to set names for different paths ( `-N kraken:polo` ). 
+- Added option to set netstat connection check delay time ( `-C 5` ).
+
+
+Details at https://gunthy.org/index.php?topic=319.msg3441#msg3441
+
+To update to v0.0.51 (it removes gmon first):
+`npm uninstall -g gunbot-monitor && npm install -g gunbot-monitor`
+
+
+`npm uninstall -g gunbot-monitor`
+`rm /usr/bin/gmon`
+`rm -r /usr/lib/node_modules/gunbot-monitor`
+`rm -r /usr/local/lib/node_modules/gunbot-monitor`
+`npm install -g gunbot-monitor`

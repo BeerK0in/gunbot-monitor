@@ -1,0 +1,184 @@
+$ lsb_release -a
+No LSB modules are available.
+Distributor ID: Ubuntu
+Description:    Ubuntu 17.04
+Release:    17.04
+Codename:   zesty
+
+$ node -v
+v7.10.0
+
+
+useradd -s /bin/bash -m -d /home/gb -c "gb" gb
+usermod -aG sudo gb
+echo gbpass | passwd gb --stdin
+
+
+
+curl -sL https://raw.githubusercontent.com/BeerK0in/generator-gunbot/master/install-loud.sh | bash -- && exec bash
+
+
+#!/bin/bash
+
+# Set variables
+# -----------------------------------
+GUNBOT_GITHUB_FOLDER_NAME="Gunbot3.3.2"
+GUNBOT_GITHUB_FILE_NAME="GUNBOT_v3.3.2_Poloniex_Bittrex_Patch"
+
+https://github.com/GuntharDeNiro/BTCT/releases/tag/Gunbot3.3SMART
+https://github.com/GuntharDeNiro/BTCT/releases/tag/Gunbot3.3.2
+
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+apt-get update
+
+
+logMessage "(2/6) Install nodejs 8.x"
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+curl -sL https://deb.nodesource.com/setup_7.x | bash -
+apt-get -y install nodejs chpasswd curl wget
+
+
+# Create gbuser
+useradd -s /bin/bash -m -d /home/gbuser -c "gbuser" gbuser
+usermod -aG sudo gbuser
+echo gbpass | passwd gbuser --stdin
+
+echo "" >> /etc/ssh/sshd_config
+echo "DenyUsers gbuser" >> /etc/ssh/sshd_config
+
+
+logMessage "Automatically login root as gbuser user"
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+echo "" >> ~/.bashrc
+echo "# automatically login as gbuser" >> ~/.bashrc
+echo "if [[ -n $SSH_CONNECTION ]] ; then" >> ~/.bashrc
+echo "su gbuser" >> ~/.bashrc
+echo "fi" >> ~/.bashrc
+
+# Create swap
+fallocate -l 6G /gunbotswap2
+chmod 600 /gunbotswap2
+mkswap /gunbotswap2
+swapon /gunbotswap2
+cp /etc/fstab /etc/fstab.bak2
+echo '/gunbotswap2 none swap sw 0 0' | sudo tee -a /etc/fstab
+
+
+logMessage "(3/6) Install tools"
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+apt-get -y install unzip
+
+npm install -g pm2 yo@1.8.5 generator-gunbot gunbot-monitor
+
+chown -R gbuser:gbuser /usr/lib/node_modules
+chown -R gbuser:gbuser /opt
+chmod -R g+wx /opt
+
+su gbuser
+cd ~
+echo "" >> ~/.bashrc
+echo "cd ~" >> ~/.bashrc
+
+
+logMessage "(4/6) Install GUNBOT"
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+wget https://github.com/GuntharDeNiro/BTCT/releases/download/Gunbot3.3SMART/GUNBOT_V3.3_ALL_OS.zip -P /opt/
+unzip -o /opt/GUNBOT_V3.3_ALL_OS.zip -d /opt/unzip-tmp
+
+# create folder for the current version.
+mkdir /opt/_gunbot3.3 -p
+
+# Copy only the executables.
+cp /opt/unzip-tmp/gunthy-* /opt/_gunbot3.3
+
+# Set rights
+chmod +x /opt/_gunbot3.3/gunthy-*
+
+# Cleanup
+rm /opt/GUNBOT_V3.3_ALL_OS.zip
+rm -R /opt/unzip-tmp
+
+
+wget https://github.com/GuntharDeNiro/BTCT/releases/download/Gunbot3.3.2/GUNBOT_v3.3.2_Poloniex_Bittrex_Patch.zip -P /opt/
+unzip -o /opt/GUNBOT_v3.3.2_Poloniex_Bittrex_Patch.zip -d /opt/unzip-tmp
+
+# create folder for the current version.
+mkdir /opt/_gunbot3.3.2 -p
+
+# Copy only the executables.
+cp /opt/unzip-tmp/gunthy-* /opt/_gunbot3.3.2
+
+# Set rights
+chmod +x /opt/_gunbot3.3.2/gunthy-*
+
+# Cleanup
+rm /opt/GUNBOT_v3.3.2_Poloniex_Bittrex_Patch.zip
+rm -R /opt/unzip-tmp
+
+mkdir /opt/p1 -p
+mkdir /opt/p2 -p
+mkdir /opt/b1 -p
+mkdir /opt/b2 -p
+mkdir /opt/k1 -p
+mkdir /opt/k2 -p
+
+cp /opt/z_gunbot3.3/gunthy-linuxx64 /opt/k1/gunthy-linuxx64
+cp /opt/z_gunbot3.3/gunthy-linuxx64 /opt/k2/gunthy-linuxx64
+cp /opt/z_gunbot3.3.2/gunthy-linuxx64 /opt/p1/gunthy-linuxx64
+cp /opt/z_gunbot3.3.2/gunthy-linuxx64 /opt/p2/gunthy-linuxx64
+cp /opt/z_gunbot3.3.2/gunthy-linuxx64 /opt/b1/gunthy-linuxx64
+cp /opt/z_gunbot3.3.2/gunthy-linuxx64 /opt/b2/gunthy-linuxx64
+
+
+
+
+
+echo "" >> ~/.bashrc
+echo "# GUNBOT ALIASES" >> ~/.bashrc
+echo "alias ginit='yo gunbot init'" >> ~/.bashrc
+echo "alias gadd='yo gunbot add'" >> ~/.bashrc
+echo "alias gl='pm2 l'" >> ~/.bashrc
+echo "alias glog='pm2 logs'" >> ~/.bashrc
+echo "alias gstart='pm2 start'" >> ~/.bashrc
+echo "alias gstop='pm2 stop'" >> ~/.bashrc
+
+
+
+logMessage "(6/6) Init generator"
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create folder for yeoman.
+chmod g+rwx ~
+chmod g+rwx /opt/gunbot
+
+# Yeoman write rights.
+mkdir ~/.config/configstore -p
+cat > /root/.config/configstore/insight-yo.json << EOM
+{
+        "clientId": 1337,
+        "optOut": true
+}
+EOM
+chmod g+rwx /root/.config
+chmod g+rwx /root/.config/configstore
+chmod g+rw /root/.config/configstore/*
+
+# pm2 write rights.
+mkdir ~/.pm2 -p
+echo "1337" > ~/.pm2/touch
+chmod g+rwx ~/.pm2
+chmod g+rw ~/.pm2/*
+
+
+echo ""
+echo " ============================================================"
+echo "                   GUNBOT SETUP complete!"
+echo ""
+echo "          Please run this command to init the GUNBOT:"
+echo "                           gcd"
+echo "                           ginit"
+echo ""
+echo " ============================================================"
+echo ""

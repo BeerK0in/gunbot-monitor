@@ -1,0 +1,100 @@
+[size=24pt][b]gmon update[/b][/size]
+[size=10pt][size=14pt][b]Version 0.0.50[/b][/size][/size]
+
+[size=14pt][b]Changelog[/b][/size]
+
+- Bugfix: Show pm2 ids for process names like `AAA_XXX`, `AAA_XXX_M` and `AAA_XXX_m`
+- Added total number of monitored pairs per folder.
+- Added total BTC value of available BTC and current ALT value.
+- Added option to set names for different paths ( `-N kraken:polo` ). 
+- Added option to set netstat connection check delay time ( `-C 5` ).
+
+[hr]
+
+[size=14pt][b]Update[/b][/size]
+
+Run [code]npm uninstall -g gunbot-monitor && npm install -g gunbot-monitor/code] to update it on your server.
+
+Run [code]npm install -g gunbot-monitor[/code] to install it on your server.
+
+[hr]
+
+[size=14pt][b]Total number of monitored pairs per folder[/b][/size]
+
+Shows the total number of pairs in the last row: [tt]= TOTAL (123) =[/tt]
+
+[hr]
+
+[size=14pt][b]Total BTC value of available BTC and current ALT value[/b][/size]
+
+Shows the total BTC value of the available BTC + the monitored ALTs:
+[tt]Available BitCoins:   poloniex 0.41640129    bittrex 0.467   |   Total BTC value: 3.1025 (in BTC: 0.8834, in ALTs: 2.2191)[/tt]
+
+It does not connect to the market to collect all you balances. The value next to ALTs is the value of the monitored currencies.
+
+[hr]
+
+[size=14pt][b]Set names for different paths[/b][/size]
+
+For every path to the GUNBOT folder(s) you can set a name ([tt]-N[/tt]) which will be displayed as headline. Separate multiple path names with ":".
+
+If you want no name for some folder, just dont type anything.
+
+Example:
+[code]
+gmon -p /opt/polobot/:/opt/v3.1/kraken/ -N "Polo with Proxy":Kraken
+[/code]
+[code]
+gmon -p /opt/polobot/:~/bot-with-no-name:/opt/v3.1/kraken/:/home/bk/awesome_gun -N "Polo with Proxy"::Kraken:"BK is cool"
+[/code]
+
+[hr]
+
+[size=14pt][b]netstat connection check delay time[/b][/size]
+
+With the option [tt]-C[/tt] it is possible to set the delay between each netstats check in seconds. This is for low end systems to reduce the CPU load by increasing the delay time.
+
+[hr]
+
+[size=14pt][b]Usage[/b][/size]
+
+All available options can be displayed with
+[code]
+gmon -h
+[/code]
+
+[code]
+  Usage: gmon [options]
+
+  Options:
+
+    -h, --help                               Output usage information
+    -v, --version                            Output the version number
+    -p, --path <path>                        Path to the GUNBOT folder. Separate multiple paths with ":" (like: -p /path1:/path2). [Default: current folder]
+    -N, --path-name <name>                   Optional name for each path to the GUNBOT folder(s). Separate multiple path names with ":" (like: -N Kraken_Bot:Proxy_Mega_Bot). [Default: No path name]
+    -c, --compact [groupSize]                Do not draw row lines. Optional set the number of rows after which a line is drawn. [Default: 0]
+    -s, --small                              Reduce columns for small screens
+    -d, --digits <digits>                    Amount of digits for all numbers. Min = 0, max = 10. [Default: 4]
+    -r, --refresh <seconds>                  Seconds between table refresh. Min = 1, max = 600. [Default: 60]
+    -m, --markets <markets>                  List of markets to show. Separate multiple markets with ":" (like: -m poloniex:kraken) [Default: poloniex:kraken:bittrex]
+    -P, --profit                             Use to activate the parsing of the profit. THIS WILL SLOW DOWN YOUR SYSTEM!
+    -H, --hide-inactive <hours>              Hides trading pairs which last log entry is older than given hours. Min = 1, max = 854400. [Default: 720]
+    -E, --show-all-errors                    Use to list 422 errors in the last column.
+    -C, --connections-check-delay <seconds>  Seconds between netstats checks. Higher numbers result in more inaccurate statistics but reduce cpu usage. Min = 1, max = 600. [Default: 1]
+[/code]
+
+You can also combine the options like:
+
+[code]gmon -sPEr 120 -p /path/to/GB/:another/path -H 1 -d 3 -c 4 -m bittrex -C 2 -N "GB one":"Bot 2"[/code]
+
+[hr]
+
+[size=14pt][b]Support & Tips[/b][/size]
+
+You like gmon and it helps you earning money? 
+
+- Report bugs in this forum thread or via pm in Telegram at @BeerK0in
+- Support gmon and send a tip to BTC wallet: 1GJCGZPn6okFefrRjPPWU73XgMrctSW1jT
+
+
+BK
