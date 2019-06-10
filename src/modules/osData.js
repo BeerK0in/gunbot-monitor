@@ -135,6 +135,7 @@ class OsData {
               result.buffcache = parseInt(mem[5], 10) + parseInt(mem[6], 10);
               result.available = result.free + result.buffcache;
             }
+
             result.active = result.total - result.free - result.buffcache;
 
             let swap = lines[2].replace(/ +/g, ' ').split(' ');
@@ -142,6 +143,7 @@ class OsData {
             result.swapfree = parseInt(swap[3], 10);
             result.swapused = parseInt(swap[2], 10);
           }
+
           resolve(result);
         });
       } else if (os.type() === 'Darwin') {
@@ -155,6 +157,7 @@ class OsData {
             result.buffcache = result.used - result.active;
             result.available = result.free + result.buffcache;
           }
+
           exec('sysctl -n vm.swapusage', {maxBuffer: 1024 * 2000}, (error, stdout) => {
             if (!error) {
               let lines = stdout.toString().split('\n');
@@ -165,9 +168,11 @@ class OsData {
                   if (line[i].toLowerCase().indexOf('total') !== -1) {
                     result.swaptotal = parseFloat(line[i].split('=')[1].trim()) * 1024 * 1024;
                   }
+
                   if (line[i].toLowerCase().indexOf('used') !== -1) {
                     result.swapused = parseFloat(line[i].split('=')[1].trim()) * 1024 * 1024;
                   }
+
                   if (line[i].toLowerCase().indexOf('free') !== -1) {
                     result.swapfree = parseFloat(line[i].split('=')[1].trim()) * 1024 * 1024;
                   }

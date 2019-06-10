@@ -22,6 +22,7 @@ class NetData {
     if (!this.connectionsHistory[market] || this.connectionsHistory[market] === undefined) {
       return false;
     }
+
     this.connectionsHistory[market].shift();
     this.connectionsHistory[market].push(value);
   }
@@ -68,6 +69,7 @@ class NetData {
           if (!data || !data.remote || !data.remote.address) {
             return;
           }
+
           for (let ip of settings.marketApiIps[market]) {
             if (data.remote.address === ip) {
               counter++;

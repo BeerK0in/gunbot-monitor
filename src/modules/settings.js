@@ -181,6 +181,7 @@ class Settings {
       } catch (e) {
         throw new Error(`Can not find directory ${pathToGunbot.path}. Please run gmon in the root Gunbot directory.`);
       }
+
       const stateFileRegExp = new RegExp('.*-[A-Z0-9]{3,4}-[A-Z0-9]{2,16}-state.json');
       for (let file of files) {
         let matches = stateFileRegExp.exec(file);
@@ -217,6 +218,7 @@ class Settings {
         });
       }
     }
+
     this._pathsToGunbot = pathsToSetups;
   }
 }

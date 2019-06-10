@@ -1,6 +1,6 @@
 {
   "name": "gunbot-monitor",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Monitors your GUNBOTs",
   "homepage": "https://github.com/BeerK0in/gunbot-monitor",
   "author": {
@@ -31,22 +31,22 @@
     "release": "np"
   },
   "devDependencies": {
-    "coveralls": "3.0.2",
-    "eslint": "5.10.0",
-    "eslint-config-xo-space": "0.20.0",
-    "jest": "23.6.0",
-    "jest-cli": "23.6.0",
-    "np": "3.1.0"
+    "coveralls": "3.0.4",
+    "eslint": "5.16.0",
+    "eslint-config-xo-space": "0.21.0",
+    "jest": "24.8.0",
+    "jest-cli": "24.8.0",
+    "np": "5.0.3"
   },
   "dependencies": {
-    "chalk": "2.4.1",
+    "chalk": "2.4.2",
     "cli-table": "0.3.1",
     "clui": "0.3.6",
-    "commander": "2.19.0",
-    "figlet": "1.2.1",
+    "commander": "2.20.0",
+    "figlet": "1.2.3",
     "graceful-fs": "4.1.15",
-    "log-update": "2.3.0",
-    "node-netstat": "1.5.0"
+    "log-update": "3.2.0",
+    "node-netstat": "1.6.1"
   },
   "jest": {
     "testEnvironment": "node",

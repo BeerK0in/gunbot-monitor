@@ -17,6 +17,7 @@ describe('TradePairs', function () {
     for (let marketPrefix of marketPrefixs) {
       regExStr += marketPrefix + '|';
     }
+
     regExStr = regExStr.slice(0, -1);
     regExStr += ')-(([A-Z0-9]{3,4})-[A-Z0-9]{2,16})-state.json';
     const regExp = new RegExp(regExStr);

@@ -97,9 +97,11 @@ if (program.digits) {
   if (numberOfDigits < 0) {
     numberOfDigits = 0;
   }
+
   if (numberOfDigits > 10) {
     numberOfDigits = 10;
   }
+
   settings.numberOfDigits = numberOfDigits;
 }
 
@@ -114,9 +116,11 @@ if (program.refresh) {
   if (refreshRate < 1) {
     refreshRate = 1;
   }
+
   if (refreshRate > 600) {
     refreshRate = 600;
   }
+
   settings.outputIntervalDelaySeconds = refreshRate;
 }
 
@@ -157,9 +161,11 @@ if (program.hideInactive) {
   if (hideInactiveAfterHours < 1) {
     hideInactiveAfterHours = 1;
   }
+
   if (hideInactiveAfterHours > 854400) {
     hideInactiveAfterHours = 854400;
   }
+
   settings.hideInactiveAfterHours = hideInactiveAfterHours;
 }
 
@@ -174,9 +180,11 @@ if (program.connectionsCheckDelay) {
   if (connectionsCheckDelay < 1) {
     connectionsCheckDelay = 1;
   }
+
   if (connectionsCheckDelay > 600) {
     connectionsCheckDelay = 600;
   }
+
   settings.connectionsCheckDelay = connectionsCheckDelay;
 }
 

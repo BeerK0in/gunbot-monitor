@@ -59,10 +59,11 @@ class Outputter {
     output += chalk.italic(`Type ${chalk.bold('gmon -h')} to see all options.`);
     output += '  |  ';
     if (settings.iHaveSentATip) {
-      output += chalk.bold.green(`You are awesome! Thank you :)`);
+      output += chalk.bold.green('You are awesome! Thank you :)');
     } else {
-      output += chalk.bold.yellow(`Support gmon and send a tip to BTC wallet: 1GJCGZPn6okFefrRjPPWU73XgMrctSW1jT`);
+      output += chalk.bold.yellow('Support gmon and send a tip to BTC wallet: 1GJCGZPn6okFefrRjPPWU73XgMrctSW1jT');
     }
+
     output += settings.newLine;
 
     return output;
@@ -115,6 +116,7 @@ class Outputter {
           resolve(true);
           return;
         }
+
         console.log(newLine + chalk.bold.yellow(data));
         console.log((subHeadline));
         resolve(true);

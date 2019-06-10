@@ -25,6 +25,7 @@ class TradePairParser {
           resolve([]);
           return;
         }
+
         const contents = fs.readFileSync(filePath);
         let state;
         try {
@@ -150,15 +151,19 @@ class TradePairParser {
     if (hours <= 1 && hours >= 0) {
       container['1hr']++;
     }
+
     if (hours <= 6 && hours > 1) {
       container['6hr']++;
     }
+
     if (hours <= 12 && hours > 6) {
       container['12hr']++;
     }
+
     if (hours <= 24 && hours > 12) {
       container['24hr']++;
     }
+
     if (hours > 24) {
       container.older++;
     }

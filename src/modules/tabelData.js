@@ -203,6 +203,7 @@ class TableData {
             if (settings.compact && counter % settings.compactGroupSize === 0) {
               table.push([]);
             }
+
             counter++;
 
             table.push([

@@ -14,10 +14,12 @@ class Pm2Data {
             resolve(result);
             return;
           }
+
           if (!stdout || !isJson(stdout)) {
             resolve(result);
             return;
           }
+
           let processes = JSON.parse(stdout);
 
           for (let process of processes) {
@@ -27,6 +29,7 @@ class Pm2Data {
               status: process.pm2_env.status
             };
           }
+
           resolve(result);
         });
       } catch (e) {

@@ -86,6 +86,7 @@ class Formatter {
     if (price === null) {
       return chalk.gray('-');
     }
+
     if (price === undefined) {
       return chalk.gray('-');
     }
@@ -98,18 +99,23 @@ class Formatter {
     if (price === 0 || price === null) {
       return this.price(null);
     }
+
     if (price < 0.01) {
       return this.price(price * 10000);
     }
+
     if (price < 0.001) {
       return this.price(price * 100000);
     }
+
     if (price < 0.0001) {
       return this.price(price * 1000000);
     }
+
     if (price < 0.00001) {
       return this.price(price * 10000000);
     }
+
     return this.price(price);
   }
 
@@ -194,6 +200,7 @@ class Formatter {
       parseFloat(numberOfCoins) === 0) {
       return this.priceFormatSmallNumbers(buyPrice);
     }
+
     return chalk.yellow(this.priceFormatSmallNumbers(boughtPrice));
   }
 
@@ -277,6 +284,7 @@ class Formatter {
     if (numberOfTrades > 9) {
       padding = ' ';
     }
+
     if (numberOfTrades > 99) {
       padding = '';
     }
@@ -305,6 +313,7 @@ class Formatter {
         if (!(date instanceof Date)) {
           date = new Date(date);
         }
+
         if (date < oldestErrorDate) {
           oldestErrorDate = date;
         }
@@ -338,18 +347,23 @@ class Formatter {
     if (tendency <= -10) {
       tendencyOutput = chalk.red.bold('\u2193\u2193');
     }
+
     if (tendency > -10 && tendency <= -2) {
       tendencyOutput = chalk.magenta.bold(' \u2193');
     }
+
     if (tendency > -2 && tendency <= 1) {
       tendencyOutput = chalk.yellow.bold(' \u2192');
     }
+
     if (tendency > 1 && tendency <= 9) {
       tendencyOutput = chalk.cyan.bold(' \u2191');
     }
+
     if (tendency > 9) {
       tendencyOutput = chalk.green.bold('\u2191\u2191');
     }
+
     return `${output} ${tendencyOutput}`;
   }
 
@@ -385,6 +399,7 @@ class Formatter {
     if (marketName === undefined || marketName.length === 0) {
       return '';
     }
+
     switch (marketName) {
       case 'binance':
         return `${chalk.yellow('Bi')} `;
@@ -512,12 +527,15 @@ class Formatter {
     if (interval > 1 && interval < 6) {
       return chalk[settings.timeColorScheme[timeColorSchemeName].hours1pColor](interval + 'h');
     }
+
     if (interval > 1 && interval < 24) {
       return chalk[settings.timeColorScheme[timeColorSchemeName].hours6pColor](interval + 'h');
     }
+
     if (interval > 1 && interval < 49) {
       return chalk[settings.timeColorScheme[timeColorSchemeName].hours24pColor](interval + 'h');
     }
+
     if (interval > 1) {
       return chalk[settings.timeColorScheme[timeColorSchemeName].hours48pColor](interval + 'h');
     }
